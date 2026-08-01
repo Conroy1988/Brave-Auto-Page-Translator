@@ -95,9 +95,11 @@
   const textOriginals = new WeakMap();
   const textTranslations = new WeakMap();
   const trackedTextNodes = new Set();
+  const textDisconnectedAt = new WeakMap();
   const attributeOriginals = new WeakMap();
   const attributeTranslations = new WeakMap();
   const trackedAttributes = new Set();
+  const attributeDisconnectedAt = new WeakMap();
   let observedRoots = new WeakSet();
   const pendingRoots = new Set();
   let observer = null;
@@ -226,8 +228,18 @@
   }
 
   function cleanupTracked() {
-    for (const node of trackedTextNodes) if (!node.isConnected) trackedTextNodes.delete(node);
-    for (const element of trackedAttributes) if (!element.isConnected) trackedAttributes.delete(element);
+    const now = Date.now();
+    const gracePeriod = 30_000;
+    for (const node of trackedTextNodes) {
+      if (node.isConnected) textDisconnectedAt.delete(node);
+      else if (!textDisconnectedAt.has(node)) textDisconnectedAt.set(node, now);
+      else if (now - textDisconnectedAt.get(node) > gracePeriod) trackedTextNodes.delete(node);
+    }
+    for (const element of trackedAttributes) {
+      if (element.isConnected) attributeDisconnectedAt.delete(element);
+      else if (!attributeDisconnectedAt.has(element)) attributeDisconnectedAt.set(element, now);
+      else if (now - attributeDisconnectedAt.get(element) > gracePeriod) trackedAttributes.delete(element);
+    }
   }
 
   function stopObservation() {
@@ -263,11 +275,11 @@
     try {
       for (const node of trackedTextNodes) {
         const original = textOriginals.get(node);
-        if (node.isConnected && typeof original === "string") node.nodeValue = original;
+        if (typeof original === "string") node.nodeValue = original;
       }
       for (const element of trackedAttributes) {
         const originals = attributeOriginals.get(element);
-        if (!element.isConnected || !originals) continue;
+        if (!originals) continue;
         for (const [name, value] of originals) element.setAttribute(name, value);
       }
     } finally {
