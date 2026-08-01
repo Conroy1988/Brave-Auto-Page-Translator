@@ -37,6 +37,14 @@
     return chunks;
   }
 
+  function createTextApplication(textNode, parts, onApplied = () => {}) {
+    return (value) => {
+      const translated = `${parts.prefix}${value}${parts.suffix}`;
+      textNode.nodeValue = translated;
+      onApplied(translated);
+    };
+  }
+
   function collectOpenRoots(root = document.body) {
     if (!root) return [];
     const roots = [root];
@@ -51,7 +59,7 @@
 
   const testApi = globalThis.__BAPT_TEST__;
   if (testApi) {
-    Object.assign(testApi, { splitWhitespace, shouldTranslateText, elementIsExcluded, chunkRecords });
+    Object.assign(testApi, { splitWhitespace, shouldTranslateText, elementIsExcluded, chunkRecords, createTextApplication });
     return;
   }
 
@@ -93,19 +101,16 @@
       let node;
       while ((node = walker.nextNode())) {
         if (elementIsExcluded(node.parentElement)) continue;
-        const current = node.nodeValue || "";
-        if (textTranslations.get(node) === current) continue;
+        const textNode = node;
+        const current = textNode.nodeValue || "";
+        if (textTranslations.get(textNode) === current) continue;
         const parts = splitWhitespace(current);
         if (!shouldTranslateText(parts.core)) continue;
-        textOriginals.set(node, current);
-        trackedTextNodes.add(node);
+        textOriginals.set(textNode, current);
+        trackedTextNodes.add(textNode);
         records.push({
           text: parts.core,
-          apply(value) {
-            const translated = `${parts.prefix}${value}${parts.suffix}`;
-            node.nodeValue = translated;
-            textTranslations.set(node, translated);
-          }
+          apply: createTextApplication(textNode, parts, (translated) => textTranslations.set(textNode, translated))
         });
       }
     }
