@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Brave Auto Page Translator</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="panel">
+      <header class="hero">
+        <img src="../icons/icon-48.png" width="42" height="42" alt="">
+        <div>
+          <p class="eyebrow">BRAVE UTILITY</p>
+          <h1>Auto Translator</h1>
+        </div>
+        <label class="switch" aria-label="Enable automatic translation">
+          <input id="enabled" type="checkbox">
+          <span></span>
+        </label>
+      </header>
+
+      <section class="status-card" aria-live="polite">
+        <div class="pulse" id="statusPulse"></div>
+        <div>
+          <p id="statusTitle">Checking this page…</p>
+          <span id="statusDetail">Detecting language and website rules</span>
+        </div>
+      </section>
+
+      <label class="field">
+        <span>Translate pages into</span>
+        <select id="targetLanguage"></select>
+      </label>
+
+      <div class="actions">
+        <button class="primary" id="translateNow" type="button">Translate this page</button>
+        <button class="secondary" id="siteRule" type="button">Never translate this site</button>
+      </div>
+
+      <footer>
+        <button class="link-button" id="openOptions" type="button">Advanced settings</button>
+        <span>v0.1.0</span>
+      </footer>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

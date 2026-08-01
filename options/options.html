@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Brave Auto Page Translator — Settings</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <img src="../icons/icon-128.png" width="72" height="72" alt="">
+        <div>
+          <p class="eyebrow">BRAVE AUTO PAGE TRANSLATOR</p>
+          <h1>Translation control centre</h1>
+          <p class="intro">Choose what gets translated, where it opens, and which corners of the web remain untouched.</p>
+        </div>
+      </header>
+
+      <form id="settingsForm">
+        <section class="card">
+          <div class="card-heading">
+            <div><span class="number">01</span><h2>Core behaviour</h2></div>
+            <label class="switch-row">
+              <input id="enabled" type="checkbox">
+              <span>Automatic translation</span>
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label class="field">
+              <span>Target language</span>
+              <select id="targetLanguage"></select>
+              <small>Foreign-language pages are translated into this language.</small>
+            </label>
+            <div class="stack">
+              <label class="check-row"><input id="openInNewTab" type="checkbox"><span>Open translations in a new tab</span></label>
+              <label class="check-row"><input id="showBadge" type="checkbox"><span>Show translation status on the toolbar icon</span></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-heading"><div><span class="number">02</span><h2>Exclusions</h2></div></div>
+          <div class="grid two">
+            <label class="field">
+              <span>Languages to leave alone</span>
+              <input id="excludedLanguages" type="text" placeholder="fr, de, es">
+              <small>Comma-separated language codes. Your target language is always skipped.</small>
+            </label>
+            <label class="field">
+              <span>Websites to leave alone</span>
+              <textarea id="excludedHosts" rows="6" placeholder="example.com&#10;private.example.org"></textarea>
+              <small>One hostname per line. Rules also cover subdomains.</small>
+            </label>
+          </div>
+        </section>
+
+        <section class="notice">
+          <strong>Privacy checkpoint</strong>
+          <p>When a page is translated, its public URL is sent to Google Translate, which retrieves and renders the page. This extension does not run analytics or maintain browsing history.</p>
+          <a href="../PRIVACY.md" target="_blank">Read the complete privacy policy</a>
+        </section>
+
+        <div class="toolbar">
+          <span id="saveStatus" role="status"></span>
+          <button class="ghost" id="reset" type="button">Restore defaults</button>
+          <button class="primary" type="submit">Save settings</button>
+        </div>
+      </form>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
