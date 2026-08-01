@@ -118,6 +118,7 @@ async function translateTab(tabId, tab, { manual = false } = {}) {
     await setBadge(tabId, "ERR", "#dc2626");
     return { ...inspection, status: result?.status || "translation-error", message: result?.message || "The page could not be translated." };
   } catch (error) {
+    if (recentlyHandled.get(tabId)?.url === sourceUrl) recentlyHandled.delete(tabId);
     await setBadge(tabId, "ERR", "#dc2626");
     return { ...inspection, status: "translation-error", message: error.message };
   }
