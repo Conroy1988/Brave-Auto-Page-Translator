@@ -1,7 +1,7 @@
 import { DEFAULT_SETTINGS, loadSettings, normalizeSettings } from "./settings.js";
+import { translateTexts } from "./provider.js";
 import {
   baseLanguage,
-  buildTranslationUrl,
   hostMatchesRule,
   hostnameFromUrl,
   isSupportedPageUrl,
@@ -41,6 +41,15 @@ async function inspectTab(tabId, tab) {
     return { status: "unsupported", settings, hostname, language: "" };
   }
 
+  try {
+    const page = await chrome.tabs.sendMessage(tabId, { type: "get-translation-state" }, { frameId: 0 });
+    if (page?.state?.busy) return { status: "translating", settings, hostname, language: page.state.sourceLanguage, pageState: page.state };
+    if (page?.state?.error) return { status: "translation-error", settings, hostname, language: page.state.sourceLanguage, pageState: page.state };
+    if (page?.state?.active) return { status: "translated", settings, hostname, language: page.state.sourceLanguage, pageState: page.state };
+  } catch {
+    // The content script may still be starting. Normal language inspection can continue.
+  }
+
   let language = "";
   try {
     language = normalizeLanguageCode(await chrome.tabs.detectLanguage(tabId));
@@ -76,7 +85,7 @@ async function translateTab(tabId, tab, { manual = false } = {}) {
     return { ...inspection, status: "disabled" };
   }
 
-  const manualOverride = manual && ["unknown-language", "excluded-site", "excluded-language"].includes(inspection.status);
+  const manualOverride = manual && ["unknown-language", "excluded-site", "excluded-language", "translation-error", "translated"].includes(inspection.status);
   if (inspection.status !== "ready" && !manualOverride) {
     if (inspection.status === "excluded-site") await setBadge(tabId, "SKIP", "#64748b");
     else if (inspection.status === "already-target") await setBadge(tabId, "");
@@ -86,26 +95,38 @@ async function translateTab(tabId, tab, { manual = false } = {}) {
   const sourceUrl = tab.url;
   const now = Date.now();
   const previous = recentlyHandled.get(tabId);
-  if (previous?.url === sourceUrl && now - previous.time < 15_000) {
+  if (!manual && previous?.url === sourceUrl && now - previous.time < 3_000) {
     return { ...inspection, status: "recently-handled" };
   }
   recentlyHandled.set(tabId, { url: sourceUrl, time: now });
 
-  const translatedUrl = buildTranslationUrl(sourceUrl, settings.targetLanguage, language || "auto");
-  await setBadge(tabId, `→${baseLanguage(settings.targetLanguage).toUpperCase()}`, "#0f9f8f");
-
-  if (settings.openInNewTab) {
-    await chrome.tabs.create({ url: translatedUrl, active: true, openerTabId: tabId });
-  } else {
-    await chrome.tabs.update(tabId, { url: translatedUrl });
+  await setBadge(tabId, "…", "#6d5dfc");
+  try {
+    const request = {
+      type: "translate-page",
+      sourceLanguage: language || "auto",
+      targetLanguage: settings.targetLanguage,
+      translateDynamicContent: settings.translateDynamicContent,
+      showPageControl: settings.showPageControl
+    };
+    const result = await chrome.tabs.sendMessage(tabId, request, { frameId: 0 });
+    if (result?.status === "translated") {
+      chrome.tabs.sendMessage(tabId, { ...request, showPageControl: false }).catch(() => {});
+      await setBadge(tabId, baseLanguage(settings.targetLanguage).toUpperCase(), "#0f9f8f");
+      return { ...inspection, ...result, status: "translated" };
+    }
+    await setBadge(tabId, "ERR", "#dc2626");
+    return { ...inspection, status: result?.status || "translation-error", message: result?.message || "The page could not be translated." };
+  } catch (error) {
+    await setBadge(tabId, "ERR", "#dc2626");
+    return { ...inspection, status: "translation-error", message: error.message };
   }
-
-  return { ...inspection, status: "translated", translatedUrl };
 }
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   const stored = await chrome.storage.sync.get(DEFAULT_SETTINGS);
   await chrome.storage.sync.set(normalizeSettings(stored));
+  await chrome.storage.sync.remove("openInNewTab");
   await refreshSettings();
   if (reason === "install") await chrome.runtime.openOptionsPage();
 });
@@ -121,10 +142,36 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => recentlyHandled.delete(tabId));
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const handle = async () => {
     if (!message || typeof message !== "object") return { status: "invalid-message" };
     if (message.type === "refresh-settings") return refreshSettings();
+
+    if (message.type === "translate-texts") {
+      const translations = await translateTexts(
+        message.texts,
+        normalizeLanguageCode(message.sourceLanguage) || "auto",
+        normalizeLanguageCode(message.targetLanguage)
+      );
+      return { status: "ok", translations, engine: "google-text" };
+    }
+
+    if (message.type === "content-ready") {
+      if (sender.frameId !== 0 || !sender.tab?.id || !sender.tab.url) return { status: "ready" };
+      const settings = await settingsPromise;
+      if (settings.enabled) translateTab(sender.tab.id, sender.tab).catch(() => {});
+      return { status: "ready" };
+    }
+
+    if (message.type === "translation-status") {
+      const statusTabId = sender.tab?.id;
+      if (!Number.isInteger(statusTabId) || sender.frameId !== 0) return { status: "ignored" };
+      if (message.state?.busy) await setBadge(statusTabId, "…", "#6d5dfc");
+      else if (message.state?.error) await setBadge(statusTabId, "ERR", "#dc2626");
+      else if (message.state?.active) await setBadge(statusTabId, baseLanguage(message.state.targetLanguage).toUpperCase(), "#0f9f8f");
+      else await setBadge(statusTabId, "");
+      return { status: "recorded" };
+    }
 
     const tabId = Number(message.tabId);
     if (!Number.isInteger(tabId)) return { status: "invalid-tab" };
@@ -132,6 +179,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
     if (message.type === "inspect-tab") return inspectTab(tabId, tab);
     if (message.type === "translate-now") return translateTab(tabId, tab, { manual: true });
+    if (message.type === "restore-page") {
+      const result = await chrome.tabs.sendMessage(tabId, { type: "restore-page" }, { frameId: 0 });
+      chrome.tabs.sendMessage(tabId, { type: "restore-page" }).catch(() => {});
+      await setBadge(tabId, "");
+      return result;
+    }
     return { status: "unknown-message" };
   };
 
