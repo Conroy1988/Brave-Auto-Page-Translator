@@ -117,8 +117,9 @@ test.beforeAll(async () => {
   });
   const worker = context.serviceWorkers()[0] || await context.waitForEvent("serviceworker");
   const extensionId = new URL(worker.url()).host;
-  for (const page of context.pages()) await page.close();
-  harness = await context.newPage();
+  const initialPages = context.pages();
+  harness = initialPages[0] || await context.newPage();
+  for (const page of initialPages.slice(1)) await page.close();
   await harness.goto(`chrome-extension://${extensionId}/test-harness.html`);
 });
 
@@ -126,7 +127,7 @@ test.afterAll(async () => {
   await context?.close();
   await new Promise((resolve) => server?.close(resolve));
   await new Promise((resolve) => frameServer?.close(resolve));
-  if (profileDirectory) rmSync(profileDirectory, { recursive: true, force: true });
+  if (profileDirectory) rmSync(profileDirectory, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 });
 
 test.beforeEach(async () => {
