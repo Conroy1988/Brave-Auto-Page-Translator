@@ -16,7 +16,7 @@
 
   function elementIsExcluded(element) {
     if (!element || Boolean(element.closest?.(EXCLUDED_SELECTOR)) || element.isContentEditable) return true;
-    if (typeof element.checkVisibility === "function" && !element.checkVisibility({ checkOpacity: false })) return true;
+    if (typeof element.checkVisibility === "function" && !element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) return true;
     return false;
   }
 
