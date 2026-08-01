@@ -32,3 +32,16 @@ test("chunks page records by count and character budget", () => {
   assert.deepEqual(content.chunkRecords(records, 2, 100), [[records[0], records[1]], [records[2]]]);
   assert.deepEqual(content.chunkRecords(records, 10, 6), [[records[0], records[1]], [records[2]]]);
 });
+
+test("binds each queued translation to its original text node", () => {
+  const first = { nodeValue: "  Hola " };
+  const second = { nodeValue: "Adiós\n" };
+  const firstApply = content.createTextApplication(first, content.splitWhitespace(first.nodeValue));
+  const secondApply = content.createTextApplication(second, content.splitWhitespace(second.nodeValue));
+
+  firstApply("Hello");
+  secondApply("Goodbye");
+
+  assert.equal(first.nodeValue, "  Hello ");
+  assert.equal(second.nodeValue, "Goodbye\n");
+});
