@@ -10,7 +10,7 @@ let frameServer;
 let baseUrl;
 let frameBaseUrl;
 let context;
-let worker;
+let harness;
 let profileDirectory;
 
 function translate(value) {
@@ -38,7 +38,7 @@ async function readBody(request) {
 }
 
 async function configure({ consent = true, behaviourMode = "manual" } = {}) {
-  await worker.evaluate(async ({ consent, behaviourMode, endpoint }) => {
+  await harness.evaluate(async ({ consent, behaviourMode, endpoint }) => {
     await chrome.storage.sync.clear();
     await chrome.storage.local.clear();
     await chrome.storage.sync.set({
@@ -72,7 +72,7 @@ async function configure({ consent = true, behaviourMode = "manual" } = {}) {
 }
 
 async function backgroundMessage(message) {
-  return worker.evaluate((value) => chrome.runtime.sendMessage(value), message);
+  return harness.evaluate((value) => chrome.runtime.sendMessage(value), message);
 }
 
 test.beforeAll(async () => {
@@ -115,8 +115,11 @@ test.beforeAll(async () => {
     headless: false,
     args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`]
   });
-  worker = context.serviceWorkers()[0] || await context.waitForEvent("serviceworker");
+  const worker = context.serviceWorkers()[0] || await context.waitForEvent("serviceworker");
+  const extensionId = new URL(worker.url()).host;
   for (const page of context.pages()) await page.close();
+  harness = await context.newPage();
+  await harness.goto(`chrome-extension://${extensionId}/test-harness.html`);
 });
 
 test.afterAll(async () => {
@@ -135,7 +138,7 @@ test("blocks translation until the privacy checkpoint is complete", async () => 
   const page = await context.newPage();
   await page.goto(baseUrl);
   await page.bringToFront();
-  const tabId = await worker.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
+  const tabId = await harness.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
   const guarded = await backgroundMessage({ type: "translate-now", tabId });
   expect(guarded.status).toBe("consent-required");
   await page.close();
@@ -145,7 +148,7 @@ test("translates static, dynamic, open-shadow and frame text, then restores orig
   const page = await context.newPage();
   await page.goto(baseUrl);
   await page.bringToFront();
-  const tabId = await worker.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
+  const tabId = await harness.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
   const result = await backgroundMessage({ type: "translate-now", tabId });
   expect(result.status).toBe("translated");
 
@@ -188,7 +191,7 @@ test("pauses automatic translation on password forms", async () => {
   const page = await context.newPage();
   await page.goto(`${baseUrl}/sensitive`);
   await page.bringToFront();
-  const tabId = await worker.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
+  const tabId = await harness.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
   const inspection = await backgroundMessage({ type: "inspect-tab", tabId });
   expect(inspection.status).toBe("sensitive-page");
   await expect(page.locator("#private-title")).toHaveText("Cuenta privada");

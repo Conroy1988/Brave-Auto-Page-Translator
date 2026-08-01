@@ -17,4 +17,5 @@ manifest.host_permissions = [...new Set([
 ])];
 manifest.optional_host_permissions = [];
 writeFileSync(path.join(target, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+writeFileSync(path.join(target, "test-harness.html"), "<!doctype html><html><head><meta charset='utf-8'><title>Extension test harness</title></head><body></body></html>\n");
 console.log("Prepared an isolated test build with fixture-only website access.");
