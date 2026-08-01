@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Brave Auto Page Translator",
   "short_name": "Auto Translator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Automatically translates foreign-language webpages using configurable language and website rules.",
   "author": "Conroy1988",
   "homepage_url": "https://github.com/Conroy1988/Brave-Auto-Page-Translator",
