@@ -43,7 +43,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   targetLanguage: "en",
   excludedLanguages: [],
   excludedHosts: ["localhost", "127.0.0.1"],
-  openInNewTab: false,
+  translateDynamicContent: true,
+  showPageControl: true,
   showBadge: true
 });
 
@@ -67,7 +68,8 @@ export function normalizeSettings(value = {}) {
     targetLanguage,
     excludedLanguages: cleanList(value.excludedLanguages, (item) => item.toLowerCase()),
     excludedHosts: cleanList(value.excludedHosts, (item) => item.toLowerCase().replace(/^www\./, "")),
-    openInNewTab: value.openInNewTab === true,
+    translateDynamicContent: value.translateDynamicContent !== false,
+    showPageControl: value.showPageControl !== false,
     showBadge: value.showBadge !== false
   };
 }

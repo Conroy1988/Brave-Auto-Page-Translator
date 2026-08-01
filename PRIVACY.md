@@ -6,32 +6,36 @@ Brave Auto Page Translator is designed to keep its own data handling minimal and
 
 ## Information stored by the extension
 
-The extension stores only the settings that you choose, including:
+The extension stores only the settings you choose:
 
 - whether automatic translation is enabled;
 - your target language;
-- excluded language codes;
-- excluded website hostnames;
-- display and tab-opening preferences.
+- excluded language codes and website hostnames;
+- whether dynamic text, the in-page restore control, and toolbar badges are enabled.
 
-These settings are stored through the browser's extension storage system. If browser synchronisation is enabled, the browser provider may synchronise them between your signed-in browser installations.
+Settings use the browser's extension storage. If browser synchronization is enabled, the browser provider may synchronize them between your signed-in browser installations.
 
 ## Translation requests
 
-When automatic or manual translation is started, the URL of the webpage is sent to Google Translate by navigating to its translated-page service. Google Translate then retrieves and renders the public webpage. Translation is therefore subject to Google's own terms and privacy policy.
+When automatic or manual translation runs, readable text from the webpage is sent in small batches to Google's text-translation service and translated into your selected language. This processing is subject to Google's terms and privacy policy.
 
-Do not translate pages containing private, confidential, authenticated, or sensitive information unless you are comfortable with this external processing. The extension excludes local addresses by default, and you can exclude any additional website.
+The extension does not intentionally include the page URL, cookies, browsing history, passwords, form entries, complete HTML, images, or files in translation requests. However, readable webpage text itself may contain personal, confidential, or sensitive information. Exclude sensitive websites or pause automatic translation if you do not want their visible text processed externally.
 
 ## Information not collected by the developer
 
-The extension does not include analytics, advertising, tracking pixels, telemetry, a developer-operated server, or a browsing-history database. The developer does not sell personal data.
+The extension has no analytics, advertising, tracking pixels, telemetry, developer-operated server, or browsing-history database. The developer does not receive translation requests and does not sell personal data.
 
 ## Permissions
 
-- `tabs`: detects the current page language, reads the page URL, and navigates to the translated version.
 - `storage`: saves the settings described above.
+- `tabs`: detects the current page language, identifies the active tab, and shows per-tab status.
+- Access to `http://*/*` and `https://*/*`: allows automatic translation to read and replace webpage text while keeping the original site open. It also allows the background service to contact Google's HTTPS translation endpoints.
 
-The extension does not request blanket host access and does not inject code into webpages.
+Browser-internal pages and extension pages remain inaccessible. The extension does not navigate translated tabs to a proxy website.
+
+## Data retention
+
+The extension keeps a temporary in-memory cache of translated text to reduce repeated requests during the current extension session. It is not written to disk and disappears when the browser discards or restarts the extension's background service. Original page text is retained only in the page's memory so it can be restored; it disappears when the tab navigates or closes.
 
 ## Changes and contact
 

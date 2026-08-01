@@ -13,7 +13,7 @@
         <div>
           <p class="eyebrow">BRAVE AUTO PAGE TRANSLATOR</p>
           <h1>Translation control centre</h1>
-          <p class="intro">Choose what gets translated, where it opens, and which corners of the web remain untouched.</p>
+          <p class="intro">Choose what gets translated, how live pages are handled, and which corners of the web remain untouched.</p>
         </div>
       </header>
 
@@ -34,7 +34,8 @@
               <small>Foreign-language pages are translated into this language.</small>
             </label>
             <div class="stack">
-              <label class="check-row"><input id="openInNewTab" type="checkbox"><span>Open translations in a new tab</span></label>
+              <label class="check-row"><input id="translateDynamicContent" type="checkbox"><span>Translate text added by live and scrolling pages</span></label>
+              <label class="check-row"><input id="showPageControl" type="checkbox"><span>Show a small “Show original” control on translated pages</span></label>
               <label class="check-row"><input id="showBadge" type="checkbox"><span>Show translation status on the toolbar icon</span></label>
             </div>
           </div>
@@ -58,7 +59,7 @@
 
         <section class="notice">
           <strong>Privacy checkpoint</strong>
-          <p>When a page is translated, its public URL is sent to Google Translate, which retrieves and renders the page. This extension does not run analytics or maintain browsing history.</p>
+          <p>When a page is translated, its readable text is sent to Google's translation service. The original website stays open, and its URL, cookies, passwords, and form entries are not included in translation requests. This extension does not run analytics or maintain browsing history.</p>
           <a href="../PRIVACY.md" target="_blank">Read the complete privacy policy</a>
         </section>
 

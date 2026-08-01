@@ -6,7 +6,8 @@ const fields = {
   targetLanguage: document.querySelector("#targetLanguage"),
   excludedLanguages: document.querySelector("#excludedLanguages"),
   excludedHosts: document.querySelector("#excludedHosts"),
-  openInNewTab: document.querySelector("#openInNewTab"),
+  translateDynamicContent: document.querySelector("#translateDynamicContent"),
+  showPageControl: document.querySelector("#showPageControl"),
   showBadge: document.querySelector("#showBadge"),
   reset: document.querySelector("#reset"),
   saveStatus: document.querySelector("#saveStatus")
@@ -25,7 +26,8 @@ function render(settings) {
   fields.targetLanguage.value = settings.targetLanguage;
   fields.excludedLanguages.value = settings.excludedLanguages.join(", ");
   fields.excludedHosts.value = settings.excludedHosts.join("\n");
-  fields.openInNewTab.checked = settings.openInNewTab;
+  fields.translateDynamicContent.checked = settings.translateDynamicContent;
+  fields.showPageControl.checked = settings.showPageControl;
   fields.showBadge.checked = settings.showBadge;
 }
 
@@ -35,7 +37,8 @@ function collect() {
     targetLanguage: fields.targetLanguage.value,
     excludedLanguages: fields.excludedLanguages.value.split(","),
     excludedHosts: fields.excludedHosts.value.split(/\r?\n/),
-    openInNewTab: fields.openInNewTab.checked,
+    translateDynamicContent: fields.translateDynamicContent.checked,
+    showPageControl: fields.showPageControl.checked,
     showBadge: fields.showBadge.checked
   };
 }

@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   baseLanguage,
-  buildTranslationUrl,
   hostMatchesRule,
   hostnameFromUrl,
   isSupportedPageUrl,
@@ -43,12 +42,4 @@ test("skips the target and explicitly excluded languages", () => {
   assert.equal(shouldTranslateLanguage("en-GB", settings), false);
   assert.equal(shouldTranslateLanguage("fr-CA", settings), false);
   assert.equal(shouldTranslateLanguage("und", settings), false);
-});
-
-test("builds an encoded Google Translate page URL", () => {
-  const result = new URL(buildTranslationUrl("https://example.com/a?x=1&y=2", "en", "de"));
-  assert.equal(result.origin, "https://translate.google.com");
-  assert.equal(result.searchParams.get("sl"), "de");
-  assert.equal(result.searchParams.get("tl"), "en");
-  assert.equal(result.searchParams.get("u"), "https://example.com/a?x=1&y=2");
 });
