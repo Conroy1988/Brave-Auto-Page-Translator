@@ -2,6 +2,9 @@ node_modules/
 dist/
 coverage/
 .nyc_output/
+.e2e-extension/
+playwright-report/
+test-results/
 *.log
 .env
 .env.*

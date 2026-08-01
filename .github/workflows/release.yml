@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install development dependencies
+        run: npm ci
+
       - name: Validate and package extension
         run: npm run validate && npm run package
 

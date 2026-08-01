@@ -1,24 +1,51 @@
-import { DEFAULT_SETTINGS, loadSettings, normalizeSettings } from "./settings.js";
-import { translateTexts } from "./provider.js";
+import {
+  CONSENT_VERSION,
+  DEFAULT_LOCAL_STATE,
+  DEFAULT_SETTINGS,
+  hasCurrentConsent,
+  loadLocalState,
+  loadSettings,
+  normalizeSettings,
+  saveLocalState,
+  suggestedTargetLanguage
+} from "./settings.js";
+import { clearTranslationCache, translateTexts } from "./provider.js";
 import {
   baseLanguage,
   hostMatchesRule,
+  hostPermissionPatterns,
   hostnameFromUrl,
+  isAutomaticHostAllowed,
   isSupportedPageUrl,
   normalizeLanguageCode,
-  shouldTranslateLanguage
+  originPatternFromUrl,
+  resolvePageLanguage,
+  shouldTranslateLanguage,
+  targetLanguageForHost
 } from "./translation.js";
 
+const AUTO_SCRIPT_ID = "auto-page-translator";
+const ALL_SITE_ORIGINS = ["http://*/*", "https://*/*"];
+const activeJobs = new Map();
 const recentlyHandled = new Map();
+let jobCounter = 0;
 let settingsPromise = loadSettings();
+let localStatePromise = loadLocalState();
 
-async function refreshSettings() {
+async function refreshRuntimeState() {
   settingsPromise = loadSettings();
-  return settingsPromise;
+  localStatePromise = loadLocalState();
+  const values = await Promise.all([settingsPromise, localStatePromise]);
+  return { settings: values[0], localState: values[1] };
+}
+
+async function runtimeState() {
+  const [settings, localState] = await Promise.all([settingsPromise, localStatePromise]);
+  return { settings, localState };
 }
 
 async function setBadge(tabId, text, color = "#6d5dfc") {
-  const settings = await settingsPromise;
+  const { settings } = await runtimeState();
   await chrome.action.setBadgeText({ tabId, text: settings.showBadge ? text : "" });
   if (text && settings.showBadge) {
     await chrome.action.setBadgeBackgroundColor({ tabId, color });
@@ -32,163 +59,451 @@ function isExcludedHost(hostname, excludedHosts) {
   return excludedHosts.some((rule) => hostMatchesRule(hostname, rule));
 }
 
-async function inspectTab(tabId, tab) {
-  const settings = await settingsPromise;
+async function hasOrigins(origins) {
+  if (!origins.length) return false;
+  return chrome.permissions.contains({ origins });
+}
+
+async function hasPagePermission(url) {
+  const origin = originPatternFromUrl(url);
+  return Boolean(origin) && hasOrigins([origin]);
+}
+
+function matchPatternsForHost(hostname) {
+  return hostPermissionPatterns(hostname).map((pattern) => pattern.replace("http://", "*://").replace("https://", "*://"))
+    .filter((pattern, index, values) => values.indexOf(pattern) === index);
+}
+
+async function syncRegisteredContentScript() {
+  await chrome.scripting.unregisterContentScripts({ ids: [AUTO_SCRIPT_ID] }).catch(() => {});
+  const { settings, localState } = await runtimeState();
+  if (!hasCurrentConsent(localState) || !settings.enabled || settings.behaviourMode === "manual") return;
+
+  let matches = [];
+  if (settings.behaviourMode === "all-sites" && await hasOrigins(ALL_SITE_ORIGINS)) {
+    matches = ["http://*/*", "https://*/*"];
+  } else if (settings.behaviourMode === "approved-sites") {
+    for (const host of settings.approvedHosts) {
+      const origins = hostPermissionPatterns(host);
+      if (await hasOrigins(origins)) matches.push(...matchPatternsForHost(host));
+    }
+  }
+  matches = [...new Set(matches)];
+  if (!matches.length) return;
+
+  await chrome.scripting.registerContentScripts([{
+    id: AUTO_SCRIPT_ID,
+    matches,
+    js: ["src/content.js"],
+    runAt: "document_idle",
+    allFrames: true,
+    matchOriginAsFallback: true,
+    persistAcrossSessions: true
+  }]);
+}
+
+async function ensureContentScript(tabId) {
+  try {
+    const response = await chrome.tabs.sendMessage(tabId, { type: "get-translation-state" }, { frameId: 0 });
+    if (response) return;
+  } catch {
+    // The script has not been injected into this page yet.
+  }
+  await chrome.scripting.executeScript({ target: { tabId, allFrames: true }, files: ["src/content.js"] });
+}
+
+async function pageMetadata(tabId) {
+  try {
+    const response = await chrome.tabs.sendMessage(tabId, { type: "get-page-metadata" }, { frameId: 0 });
+    return response?.metadata || { declaredLanguage: "", sensitive: false, sensitiveReasons: [] };
+  } catch {
+    return { declaredLanguage: "", sensitive: false, sensitiveReasons: [] };
+  }
+}
+
+async function inspectTab(tabId, tab, { inject = false } = {}) {
+  const { settings, localState } = await runtimeState();
   const url = tab?.url || "";
   const hostname = hostnameFromUrl(url);
-
+  const targetLanguage = targetLanguageForHost(hostname, settings);
   if (!isSupportedPageUrl(url)) {
-    return { status: "unsupported", settings, hostname, language: "" };
+    return { status: "unsupported", settings, hostname, language: "", targetLanguage, consented: hasCurrentConsent(localState) };
+  }
+  if (!hasCurrentConsent(localState)) {
+    return { status: "consent-required", settings, hostname, language: "", targetLanguage, consented: false };
   }
 
+  if (inject || await hasPagePermission(url)) await ensureContentScript(tabId).catch(() => {});
   try {
     const page = await chrome.tabs.sendMessage(tabId, { type: "get-translation-state" }, { frameId: 0 });
-    if (page?.state?.busy) return { status: "translating", settings, hostname, language: page.state.sourceLanguage, pageState: page.state };
-    if (page?.state?.error) return { status: "translation-error", settings, hostname, language: page.state.sourceLanguage, pageState: page.state };
-    if (page?.state?.active) return { status: "translated", settings, hostname, language: page.state.sourceLanguage, pageState: page.state };
+    if (page?.state?.busy) return { status: "translating", settings, hostname, language: page.state.sourceLanguage, targetLanguage, pageState: page.state, consented: true };
+    if (page?.state?.error) return { status: "translation-error", settings, hostname, language: page.state.sourceLanguage, targetLanguage, pageState: page.state, consented: true };
+    if (page?.state?.active) return { status: "translated", settings, hostname, language: page.state.sourceLanguage, targetLanguage, pageState: page.state, consented: true };
   } catch {
-    // The content script may still be starting. Normal language inspection can continue.
+    // Page inspection continues using browser language detection.
   }
 
-  let language = "";
+  let detectedLanguage = "";
   try {
-    language = normalizeLanguageCode(await chrome.tabs.detectLanguage(tabId));
+    detectedLanguage = normalizeLanguageCode(await chrome.tabs.detectLanguage(tabId));
   } catch {
-    language = "";
+    detectedLanguage = "";
   }
+  const metadata = await pageMetadata(tabId);
+  const resolved = resolvePageLanguage(detectedLanguage, metadata.declaredLanguage);
+  const language = resolved.language || detectedLanguage || metadata.declaredLanguage || "";
 
   if (isExcludedHost(hostname, settings.excludedHosts)) {
-    return { status: "excluded-site", settings, hostname, language };
+    return { status: "excluded-site", settings, hostname, language, targetLanguage, metadata, languageMismatch: resolved.mismatch, consented: true };
   }
-
-  if (!language || language === "und") {
-    return { status: "unknown-language", settings, hostname, language };
+  if (metadata.sensitive && settings.sensitivePageMode === "manual") {
+    return { status: "sensitive-page", settings, hostname, language, targetLanguage, metadata, languageMismatch: resolved.mismatch, consented: true };
   }
-
-  if (baseLanguage(language) === baseLanguage(settings.targetLanguage)) {
-    return { status: "already-target", settings, hostname, language };
+  if (language && language !== "auto" && baseLanguage(language) === baseLanguage(targetLanguage)) {
+    return { status: "already-target", settings, hostname, language, targetLanguage, metadata, languageMismatch: resolved.mismatch, consented: true };
   }
-
-  if (!shouldTranslateLanguage(language, settings)) {
-    return { status: "excluded-language", settings, hostname, language };
+  if (language && language !== "auto" && !shouldTranslateLanguage(language, settings, targetLanguage)) {
+    return { status: "excluded-language", settings, hostname, language, targetLanguage, metadata, languageMismatch: resolved.mismatch, consented: true };
   }
+  return {
+    status: language ? "ready" : "unknown-language",
+    settings,
+    hostname,
+    language: resolved.mismatch ? "auto" : language,
+    detectedLanguage,
+    declaredLanguage: metadata.declaredLanguage,
+    targetLanguage,
+    metadata,
+    languageMismatch: resolved.mismatch,
+    consented: true
+  };
+}
 
-  return { status: "ready", settings, hostname, language };
+function abortTabJobs(tabId) {
+  for (const [key, job] of activeJobs) {
+    if (job.tabId !== tabId) continue;
+    job.controller.abort();
+    activeJobs.delete(key);
+  }
 }
 
 async function translateTab(tabId, tab, { manual = false } = {}) {
-  const inspection = await inspectTab(tabId, tab);
-  const { settings, language } = inspection;
-
-  if (!manual && !settings.enabled) {
-    await setBadge(tabId, "OFF", "#6b7280");
-    return { ...inspection, status: "disabled" };
+  const { settings, localState } = await runtimeState();
+  const url = tab?.url || "";
+  const hostname = hostnameFromUrl(url);
+  if (!hasCurrentConsent(localState)) return { status: "consent-required", message: "Complete the privacy setup before translating." };
+  if (!isSupportedPageUrl(url)) return { status: "unsupported", message: "This browser page cannot be translated." };
+  if (!manual) {
+    if (tab.incognito) return { status: "incognito-manual-only" };
+    if (!isAutomaticHostAllowed(hostname, settings)) return { status: "not-automatic" };
+    if (!await hasPagePermission(url)) return { status: "permission-required" };
   }
 
-  const manualOverride = manual && ["unknown-language", "excluded-site", "excluded-language", "translation-error", "translated"].includes(inspection.status);
+  try {
+    await ensureContentScript(tabId);
+  } catch {
+    return { status: "permission-required", message: "Allow access to this website, then try again." };
+  }
+
+  const inspection = await inspectTab(tabId, tab, { inject: true });
+  if (!manual && inspection.status === "sensitive-page") {
+    await setBadge(tabId, "SAFE", "#64748b");
+    return inspection;
+  }
+  const manualOverride = manual && ["unknown-language", "sensitive-page", "excluded-site", "excluded-language", "translation-error", "translated"].includes(inspection.status);
   if (inspection.status !== "ready" && !manualOverride) {
     if (inspection.status === "excluded-site") await setBadge(tabId, "SKIP", "#64748b");
     else if (inspection.status === "already-target") await setBadge(tabId, "");
     return inspection;
   }
 
-  const sourceUrl = tab.url;
   const now = Date.now();
   const previous = recentlyHandled.get(tabId);
-  if (!manual && previous?.url === sourceUrl && now - previous.time < 3_000) {
-    return { ...inspection, status: "recently-handled" };
-  }
-  recentlyHandled.set(tabId, { url: sourceUrl, time: now });
-
+  if (!manual && previous?.url === url && now - previous.time < 3_000) return { ...inspection, status: "recently-handled" };
+  recentlyHandled.set(tabId, { url, time: now });
+  abortTabJobs(tabId);
+  const jobId = `${tabId}-${Date.now()}-${++jobCounter}`;
   await setBadge(tabId, "…", "#6d5dfc");
   try {
     const request = {
       type: "translate-page",
-      sourceLanguage: language || "auto",
-      targetLanguage: settings.targetLanguage,
+      jobId,
+      sourceLanguage: inspection.language || "auto",
+      targetLanguage: inspection.targetLanguage,
       translateDynamicContent: settings.translateDynamicContent,
+      translateAttributes: settings.translateAttributes,
+      adjustTextDirection: settings.adjustTextDirection,
       showPageControl: settings.showPageControl
     };
     const result = await chrome.tabs.sendMessage(tabId, request, { frameId: 0 });
     if (result?.status === "translated") {
       chrome.tabs.sendMessage(tabId, { ...request, showPageControl: false }).catch(() => {});
-      await setBadge(tabId, baseLanguage(settings.targetLanguage).toUpperCase(), "#0f9f8f");
+      await setBadge(tabId, baseLanguage(inspection.targetLanguage).toUpperCase(), "#0f9f8f");
       return { ...inspection, ...result, status: "translated" };
     }
     await setBadge(tabId, "ERR", "#dc2626");
     return { ...inspection, status: result?.status || "translation-error", message: result?.message || "The page could not be translated." };
   } catch (error) {
-    if (recentlyHandled.get(tabId)?.url === sourceUrl) recentlyHandled.delete(tabId);
+    if (recentlyHandled.get(tabId)?.url === url) recentlyHandled.delete(tabId);
     await setBadge(tabId, "ERR", "#dc2626");
     return { ...inspection, status: "translation-error", message: error.message };
   }
 }
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+async function ensureOffscreenDocument() {
+  const url = chrome.runtime.getURL("offscreen/offscreen.html");
+  if (typeof chrome.runtime.getContexts === "function") {
+    const contexts = await chrome.runtime.getContexts({ contextTypes: ["OFFSCREEN_DOCUMENT"], documentUrls: [url] });
+    if (contexts.length) return;
+  } else if (typeof chrome.offscreen.hasDocument === "function" && await chrome.offscreen.hasDocument()) {
+    return;
+  }
+  await chrome.offscreen.createDocument({
+    url: "offscreen/offscreen.html",
+    reasons: ["DOM_SCRAPING"],
+    justification: "Run the browser's on-device Translator API in a document context."
+  });
+}
+
+async function translateOnDevice(texts, sourceLanguage, targetLanguage) {
+  await ensureOffscreenDocument();
+  const response = await chrome.runtime.sendMessage({
+    target: "offscreen",
+    type: "translate-on-device",
+    texts,
+    sourceLanguage,
+    targetLanguage
+  });
+  if (response?.status !== "ok") {
+    const error = new Error(response?.message || "On-device translation is unavailable.");
+    error.code = "provider-unavailable";
+    throw error;
+  }
+  return response.translations;
+}
+
+async function providerConfig(settings, localState, signal) {
+  return {
+    providerMode: settings.providerMode,
+    allowGoogleWebFallback: settings.allowGoogleWebFallback,
+    googleCloudApiKey: localState.googleCloudApiKey,
+    libreTranslateEndpoint: localState.libreTranslateEndpoint,
+    libreTranslateApiKey: localState.libreTranslateApiKey,
+    glossary: settings.glossary,
+    neverTranslateTerms: settings.neverTranslateTerms,
+    signal,
+    onDeviceTranslate: translateOnDevice
+  };
+}
+
+async function translateSelection(info, tab) {
+  if (!tab?.id || !info.selectionText?.trim()) return;
+  const { settings, localState } = await runtimeState();
+  if (!hasCurrentConsent(localState)) {
+    await chrome.runtime.openOptionsPage();
+    return;
+  }
+  await ensureContentScript(tab.id);
+  const hostname = hostnameFromUrl(tab.url || "");
+  const targetLanguage = targetLanguageForHost(hostname, settings);
+  const result = await translateTexts([info.selectionText], {
+    ...(await providerConfig(settings, localState)),
+    sourceLanguage: "auto",
+    targetLanguage
+  });
+  await chrome.tabs.sendMessage(tab.id, {
+    type: "show-selection-translation",
+    original: info.selectionText,
+    translated: result.translations[0],
+    targetLanguage,
+    engine: result.engine
+  }, { frameId: info.frameId || 0 });
+}
+
+function createContextMenus() {
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({ id: "translate-page", title: "Translate this page", contexts: ["page"] });
+    chrome.contextMenus.create({ id: "restore-page", title: "Show original page text", contexts: ["page"] });
+    chrome.contextMenus.create({ id: "translate-selection", title: "Translate selected text", contexts: ["selection"] });
+  });
+}
+
+chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   const stored = await chrome.storage.sync.get(DEFAULT_SETTINGS);
-  await chrome.storage.sync.set(normalizeSettings(stored));
+  const normalized = normalizeSettings(stored);
+  if (reason === "install") normalized.targetLanguage = suggestedTargetLanguage(chrome.i18n.getUILanguage());
+  await chrome.storage.sync.set(normalized);
   await chrome.storage.sync.remove("openInNewTab");
-  await refreshSettings();
-  if (reason === "install") await chrome.runtime.openOptionsPage();
+  const localState = await chrome.storage.local.get(DEFAULT_LOCAL_STATE);
+  await chrome.storage.local.set({ ...DEFAULT_LOCAL_STATE, ...localState });
+  await refreshRuntimeState();
+  await syncRegisteredContentScript();
+  createContextMenus();
+  if (reason === "install" || (!hasCurrentConsent(localState) && previousVersion !== chrome.runtime.getManifest().version)) {
+    await chrome.tabs.create({ url: chrome.runtime.getURL("onboarding/onboarding.html") });
+  }
 });
 
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "sync") refreshSettings();
+chrome.runtime.onStartup.addListener(() => {
+  refreshRuntimeState().then(syncRegisteredContentScript).catch(() => {});
+  createContextMenus();
 });
+
+chrome.storage.onChanged.addListener((_changes, areaName) => {
+  if (!["sync", "local"].includes(areaName)) return;
+  refreshRuntimeState().then(syncRegisteredContentScript).catch(() => {});
+});
+
+chrome.permissions.onAdded.addListener(() => syncRegisteredContentScript().catch(() => {}));
+chrome.permissions.onRemoved.addListener(() => syncRegisteredContentScript().catch(() => {}));
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "loading") abortTabJobs(tabId);
   if (changeInfo.status !== "complete" || !tab.url) return;
-  translateTab(tabId, tab).catch((error) => console.warn("Automatic translation skipped:", error));
+  translateTab(tabId, tab).catch(() => {});
 });
 
-chrome.tabs.onRemoved.addListener((tabId) => recentlyHandled.delete(tabId));
+chrome.tabs.onRemoved.addListener((tabId) => {
+  recentlyHandled.delete(tabId);
+  abortTabJobs(tabId);
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "translate-page" && tab?.id) translateTab(tab.id, tab, { manual: true }).catch(() => {});
+  if (info.menuItemId === "restore-page" && tab?.id) {
+    abortTabJobs(tab.id);
+    chrome.tabs.sendMessage(tab.id, { type: "restore-page" }).catch(() => {});
+  }
+  if (info.menuItemId === "translate-selection") translateSelection(info, tab).catch(() => {});
+});
+
+chrome.commands.onCommand.addListener(async (command) => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+  if (command === "translate-page") await translateTab(tab.id, tab, { manual: true });
+  if (command === "restore-page") {
+    abortTabJobs(tab.id);
+    await chrome.tabs.sendMessage(tab.id, { type: "restore-page" }).catch(() => {});
+  }
+});
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.target === "offscreen") return false;
   const handle = async () => {
     if (!message || typeof message !== "object") return { status: "invalid-message" };
-    if (message.type === "refresh-settings") return refreshSettings();
-
-    if (message.type === "translate-texts") {
-      const translations = await translateTexts(
-        message.texts,
-        normalizeLanguageCode(message.sourceLanguage) || "auto",
-        normalizeLanguageCode(message.targetLanguage)
-      );
-      return { status: "ok", translations, engine: "google-text" };
+    if (message.type === "refresh-settings") {
+      const result = await refreshRuntimeState();
+      await syncRegisteredContentScript();
+      return result;
     }
-
+    if (message.type === "open-onboarding") {
+      await chrome.tabs.create({ url: chrome.runtime.getURL("onboarding/onboarding.html") });
+      return { status: "opened" };
+    }
+    if (message.type === "sync-content-scripts") {
+      await syncRegisteredContentScript();
+      return { status: "synced" };
+    }
+    if (message.type === "clear-provider-cache") {
+      clearTranslationCache();
+      return { status: "cleared" };
+    }
+    if (message.type === "translate-texts") {
+      if (!sender.tab?.id) return { status: "forbidden", message: "Translation requests must come from a webpage." };
+      const { settings, localState } = await runtimeState();
+      if (!hasCurrentConsent(localState)) return { status: "consent-required", message: "Privacy consent is required." };
+      const controller = new AbortController();
+      const key = `${sender.tab.id}:${sender.frameId || 0}:${message.jobId || "page"}`;
+      activeJobs.set(key, { tabId: sender.tab.id, controller });
+      try {
+        const result = await translateTexts(message.texts, {
+          ...(await providerConfig(settings, localState, controller.signal)),
+          sourceLanguage: normalizeLanguageCode(message.sourceLanguage) || "auto",
+          targetLanguage: normalizeLanguageCode(message.targetLanguage)
+        });
+        return { status: "ok", ...result };
+      } finally {
+        activeJobs.delete(key);
+      }
+    }
+    if (message.type === "cancel-translation") {
+      if (!sender.tab?.id) return { status: "ignored" };
+      const key = `${sender.tab.id}:${sender.frameId || 0}:${message.jobId || "page"}`;
+      activeJobs.get(key)?.controller.abort();
+      activeJobs.delete(key);
+      return { status: "cancelled" };
+    }
+    if (message.type === "test-provider") {
+      const { settings, localState } = await runtimeState();
+      if (!hasCurrentConsent(localState)) return { status: "consent-required", message: "Complete privacy setup first." };
+      const targetLanguage = settings.targetLanguage === "fr" ? "es" : "fr";
+      const result = await translateTexts(["Hello world"], {
+        ...(await providerConfig(settings, localState)),
+        sourceLanguage: "en",
+        targetLanguage
+      });
+      return { status: "ok", engine: result.engine, sample: result.translations[0] };
+    }
+    if (message.type === "get-diagnostics") {
+      const { settings, localState } = await runtimeState();
+      return {
+        status: "ok",
+        diagnostics: {
+          generatedAt: new Date().toISOString(),
+          extensionVersion: chrome.runtime.getManifest().version,
+          browserUserAgent: navigator.userAgent,
+          consentVersion: localState.privacyConsentVersion,
+          behaviourMode: settings.behaviourMode,
+          providerMode: settings.providerMode,
+          providerCredentialsConfigured: {
+            googleCloud: Boolean(localState.googleCloudApiKey),
+            libreTranslate: Boolean(localState.libreTranslateEndpoint)
+          },
+          allSitesPermission: await hasOrigins(ALL_SITE_ORIGINS),
+          rules: {
+            excludedLanguageCount: settings.excludedLanguages.length,
+            excludedHostCount: settings.excludedHosts.length,
+            approvedHostCount: settings.approvedHosts.length,
+            glossaryCount: settings.glossary.length,
+            neverTranslateTermCount: settings.neverTranslateTerms.length
+          }
+        }
+      };
+    }
     if (message.type === "content-ready") {
       if (sender.frameId !== 0 || !sender.tab?.id || !sender.tab.url) return { status: "ready" };
-      const settings = await settingsPromise;
-      if (settings.enabled) translateTab(sender.tab.id, sender.tab).catch(() => {});
+      translateTab(sender.tab.id, sender.tab).catch(() => {});
       return { status: "ready" };
     }
-
     if (message.type === "translation-status") {
-      const statusTabId = sender.tab?.id;
-      if (!Number.isInteger(statusTabId) || sender.frameId !== 0) return { status: "ignored" };
-      if (message.state?.busy) await setBadge(statusTabId, "…", "#6d5dfc");
-      else if (message.state?.error) await setBadge(statusTabId, "ERR", "#dc2626");
-      else if (message.state?.active) await setBadge(statusTabId, baseLanguage(message.state.targetLanguage).toUpperCase(), "#0f9f8f");
-      else await setBadge(statusTabId, "");
+      const tabId = sender.tab?.id;
+      if (!Number.isInteger(tabId) || sender.frameId !== 0) return { status: "ignored" };
+      if (message.state?.busy) await setBadge(tabId, "…", "#6d5dfc");
+      else if (message.state?.error) await setBadge(tabId, "ERR", "#dc2626");
+      else if (message.state?.active) await setBadge(tabId, baseLanguage(message.state.targetLanguage).toUpperCase(), "#0f9f8f");
+      else await setBadge(tabId, "");
       return { status: "recorded" };
     }
 
     const tabId = Number(message.tabId);
     if (!Number.isInteger(tabId)) return { status: "invalid-tab" };
     const tab = await chrome.tabs.get(tabId);
-
-    if (message.type === "inspect-tab") return inspectTab(tabId, tab);
+    if (message.type === "inspect-tab") return inspectTab(tabId, tab, { inject: true });
     if (message.type === "translate-now") return translateTab(tabId, tab, { manual: true });
     if (message.type === "restore-page") {
+      abortTabJobs(tabId);
       const result = await chrome.tabs.sendMessage(tabId, { type: "restore-page" }, { frameId: 0 });
       chrome.tabs.sendMessage(tabId, { type: "restore-page" }).catch(() => {});
       await setBadge(tabId, "");
       return result;
     }
+    if (message.type === "cancel-tab-translation") {
+      abortTabJobs(tabId);
+      await chrome.tabs.sendMessage(tabId, { type: "cancel-page-translation" }).catch(() => {});
+      return { status: "cancelled" };
+    }
     return { status: "unknown-message" };
   };
-
-  handle().then(sendResponse).catch((error) => sendResponse({ status: "error", message: error.message }));
+  handle().then(sendResponse).catch((error) => sendResponse({ status: "error", code: error.code || "extension-error", message: error.message }));
   return true;
 });

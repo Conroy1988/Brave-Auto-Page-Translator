@@ -1,0 +1,33 @@
+name: Website compatibility
+description: Report a public website that does not translate correctly.
+title: "[Site]: "
+labels: ["compatibility"]
+body:
+  - type: markdown
+    attributes:
+      value: "Only share the URL if the page is public and safe. Never paste private page text."
+  - type: input
+    id: url
+    attributes:
+      label: Public page URL
+  - type: input
+    id: language
+    attributes:
+      label: Source and target languages
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: What remains untranslated or breaks?
+    validations:
+      required: true
+  - type: checkboxes
+    id: surfaces
+    attributes:
+      label: Page technology if known
+      options:
+        - label: Live/SPA content
+        - label: Iframe
+        - label: Shadow DOM
+        - label: Canvas/image/PDF content

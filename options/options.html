@@ -3,71 +3,112 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Brave Auto Page Translator — Settings</title>
+    <title>Auto Page Translator — Settings</title>
     <link rel="stylesheet" href="options.css">
   </head>
   <body>
     <main class="shell">
       <header>
         <img src="../icons/icon-128.png" width="72" height="72" alt="">
-        <div>
-          <p class="eyebrow">BRAVE AUTO PAGE TRANSLATOR</p>
-          <h1>Translation control centre</h1>
-          <p class="intro">Choose what gets translated, how live pages are handled, and which corners of the web remain untouched.</p>
-        </div>
+        <div><p class="eyebrow">INDEPENDENT AUTO PAGE TRANSLATOR</p><h1>Translation control centre</h1><p class="intro">Control website access, provider privacy, live-page behaviour and every automatic translation rule.</p></div>
       </header>
 
       <form id="settingsForm">
-        <section class="card">
-          <div class="card-heading">
-            <div><span class="number">01</span><h2>Core behaviour</h2></div>
-            <label class="switch-row">
-              <input id="enabled" type="checkbox">
-              <span>Automatic translation</span>
-            </label>
-          </div>
+        <section class="setup-banner" id="consentBanner">
+          <div><strong id="consentTitle">Privacy setup</strong><p id="consentDetail"></p></div>
+          <button id="openOnboarding" type="button">Review privacy setup</button>
+        </section>
 
+        <section class="card">
+          <div class="card-heading"><div><span class="number">01</span><h2>Access and automatic behaviour</h2></div><label class="switch-row"><input id="enabled" type="checkbox"><span>Automatic translation enabled</span></label></div>
           <div class="grid two">
-            <label class="field">
-              <span>Target language</span>
-              <select id="targetLanguage"></select>
-              <small>Foreign-language pages are translated into this language.</small>
+            <label class="field"><span>Translation mode</span>
+              <select id="behaviourMode">
+                <option value="manual">Manual only</option>
+                <option value="approved-sites">Approved websites</option>
+                <option value="all-sites">Every website</option>
+              </select>
+              <small>All-site access is requested only if you select Every website.</small>
             </label>
+            <div class="permission-box"><span>All-site permission</span><strong id="permissionState">Checking…</strong><button class="ghost compact" id="toggleAllSites" type="button">Manage access</button></div>
+          </div>
+          <div class="grid two top-gap">
+            <label class="field"><span>Target language</span><select id="targetLanguage"></select><small>Per-site targets below can override this default.</small></label>
+            <label class="field"><span>Approved automatic websites</span><textarea id="approvedHosts" rows="5" placeholder="example.com"></textarea><small>One hostname per line. Permissions are requested from the popup when a site is approved.</small></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-heading"><div><span class="number">02</span><h2>Translation provider</h2></div><span class="local-chip">Secrets stay on this device</span></div>
+          <div class="grid two">
+            <label class="field"><span>Provider</span>
+              <select id="providerMode">
+                <option value="auto">Automatic provider selection</option>
+                <option value="on-device">Browser on-device translator</option>
+                <option value="google-cloud">Google Cloud Translation</option>
+                <option value="libretranslate">LibreTranslate</option>
+                <option value="google-web">Google web compatibility service</option>
+              </select>
+              <small>Automatic tries on-device first, configured official/custom providers next, then the compatibility fallback if enabled.</small>
+            </label>
+            <label class="check-row"><input id="allowGoogleWebFallback" type="checkbox"><span><strong>Allow Google web compatibility fallback</strong><small>Readable page text is sent to Google's web translation service. This endpoint has no published production guarantee.</small></span></label>
+          </div>
+          <div class="grid two top-gap">
+            <label class="field"><span>Google Cloud API key</span><input id="googleCloudApiKey" type="password" autocomplete="off" placeholder="Stored locally, never synchronized"><small>Uses the supported Cloud Translation Basic API. Billing and quota belong to your Google Cloud project.</small></label>
+            <div class="stack">
+              <label class="field"><span>LibreTranslate endpoint</span><input id="libreTranslateEndpoint" type="url" placeholder="https://translate.example.com/translate"></label>
+              <label class="field"><span>LibreTranslate API key (optional)</span><input id="libreTranslateApiKey" type="password" autocomplete="off"></label>
+            </div>
+          </div>
+          <div class="inline-actions"><button class="ghost" id="testProvider" type="button">Test configured provider</button><span id="providerStatus" role="status"></span></div>
+        </section>
+
+        <section class="card">
+          <div class="card-heading"><div><span class="number">03</span><h2>Page behaviour and safeguards</h2></div></div>
+          <div class="grid two">
             <div class="stack">
               <label class="check-row"><input id="translateDynamicContent" type="checkbox"><span>Translate text added by live and scrolling pages</span></label>
-              <label class="check-row"><input id="showPageControl" type="checkbox"><span>Show a small “Show original” control on translated pages</span></label>
+              <label class="check-row"><input id="translateAttributes" type="checkbox"><span><strong>Translate accessibility attributes</strong><small>Off by default because labels and alternative text can contain account-specific information.</small></span></label>
+              <label class="check-row"><input id="adjustTextDirection" type="checkbox"><span>Switch page direction for right-to-left target languages</span></label>
+            </div>
+            <div class="stack">
+              <label class="check-row"><input id="sensitivePageMode" type="checkbox"><span><strong>Allow automatic translation on sensitive forms</strong><small>When off, pages containing password or payment fields require a manual click.</small></span></label>
+              <label class="check-row"><input id="showPageControl" type="checkbox"><span>Show a dismissible progress and “Show original” control</span></label>
               <label class="check-row"><input id="showBadge" type="checkbox"><span>Show translation status on the toolbar icon</span></label>
             </div>
           </div>
         </section>
 
         <section class="card">
-          <div class="card-heading"><div><span class="number">02</span><h2>Exclusions</h2></div></div>
+          <div class="card-heading"><div><span class="number">04</span><h2>Exclusions and per-site targets</h2></div></div>
           <div class="grid two">
-            <label class="field">
-              <span>Languages to leave alone</span>
-              <input id="excludedLanguages" type="text" placeholder="fr, de, es">
-              <small>Comma-separated language codes. Your target language is always skipped.</small>
-            </label>
-            <label class="field">
-              <span>Websites to leave alone</span>
-              <textarea id="excludedHosts" rows="6" placeholder="example.com&#10;private.example.org"></textarea>
-              <small>One hostname per line. Rules also cover subdomains.</small>
-            </label>
+            <label class="field"><span>Languages to leave alone</span><input id="excludedLanguages" type="text" placeholder="fr, de, es"><small>Comma-separated language codes.</small></label>
+            <label class="field"><span>Websites to leave alone</span><textarea id="excludedHosts" rows="6" placeholder="example.com&#10;private.example.org"></textarea><small>One hostname per line; rules cover subdomains.</small></label>
+          </div>
+          <label class="field top-gap"><span>Per-site target languages</span><textarea id="siteTargetLanguages" rows="5" placeholder="news.example.com = en&#10;forum.example.org = fr"></textarea><small>One “hostname = language code” rule per line.</small></label>
+        </section>
+
+        <section class="card">
+          <div class="card-heading"><div><span class="number">05</span><h2>Terminology</h2></div><span class="local-chip">No cloud storage beyond translation requests</span></div>
+          <div class="grid two">
+            <label class="field"><span>Custom glossary</span><textarea id="glossary" rows="7" placeholder="MissionChief => MissionChief&#10;Bomberos => Fire Brigade"></textarea><small>One “source term =&gt; preferred result” per line, maximum 200.</small></label>
+            <label class="field"><span>Never translate these terms</span><textarea id="neverTranslateTerms" rows="7" placeholder="TKB&#10;Brave"></textarea><small>One word or phrase per line.</small></label>
           </div>
         </section>
 
         <section class="notice">
-          <strong>Privacy checkpoint</strong>
-          <p>When a page is translated, its readable text is sent to Google's translation service. The original website stays open, and its URL, cookies, passwords, and form entries are not included in translation requests. This extension does not run analytics or maintain browsing history.</p>
-          <a href="../PRIVACY.md" target="_blank">Read the complete privacy policy</a>
+          <strong>Privacy and security</strong>
+          <p>External translation sends only selected readable text over HTTPS. The developer receives no page text. URLs, cookies, passwords, editable form entries, full HTML, images and files are not intentionally included. No analytics, ads or telemetry are present.</p>
+          <a href="https://github.com/Conroy1988/Brave-Auto-Page-Translator/blob/main/PRIVACY.md" target="_blank" rel="noreferrer">Privacy policy</a>
+          <a href="https://github.com/Conroy1988/Brave-Auto-Page-Translator/blob/main/SECURITY.md" target="_blank" rel="noreferrer">Security policy</a>
         </section>
 
-        <div class="toolbar">
-          <span id="saveStatus" role="status"></span>
-          <button class="ghost" id="reset" type="button">Restore defaults</button>
-          <button class="primary" type="submit">Save settings</button>
-        </div>
+        <section class="card compact-card">
+          <div><h2>Local diagnostics</h2><p class="muted">Export versions, configuration counts and error-independent environment details. The report excludes webpage text and URLs.</p></div>
+          <div class="inline-actions"><button class="ghost" id="exportDiagnostics" type="button">Export diagnostic report</button><button class="ghost" id="clearCache" type="button">Clear translation cache</button><button class="danger" id="reset" type="button">Restore default settings</button></div>
+        </section>
+
+        <div class="toolbar"><span id="saveStatus" role="status"></span><button class="primary" type="submit">Save settings</button></div>
       </form>
     </main>
     <script type="module" src="options.js"></script>
