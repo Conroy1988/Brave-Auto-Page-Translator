@@ -6,7 +6,18 @@ const root = path.resolve(import.meta.dirname, "..");
 const manifest = JSON.parse(readFileSync(path.join(root, "manifest.json"), "utf8"));
 const outputDirectory = path.join(root, "dist");
 const outputPath = path.join(outputDirectory, `brave-auto-page-translator-${manifest.version}.zip`);
-const packageEntries = ["manifest.json", "src", "popup", "options", "icons", "LICENSE", "PRIVACY.md"];
+const packageEntries = [
+  "manifest.json",
+  "src",
+  "popup",
+  "options",
+  "onboarding",
+  "offscreen",
+  "_locales",
+  "icons",
+  "LICENSE",
+  "PRIVACY.md"
+];
 
 const crcTable = Array.from({ length: 256 }, (_, value) => {
   let crc = value;

@@ -45,3 +45,24 @@ test("binds each queued translation to its original text node", () => {
   assert.equal(first.nodeValue, "  Hello ");
   assert.equal(second.nodeValue, "Goodbye\n");
 });
+
+test("reduces overlapping mutation roots", () => {
+  const child = { isConnected: true };
+  const parent = { isConnected: true, contains: (value) => value === child };
+  child.contains = () => false;
+  assert.deepEqual(content.minimizeRoots([child, parent, child]), [parent]);
+});
+
+test("detects password and payment form safeguards", () => {
+  const root = {
+    querySelector(selector) {
+      if (selector.includes("password")) return {};
+      if (selector.includes("autocomplete")) return {};
+      return null;
+    }
+  };
+  assert.deepEqual(content.sensitivePageMetadata(root), {
+    sensitive: true,
+    sensitiveReasons: ["password-field", "payment-field"]
+  });
+});

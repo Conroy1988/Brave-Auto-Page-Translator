@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Set up Auto Page Translator</title>
+    <link rel="stylesheet" href="onboarding.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <img src="../icons/icon-128.png" width="76" height="76" alt="">
+        <div>
+          <p class="eyebrow">INDEPENDENT EXTENSION</p>
+          <h1>Translation on your terms.</h1>
+          <p>Choose what the extension may access and where webpage text is processed before anything is translated.</p>
+        </div>
+      </header>
+
+      <form id="setupForm">
+        <section class="card">
+          <span class="step">01</span>
+          <div>
+            <h2>Your language</h2>
+            <p>Foreign-language pages will be translated into this language.</p>
+            <label class="field"><span>Translate pages into</span><select id="targetLanguage"></select></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <span class="step">02</span>
+          <div>
+            <h2>When translation may run</h2>
+            <p>Website access is requested only for the mode you choose.</p>
+            <div class="choices">
+              <label><input type="radio" name="behaviourMode" value="manual" checked><span><strong>Manual only <em>Recommended</em></strong><small>Translate after you click the extension, context menu or shortcut.</small></span></label>
+              <label><input type="radio" name="behaviourMode" value="approved-sites"><span><strong>Approved websites</strong><small>Automatically translate only websites you approve later.</small></span></label>
+              <label><input type="radio" name="behaviourMode" value="all-sites"><span><strong>Every website</strong><small>Requests access to all HTTP and HTTPS pages for automatic translation.</small></span></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <span class="step">03</span>
+          <div>
+            <h2>Translation provider</h2>
+            <p>The automatic option prefers the browser's on-device engine when available, then uses configured providers and finally the disclosed Google web compatibility service.</p>
+            <label class="field"><span>Provider</span>
+              <select id="providerMode">
+                <option value="auto">Automatic provider selection</option>
+                <option value="on-device">Browser on-device translator</option>
+                <option value="google-cloud">Google Cloud Translation (my API key)</option>
+                <option value="libretranslate">My LibreTranslate server</option>
+                <option value="google-web">Google web compatibility service</option>
+              </select>
+            </label>
+            <p class="availability" id="deviceAvailability"></p>
+          </div>
+        </section>
+
+        <section class="consent">
+          <strong>Privacy checkpoint</strong>
+          <p>When an external provider is used, readable webpage text is sent over HTTPS to that provider for translation. Text may contain personal or sensitive information. The extension does not intentionally send page URLs, cookies, passwords, form entries, full HTML, images or files. The developer does not receive page text and the extension contains no analytics or advertising.</p>
+          <label class="agree"><input id="consent" type="checkbox" required><span>I understand and agree to this processing when I request or enable translation.</span></label>
+          <a href="https://github.com/Conroy1988/Brave-Auto-Page-Translator/blob/main/PRIVACY.md" target="_blank" rel="noreferrer">Read the complete privacy policy</a>
+        </section>
+
+        <div class="finish">
+          <span id="status" role="status"></span>
+          <button type="submit">Accept and finish setup</button>
+        </div>
+      </form>
+
+      <footer>This is an independent, unofficial extension. It is not developed, sponsored or endorsed by Brave Software or Google.</footer>
+    </main>
+    <script type="module" src="onboarding.js"></script>
+  </body>
+</html>

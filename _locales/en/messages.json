@@ -1,0 +1,12 @@
+{
+  "extensionName": {
+    "message": "Auto Page Translator for Brave",
+    "description": "Independent extension name"
+  },
+  "extensionShortName": {
+    "message": "Auto Translator"
+  },
+  "extensionDescription": {
+    "message": "Automatically translates foreign-language webpages with privacy controls, site rules and restorable in-page translation."
+  }
+}

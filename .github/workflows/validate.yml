@@ -21,8 +21,17 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate source and run tests
+      - name: Install development dependencies
+        run: npm ci
+
+      - name: Validate source and run unit tests
         run: npm run validate
+
+      - name: Install Chromium for extension tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Run extension browser tests
+        run: xvfb-run -a npm run test:e2e
 
       - name: Build extension package
         run: npm run package
@@ -36,3 +45,11 @@ jobs:
           name: brave-auto-page-translator
           path: dist/*.zip
           if-no-files-found: error
+
+      - name: Upload browser-test report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore

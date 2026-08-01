@@ -1,0 +1,36 @@
+# Security Policy
+
+## Supported versions
+
+Security fixes are applied to the latest public Chrome Web Store version and the current `main` branch.
+
+## Reporting a vulnerability
+
+Use GitHub's private **Security → Report a vulnerability** flow for vulnerabilities that could expose webpage text, provider credentials, extension storage or browsing access. If private vulnerability reporting is unavailable, open a minimal GitHub issue asking for a private contact channel.
+
+Do not include API keys, cookies, authentication information, private URLs, personal data or copied webpage text in a public issue.
+
+Include only:
+
+- extension and browser version;
+- affected component;
+- reproduction steps using a non-sensitive demonstration page;
+- expected and actual behaviour;
+- impact assessment.
+
+## Security design
+
+- Manifest V3 with no remotely hosted executable code.
+- Manual `activeTab` access by default.
+- Optional website permissions requested from a user gesture.
+- Explicit consent before page content is handled.
+- HTTPS external-provider requests, except user-configured localhost services.
+- Provider secrets stored locally and excluded from diagnostics.
+- No analytics, ads, telemetry or developer-operated relay.
+- DOM text is applied through text properties rather than executable HTML.
+- Bounded request sizes, concurrency, timeouts, retries, cache and circuit breaking.
+- Translation jobs are cancelled on navigation, restoration and superseding requests.
+
+## Threat-model boundaries
+
+The extension cannot control what a user-selected translation provider records after receiving a request. Users should review that provider's contract and privacy policy. A compromised browser profile or another extension with sufficient privileges may be able to inspect local extension storage.

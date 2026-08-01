@@ -1,30 +1,34 @@
 <div align="center">
-  <img src="assets/icon.svg" width="116" alt="Brave Auto Page Translator icon">
-  <h1>Brave Auto Page Translator</h1>
-  <p><strong>Automatic, in-page translation for Brave and Chromium browsers.</strong></p>
+  <img src="assets/icon.svg" width="116" alt="Auto Page Translator for Brave icon">
+  <h1>Auto Page Translator for Brave</h1>
+  <p><strong>Independent, configurable in-page translation for Brave and Chromium browsers.</strong></p>
   <p>
     <img alt="Manifest V3" src="https://img.shields.io/badge/Manifest-V3-6d5dfc?style=for-the-badge">
-    <img alt="No analytics" src="https://img.shields.io/badge/Analytics-None-0f9f8f?style=for-the-badge">
-    <img alt="License MIT" src="https://img.shields.io/badge/License-MIT-222233?style=for-the-badge">
+    <img alt="Privacy consent" src="https://img.shields.io/badge/Privacy-Explicit_consent-0f9f8f?style=for-the-badge">
+    <img alt="Analytics" src="https://img.shields.io/badge/Analytics-None-0f9f8f?style=for-the-badge">
+    <img alt="License" src="https://img.shields.io/badge/License-MIT-222233?style=for-the-badge">
   </p>
 </div>
 
 > [!IMPORTANT]
-> This is an independent, unofficial extension. It is not developed, sponsored, or endorsed by Brave Software or Google.
+> This is an independent, unofficial extension. It is not developed, sponsored, or endorsed by Brave Software or Google. Brave includes its own native Translate feature; this project provides a separate rule-driven workflow for users who want one global target language, manual/minimal-access mode, approved-site automation, per-site targets, live-page translation and restorable text.
 
 ## What it does
 
-Brave Auto Page Translator detects the primary language of a webpage and translates its readable text directly inside the original page. The website stays on its real address, so logins, Cloudflare checks, cookies, navigation, and interactive features are not moved through a translated-page proxy.
+The extension detects a webpage's primary language and translates readable text directly inside the original page. The site remains on its real address, so logins, Cloudflare checks, cookies, navigation and interactive features are not moved through a translated-page proxy.
 
-- Automatic language detection using Chromium's Tabs API
-- English by default, with 37 selectable target languages
-- In-place translation of visible DOM text and useful accessibility attributes
-- Support for text added later by live feeds, menus, and infinite scrolling
-- Support for accessible open shadow DOM and document frames
-- Per-language and per-website exclusions
-- Pause switch, manual translation, and one-click restoration of the original text
-- Toolbar status badges and synchronized browser settings
-- No analytics, advertising, telemetry, or developer-operated server
+- Manual translation with temporary `activeTab` access by default
+- Optional automatic translation for approved sites or all permitted sites
+- Explicit first-run consent before any webpage text is processed
+- Browser language detection combined with the page's declared language
+- Per-site targets, site/language exclusions, custom glossary and protected terms
+- Live translation for feeds, menus, SPAs and infinite scrolling using an incremental queue
+- Open Shadow DOM and accessible frame support, including related `about:`, `data:` and `blob:` frames in automatic modes
+- Private-page safeguard for password and payment forms
+- Progress, cancellation, provider status and one-click original restoration
+- Page, selection and keyboard-shortcut commands
+- On-device, Google Cloud, LibreTranslate and disclosed compatibility provider choices
+- No analytics, advertising, telemetry or developer-operated translation server
 
 ## Install for development
 
@@ -33,40 +37,51 @@ Brave Auto Page Translator detects the primary language of a webpage and transla
 3. Enable **Developer mode**.
 4. Select **Load unpacked**.
 5. Choose the repository folder containing `manifest.json`.
+6. Complete the privacy and access setup that opens after installation.
 
-The extension opens its settings page after first installation. Because automatic translation must read and replace webpage text, Brave asks for access to websites when the extension is installed.
+The default mode is manual. Automatic access is requested only when selected by the user.
 
-## How translation works
+## Provider choices
 
-1. Chromium detects the page's main language.
-2. The extension checks your target language and exclusion rules.
-3. Readable text is collected from the page in small batches.
-4. Those text batches are sent to Google's text-translation service.
-5. Translations replace the corresponding text nodes without leaving or reloading the website.
-6. A mutation observer translates newly added text. The original values are retained so they can be restored.
+Automatic provider selection prefers the browser's on-device Translator API where available. A user can configure an official Google Cloud Translation API key or a LibreTranslate server. The current Google web method remains available as a clearly disclosed compatibility fallback rather than the only engine.
 
-The page URL, cookies, passwords, form entries, and complete HTML are not included in translation requests. Read [PRIVACY.md](PRIVACY.md) before using automatic translation on sensitive pages.
+Read [docs/PROVIDER_GUIDE.md](docs/PROVIDER_GUIDE.md) before configuring an external service.
 
 ## Development
 
-Requires Node.js 20 or newer. There are no runtime or development dependencies.
+Requires Node.js 20 or newer.
 
 ```bash
+npm ci
 npm run validate
+npm run test:e2e
 npm run package
 ```
 
-Validation checks the Manifest V3 package, JavaScript syntax, icons, permissions, non-navigation architecture, and regression tests. Packaging creates a Chrome Web Store-compatible ZIP in `dist/`.
+`npm run validate` checks the Manifest V3 package, JavaScript syntax, icons, minimum permissions, consent architecture, provider boundaries and unit regressions. Playwright tests load the real extension into Chromium against local fixtures with mocked provider responses.
 
-## Release and Chrome Web Store path
+Tags matching `v*` trigger the release workflow, which validates the extension, builds the ZIP and attaches it to a GitHub Release.
 
-Tags matching `v*` trigger the release workflow, which validates the extension, builds the ZIP, and attaches it to a GitHub Release. That ZIP can be submitted to the Chrome Web Store after the listing, screenshots, privacy disclosures, and publisher account are completed.
+## Keyboard shortcuts
+
+- `Alt+Shift+T`: translate the current page
+- `Alt+Shift+O`: restore original page text
+
+Shortcuts can be changed through the browser's extension-shortcut settings.
 
 ## Honest limitations
 
-No browser extension can translate every surface. Brave/Chrome internal pages, extension pages, the built-in PDF viewer, text baked into images or video, canvas-rendered text, and closed or protected frames are inaccessible to ordinary content scripts. Some sites deliberately mark text as non-translatable. Translation also depends on the availability and rate limits of Google's external translation service.
+No ordinary browser extension can translate every surface. Browser-internal pages, extension pages, the built-in PDF viewer, text baked into images or video, canvas-rendered text, closed Shadow DOM and some protected or sandboxed frames are inaccessible. Sites can also mark content as non-translatable.
 
-For ordinary HTTP and HTTPS pages—including authenticated or anti-bot-protected sites that are already open in the browser—the in-page design avoids the blank proxy-page failure seen in versions 0.1.x.
+Translation quality and availability depend on the selected provider. The extension fails safely, preserves the original page and provides actionable errors when a provider or permission is unavailable.
+
+## Support and security
+
+- [Support and troubleshooting](SUPPORT.md)
+- [Compatibility matrix](docs/COMPATIBILITY.md)
+- [Privacy policy](PRIVACY.md)
+- [Security policy](SECURITY.md)
+- [Changelog](CHANGELOG.md)
 
 ## Licence
 

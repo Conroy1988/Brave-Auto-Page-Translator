@@ -3,45 +3,34 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Brave Auto Page Translator</title>
+    <title>Auto Page Translator for Brave</title>
     <link rel="stylesheet" href="popup.css">
   </head>
   <body>
     <main class="panel">
       <header class="hero">
         <img src="../icons/icon-48.png" width="42" height="42" alt="">
-        <div>
-          <p class="eyebrow">BRAVE UTILITY</p>
-          <h1>Auto Translator</h1>
-        </div>
-        <label class="switch" aria-label="Enable automatic translation">
-          <input id="enabled" type="checkbox">
-          <span></span>
-        </label>
+        <div><p class="eyebrow">INDEPENDENT EXTENSION</p><h1>Auto Translator</h1></div>
+        <label class="switch" aria-label="Enable automatic translation"><input id="enabled" type="checkbox"><span></span></label>
       </header>
 
       <section class="status-card" aria-live="polite">
-        <div class="pulse" id="statusPulse"></div>
-        <div>
-          <p id="statusTitle">Checking this page…</p>
-          <span id="statusDetail">Detecting language and website rules</span>
-        </div>
+        <div class="pulse" id="statusPulse" aria-hidden="true"></div>
+        <div><p id="statusTitle">Checking this page…</p><span id="statusDetail">Detecting language and website rules</span><small id="providerDetail"></small></div>
       </section>
 
-      <label class="field">
-        <span>Translate pages into</span>
-        <select id="targetLanguage"></select>
-      </label>
+      <label class="field"><span>Translate pages into</span><select id="targetLanguage"></select></label>
 
       <div class="actions">
         <button class="primary" id="translateNow" type="button">Translate this page</button>
-        <button class="secondary" id="siteRule" type="button">Never translate this site</button>
+        <div class="quick-grid">
+          <button class="secondary" id="automaticSite" type="button">Automatically translate this site</button>
+          <button class="secondary" id="siteRule" type="button">Never translate this site</button>
+          <button class="secondary" id="languageRule" type="button">Never translate this language</button>
+        </div>
       </div>
 
-      <footer>
-        <button class="link-button" id="openOptions" type="button">Advanced settings</button>
-        <span>v0.2.1</span>
-      </footer>
+      <footer><button class="link-button" id="openOptions" type="button">Settings & privacy</button><span id="version"></span></footer>
     </main>
     <script type="module" src="popup.js"></script>
   </body>
