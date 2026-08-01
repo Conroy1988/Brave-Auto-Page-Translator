@@ -1,6 +1,7 @@
 const TRANSLATION_HOSTS = new Set([
   "translate.google.com",
-  "translate.googleusercontent.com"
+  "translate.googleusercontent.com",
+  "translate.goog"
 ]);
 
 export function normalizeLanguageCode(code) {
@@ -20,10 +21,17 @@ export function hostnameFromUrl(value) {
   }
 }
 
+export function isTranslationHost(hostname) {
+  const host = String(hostname || "").toLowerCase().replace(/\.$/, "");
+  return [...TRANSLATION_HOSTS].some(
+    (translationHost) => host === translationHost || host.endsWith(`.${translationHost}`)
+  );
+}
+
 export function isSupportedPageUrl(value) {
   try {
     const url = new URL(value);
-    return ["http:", "https:"].includes(url.protocol) && !TRANSLATION_HOSTS.has(url.hostname);
+    return ["http:", "https:"].includes(url.protocol) && !isTranslationHost(url.hostname);
   } catch {
     return false;
   }
