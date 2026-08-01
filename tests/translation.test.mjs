@@ -6,6 +6,7 @@ import {
   hostMatchesRule,
   hostnameFromUrl,
   isSupportedPageUrl,
+  isTranslationHost,
   normalizeLanguageCode,
   shouldTranslateLanguage
 } from "../src/translation.js";
@@ -19,6 +20,15 @@ test("accepts public pages and rejects internal or translation pages", () => {
   assert.equal(isSupportedPageUrl("https://example.com/story"), true);
   assert.equal(isSupportedPageUrl("chrome://extensions"), false);
   assert.equal(isSupportedPageUrl("https://translate.google.com/translate?u=x"), false);
+  assert.equal(isSupportedPageUrl("https://es-wikipedia-org.translate.goog/wiki/Madrid"), false);
+  assert.equal(isSupportedPageUrl("https://translate.goog/"), false);
+  assert.equal(isSupportedPageUrl("https://translate.goog.example.com/story"), true);
+});
+
+test("recognizes Google Translate entry and proxy hosts", () => {
+  assert.equal(isTranslationHost("translate.google.com"), true);
+  assert.equal(isTranslationHost("es-wikipedia-org.translate.goog"), true);
+  assert.equal(isTranslationHost("translate.goog.example.com"), false);
 });
 
 test("matches a hostname and all of its subdomains", () => {
