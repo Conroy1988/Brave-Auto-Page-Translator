@@ -56,11 +56,3 @@ export function shouldTranslateLanguage(detectedLanguage, settings) {
     return detected === excluded || detectedBase === baseLanguage(excluded);
   });
 }
-
-export function buildTranslationUrl(originalUrl, targetLanguage, sourceLanguage = "auto") {
-  const url = new URL("https://translate.google.com/translate");
-  url.searchParams.set("sl", normalizeLanguageCode(sourceLanguage) || "auto");
-  url.searchParams.set("tl", targetLanguage);
-  url.searchParams.set("u", originalUrl);
-  return url.toString();
-}
