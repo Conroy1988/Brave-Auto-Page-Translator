@@ -1,7 +1,8 @@
 # Changelog
 
-## 1.0.0 — Store candidate
+## 1.0.0 — Initial public release
 
+- Published [Auto Page Translator for Brave on the Chrome Web Store](https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo) under extension ID `pilpighhgdglgngmakjepoadacbhpoeo`.
 - Renamed the product to make its independent status clear.
 - Added explicit first-run privacy consent and versioned consent records.
 - Replaced permanent all-site access with manual `activeTab` access and optional automatic-site permissions.
