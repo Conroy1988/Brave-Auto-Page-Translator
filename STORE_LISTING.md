@@ -1,8 +1,17 @@
-# Chrome Web Store Listing Draft
+# Chrome Web Store Listing
 
 ## Title
 
 Auto Page Translator for Brave
+
+## Published listing
+
+- **Status:** Public
+- **Install:** [Chrome Web Store](https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo)
+- **Extension ID:** `pilpighhgdglgngmakjepoadacbhpoeo`
+- **Source and development:** [GitHub](https://github.com/Conroy1988/Brave-Auto-Page-Translator)
+
+The Chrome Web Store is the official distribution and automatic-update channel. This repository is the source and development home; the sections below preserve the canonical listing copy for future updates.
 
 ## Summary
 
