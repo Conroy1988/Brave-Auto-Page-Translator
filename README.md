@@ -3,6 +3,7 @@
   <h1>Auto Page Translator for Brave</h1>
   <p><strong>Independent, configurable in-page translation for Brave and Chromium browsers.</strong></p>
   <p>
+    <a href="https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo"><img alt="Install from the Chrome Web Store" src="https://img.shields.io/badge/Chrome_Web_Store-Install-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white"></a>
     <img alt="Manifest V3" src="https://img.shields.io/badge/Manifest-V3-6d5dfc?style=for-the-badge">
     <img alt="Privacy consent" src="https://img.shields.io/badge/Privacy-Explicit_consent-0f9f8f?style=for-the-badge">
     <img alt="Analytics" src="https://img.shields.io/badge/Analytics-None-0f9f8f?style=for-the-badge">
@@ -12,6 +13,14 @@
 
 > [!IMPORTANT]
 > This is an independent, unofficial extension. It is not developed, sponsored, or endorsed by Brave Software or Google. Brave includes its own native Translate feature; this project provides a separate rule-driven workflow for users who want one global target language, manual/minimal-access mode, approved-site automation, per-site targets, live-page translation and restorable text.
+
+## Install
+
+[**Install Auto Page Translator for Brave from the Chrome Web Store →**](https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo)
+
+The Chrome Web Store is the official installation and automatic-update channel for Brave and other Chromium browsers. Brave users can install the extension directly from the listing above.
+
+GitHub is the public source, issue tracker and development home. Development happens in this repository; validated releases are then published to the Chrome Web Store.
 
 ## What it does
 
@@ -30,7 +39,9 @@ The extension detects a webpage's primary language and translates readable text 
 - On-device, Google Cloud, LibreTranslate and disclosed compatibility provider choices
 - No analytics, advertising, telemetry or developer-operated translation server
 
-## Install for development
+## Install from source (development)
+
+Most users should use the [official Chrome Web Store listing](https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo). The unpacked route below is intended for contributors, testers and local development.
 
 1. Download or clone this repository.
 2. Open `brave://extensions` in Brave.
@@ -48,6 +59,8 @@ Automatic provider selection prefers the browser's on-device Translator API wher
 Read [docs/PROVIDER_GUIDE.md](docs/PROVIDER_GUIDE.md) before configuring an external service.
 
 ## Development
+
+Development and issue tracking happen in this GitHub repository. Store builds are validated and packaged here before publication to the [Chrome Web Store](https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo).
 
 Requires Node.js 20 or newer.
 
