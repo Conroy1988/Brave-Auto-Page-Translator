@@ -1,5 +1,10 @@
 # Chrome Web Store Submission Checklist
 
+> [!NOTE]
+> **Published:** [Auto Page Translator for Brave on the Chrome Web Store](https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo)  
+> **Extension ID:** `pilpighhgdglgngmakjepoadacbhpoeo`  
+> The checklist below is retained as the release gate for future store updates. Development happens in GitHub; validated packages are then submitted to the Chrome Web Store.
+
 ## Engineering gate
 
 - [ ] `npm ci`
