@@ -48,7 +48,7 @@ jobs:
             echo "Unsupported release ref: $GITHUB_REF" >&2
             exit 1
           fi
-          test "$RELEASE_TAG" = "v$(node -p 'require(\"./manifest.json\").version')"
+          test "$RELEASE_TAG" = "v$(node -p 'require("./manifest.json").version')"
           printf 'RELEASE_TAG=%s\nRELEASE_MODE=%s\n' "$RELEASE_TAG" "$RELEASE_MODE" >> "$GITHUB_ENV"
 
       - name: Validate, audit, package, and inspect
