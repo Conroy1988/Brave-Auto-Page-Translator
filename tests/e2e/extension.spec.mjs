@@ -231,14 +231,20 @@ test("popup and onboarding controls have accessible names and unique IDs", async
     const issues = await page.evaluate(() => {
       const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);
       const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
-      const unnamed = [...document.querySelectorAll("button, a, input, select, textarea")].filter((element) => {
-        if (element.type === "hidden" || element.hidden) return false;
-        const label = element.labels?.[0]?.textContent || element.getAttribute("aria-label") || element.textContent || element.title;
-        return !String(label || "").trim();
-      }).length;
+      const unnamed = [...document.querySelectorAll("button, a, input, select, textarea")]
+        .filter((element) => {
+          if (element.type === "hidden" || element.hidden) return false;
+          const label = element.labels?.[0]?.textContent || element.getAttribute("aria-label") || element.textContent || element.title;
+          return !String(label || "").trim();
+        })
+        .map((element) => ({
+          tag: element.tagName.toLowerCase(),
+          id: element.id,
+          type: element.getAttribute("type") || ""
+        }));
       return { duplicateIds, unnamed };
     });
-    expect(issues).toEqual({ duplicateIds: [], unnamed: 0 });
+    expect(issues).toEqual({ duplicateIds: [], unnamed: [] });
     await page.close();
   }
 });
