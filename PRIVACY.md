@@ -1,8 +1,10 @@
 # Privacy Policy
 
-Last updated: 1 August 2026
+Last updated: 5 August 2026
 
 Auto Page Translator for Brave is an independent browser extension. It is not developed, sponsored, or endorsed by Brave Software or Google.
+
+> **Important clarification:** the Chrome Web Store's broad “Authentication information” label refers only to optional translation-provider API keys entered by the user. The extension does not collect, store or transmit website passwords, passcodes, PINs, security answers, login form values or payment-card details.
 
 ## Plain-language summary
 
@@ -10,22 +12,30 @@ Auto Page Translator for Brave is an independent browser extension. It is not de
 - Manual mode is the default and uses temporary access to the page you choose.
 - Automatic modes request access only to approved websites or, if you explicitly choose it, all HTTP and HTTPS websites.
 - An external translation provider receives readable page text only when translation runs.
+- External providers and the Google web fallback are disabled until their specific data route is explicitly approved.
+- Provider credentials remain in temporary browser-session storage by default.
+- Automatic translation is disabled in private/incognito windows; manual translation remains available and private-window site rules are not saved.
 - The developer does not receive webpage text and operates no translation relay or analytics server.
 - The extension does not sell data, show ads, create behavioural profiles, or maintain browsing history.
 
 ## Information stored by the extension
 
-The extension stores the settings you choose, including:
+The extension stores the settings you choose. Low-sensitivity preferences that can use browser synchronization include:
 
 - whether automatic translation is enabled and which access mode is selected;
-- target language, provider choice, site/language exclusions, approved sites and per-site targets;
-- glossary and never-translate terms;
+- target language and provider choice;
 - live-page, attribute, sensitive-form, direction, page-control and badge preferences;
-- the accepted privacy-disclosure version and acceptance time.
 
-Ordinary settings use the browser's synchronized extension storage. If browser synchronization is enabled, the browser provider may synchronize those settings between signed-in browser installations.
+If browser synchronization is enabled, the browser provider may synchronize those ordinary preferences between signed-in browser installations.
 
-Provider secrets—Google Cloud API keys, LibreTranslate endpoint details and LibreTranslate API keys—use local extension storage and are not intentionally synchronized by this extension.
+The following stay in local extension storage on the current device and are not intentionally synchronized by this extension:
+
+- approved websites, excluded websites and per-site target-language rules;
+- language exclusions, glossary entries and never-translate terms;
+- privacy and provider-consent versions and acceptance times;
+- the choice to remember provider credentials.
+
+Provider secrets—Google Cloud API keys, LibreTranslate endpoint details and API keys, and DeepL API keys—are stored in temporary browser-session extension storage by default. They disappear after the browser fully closes. A user can explicitly choose **Remember provider credentials on this device**, which stores them in local extension storage. They are never intentionally synchronized by this extension and are excluded from settings backups and diagnostic reports.
 
 ## Website content and translation requests
 
@@ -42,9 +52,10 @@ The provider selected in Settings determines where text is processed:
 - **Browser on-device translator:** text is processed by the browser's built-in Translator API where supported. Required language models may be downloaded by the browser.
 - **Google Cloud Translation:** text is sent directly to Google Cloud Translation using the API key supplied by the user. The user's Google Cloud terms, billing, quota and data-processing terms apply.
 - **LibreTranslate:** text is sent directly to the HTTPS endpoint supplied by the user. The operator of that server controls its logging and retention practices.
+- **DeepL API:** text is sent directly to DeepL's documented API using the API key supplied by the user. The user's DeepL terms, quota and data-processing terms apply.
 - **Google web compatibility service:** text is sent directly to Google's web translation service. This compatibility method is not the authenticated Google Cloud Translation API and has no published production availability guarantee.
 
-Automatic provider selection tries the on-device provider first, configured supported/custom providers next, and the Google web compatibility service only when its fallback setting is enabled.
+Automatic provider selection tries the on-device provider first, then only configured external providers whose specific disclosure has been accepted. The Google web compatibility service is off by default and is considered only when its separate fallback setting and provider consent are both enabled.
 
 Provider terms and privacy practices are independent of the extension. Users should review the terms for the provider they choose.
 
@@ -71,6 +82,8 @@ Original page text is retained only in the page's memory so it can be restored. 
 
 Settings can be reset from the extension's control centre. Removing the extension deletes its extension storage under the browser's normal extension-removal process. External providers control their own server-side logging and retention.
 
+Credential-free settings backups are created only after a user clicks Export. Diagnostic reports are generated locally, shown for review and shared only when the user chooses to export or copy them. Neither includes webpage text, URLs or provider credentials.
+
 ## Chrome Web Store Limited Use disclosure
 
 The extension's use and transfer of user data is limited to providing and improving its single purpose: translating webpage text chosen or authorized by the user. Data is not used or transferred for advertising, profiling, creditworthiness, unrelated analytics or sale. The developer does not permit humans to read webpage text handled by the extension. Transfers to a chosen translation provider occur only as necessary to return the requested translation.
@@ -79,7 +92,9 @@ The use of information received from Google APIs will adhere to the Chrome Web S
 
 ## Security
 
-Page text and provider requests use HTTPS, except that a user may deliberately configure a LibreTranslate server running locally on `localhost` or `127.0.0.1`. Provider credentials are omitted from diagnostics and are never written to logs by the extension.
+Page text and provider requests use HTTPS, except that a user may deliberately configure a LibreTranslate server running locally on `localhost` or `127.0.0.1`. Provider credentials are omitted from diagnostics, settings backups and logs. Extension storage is restricted to trusted extension contexts where the browser supports storage access levels.
+
+The repository's [data map](DATA_MAP.md) records each data category, storage location, transmission path, retention rule and corresponding Chrome Web Store disclosure.
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 

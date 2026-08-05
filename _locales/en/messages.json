@@ -8,5 +8,30 @@
   },
   "extensionDescription": {
     "message": "Automatically translates foreign-language webpages with privacy controls, site rules and restorable in-page translation."
-  }
+  },
+  "independentExtension": { "message": "INDEPENDENT EXTENSION" },
+  "privateWindowNotice": { "message": "Private window: manual translation only. Site and language rules are not saved here." },
+  "translatePagesInto": { "message": "Translate pages into" },
+  "translateThisPage": { "message": "Translate this page" },
+  "automaticSite": { "message": "Automatically translate this site" },
+  "neverSite": { "message": "Never translate this site" },
+  "neverLanguage": { "message": "Never translate this language" },
+  "settingsPrivacy": { "message": "Settings & privacy" },
+  "onboardingTitle": { "message": "Translation on your terms." },
+  "onboardingIntro": { "message": "Choose what the extension may access and where webpage text is processed before anything is translated." },
+  "yourLanguage": { "message": "Your language" },
+  "whenTranslationRuns": { "message": "When translation may run" },
+  "translationProvider": { "message": "Translation provider" },
+  "privacyCheckpoint": { "message": "Privacy checkpoint" },
+  "acceptFinish": { "message": "Accept and finish setup" },
+  "controlCentre": { "message": "Translation control centre" },
+  "controlIntro": { "message": "Control website access, provider privacy, live-page behaviour and every automatic translation rule." },
+  "accessBehaviour": { "message": "Access and automatic behaviour" },
+  "pageSafeguards": { "message": "Page behaviour and safeguards" },
+  "rulesTargets": { "message": "Exclusions and per-site targets" },
+  "terminology": { "message": "Terminology" },
+  "privacyDashboard": { "message": "Privacy dashboard" },
+  "settingsBackup": { "message": "Settings backup" },
+  "localDiagnostics": { "message": "Local diagnostics" },
+  "saveSettings": { "message": "Save settings" }
 }

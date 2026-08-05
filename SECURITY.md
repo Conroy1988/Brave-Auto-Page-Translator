@@ -25,7 +25,10 @@ Include only:
 - Optional website permissions requested from a user gesture.
 - Explicit consent before page content is handled.
 - HTTPS external-provider requests, except user-configured localhost services.
-- Provider secrets stored locally and excluded from diagnostics.
+- Provider secrets stored in browser-session storage by default, optionally remembered locally after explicit opt-in, and excluded from diagnostics and backups.
+- Provider-specific consent enforced before any external engine can receive page text.
+- Trusted-context storage access levels, versioned storage migration and local-only site/glossary rules.
+- Exact release-ZIP tests, archive policy inspection, recognized-secret scanning, checksums, dependency audit, CodeQL and dependency update monitoring.
 - No analytics, ads, telemetry or developer-operated relay.
 - DOM text is applied through text properties rather than executable HTML.
 - Bounded request sizes, concurrency, timeouts, retries, cache and circuit breaking.
@@ -33,4 +36,4 @@ Include only:
 
 ## Threat-model boundaries
 
-The extension cannot control what a user-selected translation provider records after receiving a request. Users should review that provider's contract and privacy policy. A compromised browser profile or another extension with sufficient privileges may be able to inspect local extension storage.
+The extension cannot control what a user-selected translation provider records after receiving a request. Users should review that provider's contract and privacy policy. A compromised browser profile or browser process remains outside the extension's trust boundary. Users should avoid remembering provider credentials on shared devices.

@@ -1,0 +1,10 @@
+.private-notice {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border: 1px solid #514778;
+  border-radius: 10px;
+  color: #d8d4e4;
+  background: #171522;
+  font-size: 12px;
+  line-height: 1.45;
+}

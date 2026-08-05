@@ -44,7 +44,12 @@ export function hostPermissionPatterns(hostname) {
   return patterns;
 }
 
-export function providerPermissionPatterns(providerMode, { allowGoogleWebFallback = true, googleCloudApiKey = "" } = {}) {
+export function providerPermissionPatterns(providerMode, {
+  allowGoogleWebFallback = false,
+  googleCloudApiKey = "",
+  deepLApiKey = "",
+  deepLApiPlan = "free"
+} = {}) {
   const mode = String(providerMode || "auto");
   const patterns = [];
   if (mode === "google-cloud" || (mode === "auto" && googleCloudApiKey)) {
@@ -52,6 +57,9 @@ export function providerPermissionPatterns(providerMode, { allowGoogleWebFallbac
   }
   if (mode === "google-web" || allowGoogleWebFallback) {
     patterns.push("https://translate.googleapis.com/*", "https://translate.google.com/*");
+  }
+  if (mode === "deepl" || (mode === "auto" && deepLApiKey)) {
+    patterns.push(deepLApiPlan === "pro" ? "https://api.deepl.com/*" : "https://api-free.deepl.com/*");
   }
   return [...new Set(patterns)];
 }

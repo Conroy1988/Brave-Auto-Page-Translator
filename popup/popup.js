@@ -1,15 +1,27 @@
-import { DEFAULT_LOCAL_STATE, DEFAULT_SETTINGS, SUPPORTED_LANGUAGES, loadLocalState, loadSettings, saveSettings } from "../src/settings.js";
+import {
+  DEFAULT_LOCAL_STATE,
+  DEFAULT_SETTINGS,
+  SUPPORTED_LANGUAGES,
+  externalProvidersForConfiguration,
+  hasProviderConsent,
+  loadLocalState,
+  loadSettings,
+  saveSettings
+} from "../src/settings.js";
+import { applyTranslations } from "../src/i18n.js";
 import { baseLanguage, hostMatchesRule, hostPermissionPatterns, hostnameFromUrl, providerPermissionPatterns } from "../src/translation.js";
 
 const elements = Object.fromEntries([
   "enabled", "targetLanguage", "statusPulse", "statusTitle", "statusDetail", "providerDetail",
-  "translateNow", "automaticSite", "siteRule", "languageRule", "openOptions", "version"
+  "translateNow", "automaticSite", "siteRule", "languageRule", "privateNotice", "openOptions", "version"
 ].map((id) => [id, document.querySelector(`#${id}`)]));
+applyTranslations();
 const providerNames = {
   auto: "Automatic provider selection",
   "on-device": "On-device translator",
   "google-cloud": "Google Cloud Translation",
   libretranslate: "LibreTranslate",
+  deepl: "DeepL API",
   "google-web": "Google web compatibility service"
 };
 let settings = { ...DEFAULT_SETTINGS };
@@ -44,11 +56,13 @@ function setStatus(title, detail, tone = "", provider = "") {
 
 function renderQuickActions() {
   const language = inspection?.language;
-  elements.siteRule.disabled = !hostname;
+  const privateWindow = Boolean(activeTab?.incognito);
+  elements.privateNotice.hidden = !privateWindow;
+  elements.siteRule.disabled = !hostname || privateWindow;
   elements.siteRule.textContent = siteIsExcluded() ? "Allow translation on this site" : "Never translate this site";
-  elements.automaticSite.hidden = settings.behaviourMode === "all-sites" || !hostname;
+  elements.automaticSite.hidden = settings.behaviourMode === "all-sites" || !hostname || privateWindow;
   elements.automaticSite.textContent = siteIsApproved() ? "Stop automatic translation here" : "Automatically translate this site";
-  elements.languageRule.hidden = !language || language === "auto" || language === "und";
+  elements.languageRule.hidden = privateWindow || !language || language === "auto" || language === "und";
   elements.languageRule.textContent = languageIsExcluded(language) ? `Allow ${languageName(language)}` : `Never translate ${languageName(language)}`;
 }
 
@@ -96,11 +110,19 @@ function customEndpointOrigin(value) {
 }
 
 async function ensureProviderAccess() {
+  const unapproved = externalProvidersForConfiguration(settings, localState)
+    .filter((provider) => !hasProviderConsent(localState, provider));
+  if (unapproved.includes(settings.providerMode)) {
+    setStatus("Provider approval required", "Review the provider text route in Settings & privacy before translating.", "paused");
+    return false;
+  }
   const origins = providerPermissionPatterns(settings.providerMode, {
-    allowGoogleWebFallback: settings.allowGoogleWebFallback,
-    googleCloudApiKey: localState.googleCloudApiKey
+    allowGoogleWebFallback: settings.allowGoogleWebFallback && hasProviderConsent(localState, "google-web"),
+    googleCloudApiKey: hasProviderConsent(localState, "google-cloud") ? localState.googleCloudApiKey : "",
+    deepLApiKey: hasProviderConsent(localState, "deepl") ? localState.deepLApiKey : "",
+    deepLApiPlan: settings.deepLApiPlan
   });
-  if (["auto", "libretranslate"].includes(settings.providerMode) && localState.libreTranslateEndpoint) {
+  if (["auto", "libretranslate"].includes(settings.providerMode) && localState.libreTranslateEndpoint && hasProviderConsent(localState, "libretranslate")) {
     const endpoint = customEndpointOrigin(localState.libreTranslateEndpoint);
     if (endpoint) origins.push(endpoint);
   }
@@ -158,7 +180,7 @@ elements.translateNow.addEventListener("click", async () => {
     return;
   }
   const providerAccess = await ensureProviderAccess();
-  if (!providerAccess && ["google-cloud", "google-web", "libretranslate"].includes(settings.providerMode)) {
+  if (!providerAccess && ["google-cloud", "google-web", "libretranslate", "deepl"].includes(settings.providerMode)) {
     setStatus("Provider access declined", "Translation needs access to the provider selected in Settings.", "error");
     return;
   }
@@ -173,7 +195,7 @@ elements.translateNow.addEventListener("click", async () => {
 });
 
 elements.siteRule.addEventListener("click", async () => {
-  if (!hostname) return;
+  if (!hostname || activeTab?.incognito) return;
   const excluded = siteIsExcluded();
   const excludedHosts = excluded
     ? settings.excludedHosts.filter((rule) => !hostMatchesRule(hostname, rule))
@@ -184,7 +206,7 @@ elements.siteRule.addEventListener("click", async () => {
 });
 
 elements.automaticSite.addEventListener("click", async () => {
-  if (!hostname) return;
+  if (!hostname || activeTab?.incognito) return;
   const approved = siteIsApproved();
   const patterns = hostPermissionPatterns(hostname);
   if (!approved) {
@@ -203,6 +225,7 @@ elements.automaticSite.addEventListener("click", async () => {
 });
 
 elements.languageRule.addEventListener("click", async () => {
+  if (activeTab?.incognito) return;
   const language = baseLanguage(inspection?.language);
   if (!language) return;
   const excluded = languageIsExcluded(language);

@@ -2,28 +2,48 @@ import {
   CONSENT_VERSION,
   DEFAULT_LOCAL_STATE,
   DEFAULT_SETTINGS,
+  EXTERNAL_PROVIDER_MODES,
   SUPPORTED_LANGUAGES,
+  clearProviderSecrets,
+  createSettingsBackup,
+  externalProvidersForConfiguration,
   hasCurrentConsent,
+  hasProviderConsent,
   loadLocalState,
   loadSettings,
+  parseSettingsBackup,
+  recordProviderConsents,
   saveLocalState,
   saveSettings
 } from "../src/settings.js";
+import { applyTranslations } from "../src/i18n.js";
 import { providerPermissionPatterns } from "../src/translation.js";
 
 const ids = [
   "settingsForm", "enabled", "behaviourMode", "targetLanguage", "approvedHosts", "providerMode",
   "allowGoogleWebFallback", "googleCloudApiKey", "libreTranslateEndpoint", "libreTranslateApiKey",
+  "deepLApiKey", "deepLApiPlan", "rememberProviderCredentials", "providerDisclosure",
+  "providerDisclosureTitle", "providerDisclosureText", "providerConsent", "providerConsentLabel",
   "translateDynamicContent", "translateAttributes", "adjustTextDirection", "sensitivePageMode",
   "showPageControl", "showBadge", "excludedLanguages", "excludedHosts", "siteTargetLanguages",
   "glossary", "neverTranslateTerms", "permissionState", "toggleAllSites", "providerStatus",
-  "testProvider", "consentBanner", "consentTitle", "consentDetail", "openOnboarding", "exportDiagnostics",
-  "clearCache", "reset", "saveStatus"
+  "testProvider", "consentBanner", "consentTitle", "consentDetail", "openOnboarding",
+  "privacyRoute", "credentialStorage", "privacyPermission", "providerConsentSummary",
+  "exportSettings", "importSettings", "settingsFile", "previewDiagnostics", "exportDiagnostics",
+  "supportPreview", "diagnosticsPreview", "copyDiagnostics", "clearCache", "reset", "saveStatus"
 ];
 const fields = Object.fromEntries(ids.map((id) => [id, document.querySelector(`#${id}`)]));
+applyTranslations();
 const ALL_SITE_ORIGINS = ["http://*/*", "https://*/*"];
+const providerLabels = {
+  "google-cloud": "Google Cloud Translation",
+  libretranslate: "your LibreTranslate server",
+  deepl: "DeepL API",
+  "google-web": "Google web compatibility service"
+};
 let settings = { ...DEFAULT_SETTINGS };
 let localState = { ...DEFAULT_LOCAL_STATE };
+let diagnostics = null;
 let statusTimer;
 
 function showStatus(message, error = false) {
@@ -52,11 +72,97 @@ function parseGlossary(value) {
   });
 }
 
+function customEndpointOrigin(value) {
+  try {
+    const url = new URL(value);
+    return `${url.protocol}//${url.host}/*`;
+  } catch {
+    return "";
+  }
+}
+
+function downloadJson(value, filename) {
+  const blob = new Blob([JSON.stringify(value, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
+
+function collectSettings() {
+  return {
+    enabled: fields.enabled.checked,
+    behaviourMode: fields.behaviourMode.value,
+    targetLanguage: fields.targetLanguage.value,
+    approvedHosts: lines(fields.approvedHosts.value),
+    providerMode: fields.providerMode.value,
+    allowGoogleWebFallback: fields.allowGoogleWebFallback.checked,
+    deepLApiPlan: fields.deepLApiPlan.value,
+    translateDynamicContent: fields.translateDynamicContent.checked,
+    translateAttributes: fields.translateAttributes.checked,
+    adjustTextDirection: fields.adjustTextDirection.checked,
+    sensitivePageMode: fields.sensitivePageMode.checked ? "allow" : "manual",
+    showPageControl: fields.showPageControl.checked,
+    showBadge: fields.showBadge.checked,
+    excludedLanguages: fields.excludedLanguages.value.split(","),
+    excludedHosts: lines(fields.excludedHosts.value),
+    siteTargetLanguages: parseSiteTargets(fields.siteTargetLanguages.value),
+    glossary: parseGlossary(fields.glossary.value),
+    neverTranslateTerms: lines(fields.neverTranslateTerms.value)
+  };
+}
+
+function collectLocalState() {
+  return {
+    ...localState,
+    rememberProviderCredentials: fields.rememberProviderCredentials.checked,
+    googleCloudApiKey: fields.googleCloudApiKey.value,
+    libreTranslateEndpoint: fields.libreTranslateEndpoint.value,
+    libreTranslateApiKey: fields.libreTranslateApiKey.value,
+    deepLApiKey: fields.deepLApiKey.value
+  };
+}
+
+function configuredExternalProviders() {
+  return externalProvidersForConfiguration(collectSettings(), collectLocalState());
+}
+
+function renderProviderDisclosure() {
+  const providers = configuredExternalProviders();
+  const missing = providers.filter((provider) => !hasProviderConsent(localState, provider));
+  fields.providerDisclosure.classList.toggle("hidden", providers.length === 0);
+  if (!providers.length) {
+    fields.providerDisclosureTitle.textContent = "On-device text route";
+    fields.providerDisclosureText.textContent = "No external provider is enabled. Compatible language packs are processed by the browser on this device.";
+    fields.providerConsent.checked = false;
+    fields.providerConsent.disabled = true;
+  } else {
+    const names = providers.map((provider) => providerLabels[provider]).join(", ");
+    fields.providerDisclosureTitle.textContent = `External text route: ${names}`;
+    fields.providerDisclosureText.textContent = "Readable page text is sent over HTTPS only when translation runs. URLs, cookies, passwords, editable form values, full HTML, images and files are not intentionally included.";
+    fields.providerConsent.disabled = missing.length === 0;
+    fields.providerConsent.checked = missing.length === 0;
+    fields.providerConsentLabel.textContent = missing.length
+      ? `I understand and allow ${missing.map((provider) => providerLabels[provider]).join(", ")} to receive readable page text for translation.`
+      : "Provider-specific consent is already recorded for this configuration.";
+  }
+  fields.privacyRoute.textContent = providers.length
+    ? providers.map((provider) => providerLabels[provider]).join(" → fallback to ")
+    : "Browser on-device translator only";
+  fields.credentialStorage.textContent = fields.rememberProviderCredentials.checked ? "Local device storage" : "Browser session only";
+  const accepted = EXTERNAL_PROVIDER_MODES.filter((provider) => hasProviderConsent(localState, provider));
+  fields.providerConsentSummary.textContent = accepted.length
+    ? `Provider consent recorded for: ${accepted.map((provider) => providerLabels[provider]).join(", ")}.`
+    : "No external-provider consent is recorded. External providers cannot be used until you explicitly approve their text route.";
+}
+
 async function renderPermission() {
   const granted = await chrome.permissions.contains({ origins: ALL_SITE_ORIGINS });
   fields.permissionState.textContent = granted ? "Granted for all websites" : "Not granted";
   fields.permissionState.style.color = granted ? "#69d7c8" : "#aaa6b7";
   fields.toggleAllSites.textContent = granted ? "Remove all-site access" : "Grant all-site access";
+  fields.privacyPermission.textContent = granted ? "All HTTP and HTTPS websites" : "Only sites approved on demand";
   return granted;
 }
 
@@ -80,6 +186,9 @@ function render() {
   fields.googleCloudApiKey.value = localState.googleCloudApiKey;
   fields.libreTranslateEndpoint.value = localState.libreTranslateEndpoint;
   fields.libreTranslateApiKey.value = localState.libreTranslateApiKey;
+  fields.deepLApiKey.value = localState.deepLApiKey;
+  fields.deepLApiPlan.value = settings.deepLApiPlan;
+  fields.rememberProviderCredentials.checked = localState.rememberProviderCredentials;
   fields.translateDynamicContent.checked = settings.translateDynamicContent;
   fields.translateAttributes.checked = settings.translateAttributes;
   fields.adjustTextDirection.checked = settings.adjustTextDirection;
@@ -92,41 +201,32 @@ function render() {
   fields.glossary.value = settings.glossary.map(({ source, replacement }) => `${source} => ${replacement}`).join("\n");
   fields.neverTranslateTerms.value = settings.neverTranslateTerms.join("\n");
   renderConsent();
+  renderProviderDisclosure();
 }
 
-function collectSettings() {
-  return {
-    enabled: fields.enabled.checked,
-    behaviourMode: fields.behaviourMode.value,
-    targetLanguage: fields.targetLanguage.value,
-    approvedHosts: lines(fields.approvedHosts.value),
-    providerMode: fields.providerMode.value,
-    allowGoogleWebFallback: fields.allowGoogleWebFallback.checked,
-    translateDynamicContent: fields.translateDynamicContent.checked,
-    translateAttributes: fields.translateAttributes.checked,
-    adjustTextDirection: fields.adjustTextDirection.checked,
-    sensitivePageMode: fields.sensitivePageMode.checked ? "allow" : "manual",
-    showPageControl: fields.showPageControl.checked,
-    showBadge: fields.showBadge.checked,
-    excludedLanguages: fields.excludedLanguages.value.split(","),
-    excludedHosts: lines(fields.excludedHosts.value),
-    siteTargetLanguages: parseSiteTargets(fields.siteTargetLanguages.value),
-    glossary: parseGlossary(fields.glossary.value),
-    neverTranslateTerms: lines(fields.neverTranslateTerms.value)
-  };
-}
-
-function customEndpointOrigin(value) {
-  try {
-    const url = new URL(value);
-    return `${url.protocol}//${url.host}/*`;
-  } catch {
-    return "";
-  }
+async function requestProviderPermissions(nextSettings, nextLocal) {
+  const providerOrigins = providerPermissionPatterns(nextSettings.providerMode, {
+    allowGoogleWebFallback: nextSettings.allowGoogleWebFallback,
+    googleCloudApiKey: nextLocal.googleCloudApiKey,
+    deepLApiKey: nextLocal.deepLApiKey,
+    deepLApiPlan: nextSettings.deepLApiPlan
+  });
+  const endpointOrigin = customEndpointOrigin(nextLocal.libreTranslateEndpoint);
+  if (endpointOrigin && ["auto", "libretranslate"].includes(nextSettings.providerMode)) providerOrigins.push(endpointOrigin);
+  const uniqueOrigins = [...new Set(providerOrigins)];
+  if (!uniqueOrigins.length || await chrome.permissions.contains({ origins: uniqueOrigins })) return true;
+  return chrome.permissions.request({ origins: uniqueOrigins });
 }
 
 async function saveAll() {
   const nextSettings = collectSettings();
+  let nextLocal = collectLocalState();
+  const externalProviders = externalProvidersForConfiguration(nextSettings, nextLocal);
+  const missingConsents = externalProviders.filter((provider) => !hasProviderConsent(nextLocal, provider));
+  if (missingConsents.length) {
+    if (!fields.providerConsent.checked) throw new Error("Review and accept the provider data route before saving this external provider.");
+    nextLocal = recordProviderConsents(nextLocal, missingConsents);
+  }
   if (nextSettings.behaviourMode === "all-sites" && !await chrome.permissions.contains({ origins: ALL_SITE_ORIGINS })) {
     const granted = await chrome.permissions.request({ origins: ALL_SITE_ORIGINS });
     if (!granted) {
@@ -134,29 +234,13 @@ async function saveAll() {
       showStatus("All-site access was declined; Manual only was saved instead.", true);
     }
   }
-  const providerOrigins = providerPermissionPatterns(nextSettings.providerMode, {
-    allowGoogleWebFallback: nextSettings.allowGoogleWebFallback,
-    googleCloudApiKey: fields.googleCloudApiKey.value.trim()
-  });
-  if (providerOrigins.length && !await chrome.permissions.contains({ origins: providerOrigins })) {
-    const granted = await chrome.permissions.request({ origins: providerOrigins });
-    if (!granted && ["google-cloud", "google-web"].includes(nextSettings.providerMode)) {
-      throw new Error("Website access to the selected Google translation provider was declined.");
-    }
-    if (!granted) showStatus("Provider fallback access was declined; another configured engine may still work.", true);
+  const providerGranted = await requestProviderPermissions(nextSettings, nextLocal);
+  if (!providerGranted && externalProviders.includes(nextSettings.providerMode)) {
+    throw new Error("Website access to the selected translation provider was declined.");
   }
-  const endpointOrigin = customEndpointOrigin(fields.libreTranslateEndpoint.value);
-  if (endpointOrigin && !await chrome.permissions.contains({ origins: [endpointOrigin] })) {
-    const granted = await chrome.permissions.request({ origins: [endpointOrigin] });
-    if (!granted && nextSettings.providerMode === "libretranslate") throw new Error("Website access to the LibreTranslate endpoint was declined.");
-  }
+  if (!providerGranted) showStatus("Optional provider access was declined; on-device translation may still work.", true);
   settings = await saveSettings(nextSettings);
-  localState = await saveLocalState({
-    ...localState,
-    googleCloudApiKey: fields.googleCloudApiKey.value,
-    libreTranslateEndpoint: fields.libreTranslateEndpoint.value,
-    libreTranslateApiKey: fields.libreTranslateApiKey.value
-  });
+  localState = await saveLocalState(nextLocal);
   await chrome.runtime.sendMessage({ type: "refresh-settings" });
   render();
   await renderPermission();
@@ -178,6 +262,11 @@ fields.settingsForm.addEventListener("submit", async (event) => {
     showStatus(error.message, true);
   }
 });
+
+for (const field of [fields.providerMode, fields.allowGoogleWebFallback, fields.googleCloudApiKey, fields.libreTranslateEndpoint, fields.deepLApiKey, fields.deepLApiPlan, fields.rememberProviderCredentials]) {
+  field.addEventListener("input", renderProviderDisclosure);
+  field.addEventListener("change", renderProviderDisclosure);
+}
 
 fields.toggleAllSites.addEventListener("click", async () => {
   const granted = await chrome.permissions.contains({ origins: ALL_SITE_ORIGINS });
@@ -207,15 +296,49 @@ fields.testProvider.addEventListener("click", async () => {
 
 fields.openOnboarding.addEventListener("click", () => chrome.runtime.sendMessage({ type: "open-onboarding" }));
 
-fields.exportDiagnostics.addEventListener("click", async () => {
+fields.exportSettings.addEventListener("click", () => {
+  downloadJson(createSettingsBackup(collectSettings()), `auto-page-translator-settings-${Date.now()}.json`);
+  showStatus("Credential-free settings backup exported");
+});
+
+fields.importSettings.addEventListener("click", () => fields.settingsFile.click());
+fields.settingsFile.addEventListener("change", async () => {
+  try {
+    const file = fields.settingsFile.files?.[0];
+    if (!file) return;
+    settings = await saveSettings(parseSettingsBackup(await file.text()));
+    await chrome.runtime.sendMessage({ type: "refresh-settings" });
+    render();
+    await renderPermission();
+    showStatus("Settings imported; provider credentials and consent were unchanged");
+  } catch (error) {
+    showStatus(error.message, true);
+  } finally {
+    fields.settingsFile.value = "";
+  }
+});
+
+async function loadDiagnostics() {
   const result = await chrome.runtime.sendMessage({ type: "get-diagnostics" });
-  const blob = new Blob([JSON.stringify(result.diagnostics, null, 2)], { type: "application/json" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `auto-page-translator-diagnostics-${Date.now()}.json`;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  diagnostics = result.diagnostics;
+  fields.diagnosticsPreview.value = JSON.stringify(diagnostics, null, 2);
+  fields.supportPreview.hidden = false;
+  return diagnostics;
+}
+
+fields.previewDiagnostics.addEventListener("click", async () => {
+  await loadDiagnostics();
+  fields.diagnosticsPreview.focus();
+});
+
+fields.exportDiagnostics.addEventListener("click", async () => {
+  downloadJson(diagnostics || await loadDiagnostics(), `auto-page-translator-diagnostics-${Date.now()}.json`);
   showStatus("Privacy-safe diagnostic report exported");
+});
+
+fields.copyDiagnostics.addEventListener("click", async () => {
+  await navigator.clipboard.writeText(fields.diagnosticsPreview.value || JSON.stringify(await loadDiagnostics(), null, 2));
+  showStatus("Support report copied after review");
 });
 
 fields.clearCache.addEventListener("click", async () => {
@@ -225,17 +348,20 @@ fields.clearCache.addEventListener("click", async () => {
 
 fields.reset.addEventListener("click", async () => {
   settings = await saveSettings(DEFAULT_SETTINGS);
+  await clearProviderSecrets();
   localState = await saveLocalState({
     ...localState,
+    rememberProviderCredentials: false,
     googleCloudApiKey: "",
     libreTranslateEndpoint: "",
-    libreTranslateApiKey: ""
+    libreTranslateApiKey: "",
+    deepLApiKey: ""
   });
   await chrome.permissions.remove({ origins: ALL_SITE_ORIGINS }).catch(() => false);
   await chrome.runtime.sendMessage({ type: "refresh-settings" });
   render();
   await renderPermission();
-  showStatus("Defaults restored; privacy consent was retained");
+  showStatus("Defaults restored; privacy and provider consent records were retained");
 });
 
 [settings, localState] = await Promise.all([loadSettings(), loadLocalState()]);

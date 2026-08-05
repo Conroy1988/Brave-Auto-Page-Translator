@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.0 — Privacy, reliability and release hardening
+
+- Made the Google web compatibility fallback opt-in instead of enabled by default.
+- Added provider-specific text-route consent and enforced it in the translation pipeline.
+- Added the documented DeepL API as an official provider option.
+- Moved credentials to browser-session storage by default, with a separate remember-on-device choice.
+- Moved site rules, language exclusions and terminology out of synchronized storage and added a versioned migration.
+- Disabled rule persistence and automatic translation in private/incognito windows while retaining manual translation.
+- Added a privacy dashboard, on-device availability reporting, credential-free settings backup and review-before-sharing support reports.
+- Added exact-ZIP browser tests, large-page and accessibility regressions, package inspection, secret scanning, checksums, a CycloneDX dependency inventory and release provenance attestations.
+- Added pinned GitHub Actions, Dependabot, CodeQL and nightly Chromium/Chrome/Brave compatibility checks.
+- Added a protected Chrome Web Store V2 submission workflow that never skips review and blocks on warnings.
+- Added a user-data map and synchronized policy, listing, security and support documentation.
+
 ## 1.0.0 — Initial public release
 
 - Published [Auto Page Translator for Brave on the Chrome Web Store](https://chromewebstore.google.com/detail/auto-page-translator-for/pilpighhgdglgngmakjepoadacbhpoeo) under extension ID `pilpighhgdglgngmakjepoadacbhpoeo`.

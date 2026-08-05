@@ -1,12 +1,16 @@
 import {
-  CONSENT_VERSION,
   DEFAULT_LOCAL_STATE,
-  DEFAULT_SETTINGS,
+  EXTERNAL_PROVIDER_MODES,
+  externalProvidersForConfiguration,
   hasCurrentConsent,
+  hasProviderConsent,
   loadLocalState,
   loadSettings,
+  migrateSettingsStorage,
   normalizeSettings,
+  restrictStorageAccess,
   saveLocalState,
+  saveSettings,
   suggestedTargetLanguage
 } from "./settings.js";
 import { clearTranslationCache, translateTexts } from "./provider.js";
@@ -31,6 +35,8 @@ const recentlyHandled = new Map();
 let jobCounter = 0;
 let settingsPromise = loadSettings();
 let localStatePromise = loadLocalState();
+
+restrictStorageAccess().catch(() => {});
 
 async function refreshRuntimeState() {
   settingsPromise = loadSettings();
@@ -127,10 +133,10 @@ async function inspectTab(tabId, tab, { inject = false } = {}) {
   const hostname = hostnameFromUrl(url);
   const targetLanguage = targetLanguageForHost(hostname, settings);
   if (!isSupportedPageUrl(url)) {
-    return { status: "unsupported", settings, hostname, language: "", targetLanguage, consented: hasCurrentConsent(localState) };
+    return { status: "unsupported", settings, hostname, language: "", targetLanguage, consented: hasCurrentConsent(localState), incognito: Boolean(tab?.incognito) };
   }
   if (!hasCurrentConsent(localState)) {
-    return { status: "consent-required", settings, hostname, language: "", targetLanguage, consented: false };
+    return { status: "consent-required", settings, hostname, language: "", targetLanguage, consented: false, incognito: Boolean(tab?.incognito) };
   }
 
   if (inject || await hasPagePermission(url)) await ensureContentScript(tabId).catch(() => {});
@@ -175,7 +181,12 @@ async function inspectTab(tabId, tab, { inject = false } = {}) {
     targetLanguage,
     metadata,
     languageMismatch: resolved.mismatch,
-    consented: true
+    consented: true,
+    incognito: Boolean(tab?.incognito),
+    externalProviders: externalProvidersForConfiguration(settings, localState).map((provider) => ({
+      provider,
+      consented: hasProviderConsent(localState, provider)
+    }))
   };
 }
 
@@ -282,6 +293,16 @@ async function translateOnDevice(texts, sourceLanguage, targetLanguage) {
   return response.translations;
 }
 
+async function onDeviceAvailability(sourceLanguage, targetLanguage) {
+  await ensureOffscreenDocument();
+  return chrome.runtime.sendMessage({
+    target: "offscreen",
+    type: "on-device-availability",
+    sourceLanguage,
+    targetLanguage
+  });
+}
+
 async function providerConfig(settings, localState, signal) {
   return {
     providerMode: settings.providerMode,
@@ -289,6 +310,9 @@ async function providerConfig(settings, localState, signal) {
     googleCloudApiKey: localState.googleCloudApiKey,
     libreTranslateEndpoint: localState.libreTranslateEndpoint,
     libreTranslateApiKey: localState.libreTranslateApiKey,
+    deepLApiKey: localState.deepLApiKey,
+    deepLApiPlan: settings.deepLApiPlan,
+    allowedExternalProviders: EXTERNAL_PROVIDER_MODES.filter((provider) => hasProviderConsent(localState, provider)),
     glossary: settings.glossary,
     neverTranslateTerms: settings.neverTranslateTerms,
     signal,
@@ -329,10 +353,10 @@ function createContextMenus() {
 }
 
 chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
-  const stored = await chrome.storage.sync.get(DEFAULT_SETTINGS);
-  const normalized = normalizeSettings(stored);
+  await restrictStorageAccess();
+  const normalized = normalizeSettings(await migrateSettingsStorage());
   if (reason === "install") normalized.targetLanguage = suggestedTargetLanguage(chrome.i18n.getUILanguage());
-  await chrome.storage.sync.set(normalized);
+  await saveSettings(normalized);
   await chrome.storage.sync.remove("openInNewTab");
   const localState = await chrome.storage.local.get(DEFAULT_LOCAL_STATE);
   await chrome.storage.local.set({ ...DEFAULT_LOCAL_STATE, ...localState });
@@ -345,12 +369,12 @@ chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  refreshRuntimeState().then(syncRegisteredContentScript).catch(() => {});
+  restrictStorageAccess().then(refreshRuntimeState).then(syncRegisteredContentScript).catch(() => {});
   createContextMenus();
 });
 
 chrome.storage.onChanged.addListener((_changes, areaName) => {
-  if (!["sync", "local"].includes(areaName)) return;
+  if (!["sync", "local", "session"].includes(areaName)) return;
   refreshRuntimeState().then(syncRegisteredContentScript).catch(() => {});
 });
 
@@ -444,6 +468,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
       return { status: "ok", engine: result.engine, sample: result.translations[0] };
     }
+    if (message.type === "get-on-device-availability") {
+      return onDeviceAvailability(
+        normalizeLanguageCode(message.sourceLanguage) || "en",
+        normalizeLanguageCode(message.targetLanguage) || "fr"
+      );
+    }
+    if (message.type === "on-device-download-progress") {
+      return { status: "recorded" };
+    }
     if (message.type === "get-diagnostics") {
       const { settings, localState } = await runtimeState();
       return {
@@ -457,8 +490,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           providerMode: settings.providerMode,
           providerCredentialsConfigured: {
             googleCloud: Boolean(localState.googleCloudApiKey),
-            libreTranslate: Boolean(localState.libreTranslateEndpoint)
+            libreTranslate: Boolean(localState.libreTranslateEndpoint),
+            deepL: Boolean(localState.deepLApiKey)
           },
+          providerConsents: Object.fromEntries(EXTERNAL_PROVIDER_MODES.map((provider) => [provider, hasProviderConsent(localState, provider)])),
+          providerCredentialsPersistence: localState.rememberProviderCredentials ? "this-device" : "browser-session",
+          siteRulesStorage: "local-only",
           allSitesPermission: await hasOrigins(ALL_SITE_ORIGINS),
           rules: {
             excludedLanguageCount: settings.excludedLanguages.length,

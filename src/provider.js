@@ -3,6 +3,11 @@ const GOOGLE_WEB_ENDPOINTS = Object.freeze([
   "https://translate.google.com/translate_a/single"
 ]);
 const GOOGLE_CLOUD_ENDPOINT = "https://translation.googleapis.com/language/translate/v2";
+const DEEPL_ENDPOINTS = Object.freeze({
+  free: "https://api-free.deepl.com/v2/translate",
+  pro: "https://api.deepl.com/v2/translate"
+});
+const EXTERNAL_ENGINES = new Set(["google-cloud", "libretranslate", "deepl", "google-web"]);
 const CACHE_LIMIT = 2500;
 const MAX_BATCH_CHARACTERS = 2800;
 const MAX_BATCH_ITEMS = 32;
@@ -147,6 +152,18 @@ export function parseLibreTranslations(payload, expectedCount) {
     throw new TranslationProviderError("LibreTranslate returned an incomplete translation.", { code: "invalid-response" });
   }
   return values;
+}
+
+export function parseDeepLTranslations(payload, expectedCount) {
+  const values = payload?.translations;
+  if (!Array.isArray(values) || values.length !== expectedCount) {
+    throw new TranslationProviderError("DeepL returned an incomplete translation.", { code: "invalid-response" });
+  }
+  const translations = values.map((item) => String(item?.text || ""));
+  if (translations.some((item) => !item)) {
+    throw new TranslationProviderError("DeepL returned an empty translation.", { code: "invalid-response" });
+  }
+  return translations;
 }
 
 function marker(index) {
@@ -318,16 +335,56 @@ async function translateLibre(texts, sourceLanguage, targetLanguage, endpoint, a
   return parseLibreTranslations(payload, texts.length);
 }
 
+function deepLLanguage(code, { target = false } = {}) {
+  const normalized = String(code || "").replace("_", "-").toUpperCase();
+  if (!normalized || normalized === "AUTO") return "";
+  if (target && normalized === "EN") return "EN-GB";
+  if (target && normalized === "PT") return "PT-PT";
+  if (normalized === "ZH-CN" || normalized === "ZH-TW") return "ZH";
+  return normalized.split("-")[0];
+}
+
+async function translateDeepL(texts, sourceLanguage, targetLanguage, apiKey, apiPlan, options) {
+  if (!apiKey) throw new TranslationProviderError("A DeepL API key is required.", { code: "missing-credential", retryable: false });
+  const endpoint = DEEPL_ENDPOINTS[apiPlan === "pro" ? "pro" : "free"];
+  const body = new URLSearchParams();
+  for (const text of texts) body.append("text", text);
+  body.set("target_lang", deepLLanguage(targetLanguage, { target: true }));
+  const source = deepLLanguage(sourceLanguage);
+  if (source) body.set("source_lang", source);
+  const payload = await requestJson(endpoint, {
+    method: "POST",
+    headers: {
+      authorization: `DeepL-Auth-Key ${apiKey}`,
+      "content-type": "application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    body: body.toString(),
+    credentials: "omit",
+    cache: "no-store"
+  }, options);
+  return parseDeepLTranslations(payload, texts.length);
+}
+
 function providerCandidates(config) {
   const requested = config.providerMode || "auto";
+  const allowedExternal = config.allowedExternalProviders
+    ? new Set(config.allowedExternalProviders)
+    : EXTERNAL_ENGINES;
+  if (EXTERNAL_ENGINES.has(requested) && !allowedExternal.has(requested)) {
+    throw new TranslationProviderError("Confirm this provider's page-text disclosure in Settings before using it.", { code: "provider-consent-required", retryable: false });
+  }
   if (requested !== "auto") {
-    return [requested, ...(config.allowGoogleWebFallback && requested !== "google-web" ? ["google-web"] : [])];
+    return [
+      requested,
+      ...(config.allowGoogleWebFallback && requested !== "google-web" && allowedExternal.has("google-web") ? ["google-web"] : [])
+    ];
   }
   return [
     "on-device",
-    ...(config.googleCloudApiKey ? ["google-cloud"] : []),
-    ...(config.libreTranslateEndpoint ? ["libretranslate"] : []),
-    ...(config.allowGoogleWebFallback ? ["google-web"] : [])
+    ...(config.googleCloudApiKey && allowedExternal.has("google-cloud") ? ["google-cloud"] : []),
+    ...(config.libreTranslateEndpoint && allowedExternal.has("libretranslate") ? ["libretranslate"] : []),
+    ...(config.deepLApiKey && allowedExternal.has("deepl") ? ["deepl"] : []),
+    ...(config.allowGoogleWebFallback && allowedExternal.has("google-web") ? ["google-web"] : [])
   ];
 }
 
@@ -339,6 +396,7 @@ async function runProvider(engine, texts, config) {
   }
   if (engine === "google-cloud") return translateGoogleCloud(texts, config.sourceLanguage, config.targetLanguage, config.googleCloudApiKey, common);
   if (engine === "libretranslate") return translateLibre(texts, config.sourceLanguage, config.targetLanguage, config.libreTranslateEndpoint, config.libreTranslateApiKey, common);
+  if (engine === "deepl") return translateDeepL(texts, config.sourceLanguage, config.targetLanguage, config.deepLApiKey, config.deepLApiPlan, common);
   if (engine === "google-web") return translateGoogleWeb(texts, config.sourceLanguage, config.targetLanguage, common);
   throw new TranslationProviderError(`Unknown translation provider: ${engine}`, { code: "invalid-provider", retryable: false });
 }

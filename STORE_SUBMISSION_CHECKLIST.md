@@ -8,9 +8,13 @@
 ## Engineering gate
 
 - [ ] `npm ci`
-- [ ] `npm run validate:full`
+- [ ] `npm run validate`
 - [ ] `npm run store:assets`
 - [ ] `npm run package`
+- [ ] `npm run package:verify`
+- [ ] `npm run checksums`
+- [ ] Exact packaged ZIP passes `npm run test:e2e`
+- [ ] `npm run audit`
 - [ ] Manual Brave stable matrix complete
 - [ ] Manual Chrome stable matrix complete
 - [ ] No secrets or test-only code in ZIP
@@ -22,6 +26,8 @@
 - [ ] Single-purpose statement copied from `STORE_LISTING.md`
 - [ ] Every permission justified exactly
 - [ ] Website content disclosed
+- [ ] Authentication information disclosed for user-supplied provider credentials
+- [ ] `DATA_MAP.md`, Privacy Practices form, privacy policy and UI match
 - [ ] Local browsing-hostname handling disclosed truthfully
 - [ ] Remote code set to No
 - [ ] Limited Use certifications completed
@@ -52,7 +58,9 @@
 
 - [ ] Exact Git commit recorded
 - [ ] Release ZIP checksum recorded
+- [ ] GitHub build-provenance attestation generated
 - [ ] GitHub release published
 - [ ] Web Store package uploaded from the verified release artifact
+- [ ] Protected submission workflow used with `skipReview: false` and `blockOnWarnings: true`, or equivalent dashboard checks completed manually
 - [ ] Review emails monitored
 - [ ] Rollback version and incident process ready

@@ -1,0 +1,42 @@
+name: Nightly browser compatibility
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, chrome, brave]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        if: matrix.browser == 'chromium'
+        run: npx playwright install --with-deps chromium
+      - name: Install Google Chrome
+        if: matrix.browser == 'chrome'
+        run: npx playwright install --with-deps chrome
+      - name: Install Brave stable
+        if: matrix.browser == 'brave'
+        run: |
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt-get update
+          sudo apt-get install -y brave-browser xvfb
+      - name: Run extension suite
+        env:
+          BAPT_BROWSER_EXECUTABLE: ${{ matrix.browser == 'chrome' && '/usr/bin/google-chrome' || matrix.browser == 'brave' && '/usr/bin/brave-browser' || '' }}
+        run: xvfb-run -a npm run test:e2e
