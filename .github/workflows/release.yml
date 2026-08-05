@@ -4,11 +4,18 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - "release/v*"
 
 permissions:
   contents: write
+  actions: write
   id-token: write
   attestations: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -27,8 +34,22 @@ jobs:
       - name: Install development dependencies
         run: npm ci
 
-      - name: Verify tag matches the manifest version
-        run: test "$GITHUB_REF_NAME" = "v$(node -p 'require(\"./manifest.json\").version')"
+      - name: Resolve immutable release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            RELEASE_TAG="$GITHUB_REF_NAME"
+            RELEASE_MODE="tag"
+          elif [[ "$GITHUB_REF_NAME" == release/v* ]]; then
+            RELEASE_TAG="${GITHUB_REF_NAME#release/}"
+            RELEASE_MODE="branch"
+          else
+            echo "Unsupported release ref: $GITHUB_REF" >&2
+            exit 1
+          fi
+          test "$RELEASE_TAG" = "v$(node -p 'require(\"./manifest.json\").version')"
+          printf 'RELEASE_TAG=%s\nRELEASE_MODE=%s\n' "$RELEASE_TAG" "$RELEASE_MODE" >> "$GITHUB_ENV"
 
       - name: Validate, audit, package, and inspect
         run: npm run validate && npm run audit && npm run package && npm run package:verify && npm run checksums
@@ -51,8 +72,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS dist/sbom.cdx.json --clobber
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/*.zip dist/SHA256SUMS dist/sbom.cdx.json --clobber
+          elif [[ "$RELEASE_MODE" == "tag" ]]; then
+            gh release create "$RELEASE_TAG" dist/*.zip dist/SHA256SUMS dist/sbom.cdx.json --verify-tag --generate-notes --title "Brave Auto Page Translator $RELEASE_TAG"
           else
-            gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS dist/sbom.cdx.json --verify-tag --generate-notes --title "Brave Auto Page Translator $GITHUB_REF_NAME"
+            gh release create "$RELEASE_TAG" dist/*.zip dist/SHA256SUMS dist/sbom.cdx.json --target "$GITHUB_SHA" --generate-notes --title "Brave Auto Page Translator $RELEASE_TAG"
           fi
+
+      - name: Queue protected staged Chrome Web Store submission
+        if: startsWith(github.ref, 'refs/heads/release/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run chrome-web-store.yml --ref main --field release_tag="$RELEASE_TAG" --field publish_type=STAGED_PUBLISH
