@@ -214,7 +214,7 @@ test("falls back when on-device translation is unavailable", async () => {
 
 test("automatic mode falls through a failed official provider to an approved custom provider", async () => {
   const fakeFetch = async (url) => {
-    if (String(url).includes("translation.googleapis.com")) {
+    if (new URL(url).hostname === "translation.googleapis.com") {
       return {
         ok: false,
         status: 401,
