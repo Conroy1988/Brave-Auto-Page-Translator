@@ -112,20 +112,22 @@ writePng("screenshot-2-automatic-rules-1280x800", 1280, 800, `
   <rect x="858" y="273" width="242" height="49" rx="24" fill="#2c283a"/>${text(979, 304, "No all-site access", 14, 700, "#c9c5d7", "middle")}
   <rect x="108" y="395" width="500" height="132" rx="18" fill="#22202d" stroke="#3b3648"/>${text(142, 435, "Approved websites", 18, 700)}${text(142, 468, "Grant narrow access one site at a time", 14, 500, "#aba7b6")}<rect x="142" y="486" width="180" height="28" rx="14" fill="#173a37"/>${text(232, 505, "news.example.com", 12, 700, "#69d7c8", "middle")}
   <rect x="640" y="395" width="500" height="132" rx="18" fill="#22202d" stroke="#3b3648"/>${text(674, 435, "Every website", 18, 700)}${text(674, 468, "Optional permission, requested only by choice", 14, 500, "#aba7b6")}<rect x="674" y="486" width="174" height="28" rx="14" fill="#332d51"/>${text(761, 505, "Opt-in permission", 12, 700, "#c7c1ff", "middle")}
-  <rect x="108" y="565" width="1032" height="103" rx="18" fill="#131f21" stroke="#285d57"/>${text(142, 605, "Sensitive-page safeguard", 17, 700, "#69d7c8")}${text(142, 636, "Password and payment forms pause automatic translation until you click.", 14, 500, "#c4c0ce")}
+  <rect x="108" y="565" width="1032" height="103" rx="18" fill="#131f21" stroke="#285d57"/>${text(142, 605, "Sensitive-page safeguard", 17, 700, "#69d7c8")}${text(142, 636, "Sign-in and payment pages pause automatically; form values are never read.", 14, 500, "#c4c0ce")}
 `);
 
 writePng("screenshot-3-providers-1280x800", 1280, 800, `
-  ${screenshotHeader(3, "Choose how text is translated", "Prefer on-device translation, connect an official API, or use your LibreTranslate server.")}
+  ${screenshotHeader(3, "Choose how text is translated", "Prefer on-device translation or explicitly approve an official or custom provider.")}
   <rect x="68" y="151" width="1144" height="566" rx="28" fill="#171622" stroke="#363141"/>
-  ${text(108, 205, "02", 16, 800, "#9588ff")}${text(151, 207, "Translation provider", 25, 800)}<rect x="910" y="178" width="250" height="35" rx="17" fill="#173a37"/>${text(1035, 201, "Secrets stay on this device", 12, 700, "#69d7c8", "middle")}
+  ${text(108, 205, "02", 16, 800, "#9588ff")}${text(151, 207, "Translation provider", 25, 800)}<rect x="870" y="178" width="290" height="35" rx="17" fill="#173a37"/>${text(1015, 201, "Keys are session-only by default", 12, 700, "#69d7c8", "middle")}
   <rect x="108" y="248" width="1032" height="76" rx="18" fill="#28243a" stroke="#6d5dfc"/><circle cx="143" cy="286" r="12" fill="#6d5dfc"/><circle cx="143" cy="286" r="5" fill="white"/>${text(176, 284, "Automatic provider selection", 18, 700)}${text(176, 308, "On-device first, then configured providers and optional fallback", 13, 500, "#aaa6b7")}
   ${[
-    ["On-device Translator", "Page text remains on your device where the browser supports it", "#25c7aa"],
-    ["Google Cloud Translation", "Your API key, supported API, your quota and billing", "#8b7cff"],
-    ["LibreTranslate", "Connect your own HTTPS endpoint and optional key", "#4ca6ff"],
-    ["Compatibility fallback", "Clearly disclosed and individually switchable", "#f0a34a"]
-  ].map(([title, detail, color], i) => `<rect x="${108 + (i % 2) * 520}" y="${351 + Math.floor(i / 2) * 145}" width="500" height="119" rx="18" fill="#22202d" stroke="#3b3648"/><circle cx="${145 + (i % 2) * 520}" cy="${390 + Math.floor(i / 2) * 145}" r="10" fill="${color}"/>${text(170 + (i % 2) * 520, 394 + Math.floor(i / 2) * 145, title, 17, 700)}${text(145 + (i % 2) * 520, 430 + Math.floor(i / 2) * 145, detail, 13, 500, "#aaa6b7")}`).join("")}
+    ["On-device Translator", "Text stays on-device where supported", "#25c7aa"],
+    ["Google Cloud Translation", "Optional user-supplied API key", "#8b7cff"],
+    ["DeepL API", "Official Free and Pro API endpoints", "#ff6f61"],
+    ["LibreTranslate", "Your own HTTPS endpoint", "#4ca6ff"],
+    ["Compatibility fallback", "Off by default and separately approved", "#f0a34a"],
+    ["Provider-specific consent", "No external route is silently enabled", "#69d7c8"]
+  ].map(([title, detail, color], i) => `<rect x="${108 + (i % 2) * 520}" y="${345 + Math.floor(i / 2) * 108}" width="500" height="88" rx="18" fill="#22202d" stroke="#3b3648"/><circle cx="${145 + (i % 2) * 520}" cy="${375 + Math.floor(i / 2) * 108}" r="9" fill="${color}"/>${text(170 + (i % 2) * 520, 379 + Math.floor(i / 2) * 108, title, 16, 700)}${text(145 + (i % 2) * 520, 412 + Math.floor(i / 2) * 108, detail, 12, 500, "#aaa6b7")}`).join("")}
 `);
 
 writePng("screenshot-4-live-pages-1280x800", 1280, 800, `
@@ -143,10 +145,10 @@ writePng("screenshot-5-privacy-1280x800", 1280, 800, `
   <rect x="68" y="151" width="1144" height="566" rx="28" fill="#171622" stroke="#363141"/>
   ${icon(108, 194, 74)}${text(205, 219, "INDEPENDENT EXTENSION", 13, 800, "#9588ff")}${text(205, 256, "Translation on your terms.", 29, 800)}
   <rect x="108" y="301" width="1032" height="184" rx="20" fill="#22202d" stroke="#3b3648"/>${text(142, 342, "PRIVACY CHECKPOINT", 13, 800, "#69d7c8")}
-  ${text(142, 380, "External providers receive selected readable page text over HTTPS.", 18, 700)}${text(142, 414, "No analytics, advertising or developer-operated translation server.", 16, 500, "#b8b4c3")}${text(142, 447, "URLs, cookies, passwords, editable form entries, HTML, images and files are excluded.", 16, 500, "#b8b4c3")}
+  ${text(142, 380, "External providers receive selected readable page text only after approval.", 18, 700)}${text(142, 414, "No analytics, advertising or developer-operated translation server.", 16, 500, "#b8b4c3")}${text(142, 447, "Website passwords, PINs, login fields, payment details and cookies are never read.", 16, 500, "#b8b4c3")}
   <rect x="142" y="513" width="28" height="28" rx="6" fill="#6d5dfc"/><path d="m149 527 6 6 10-13" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/>${text(186, 534, "I understand and agree when I request or enable translation", 16, 600)}
   <rect x="811" y="611" width="329" height="58" rx="18" fill="#6d5dfc"/>${text(976, 648, "Accept and finish setup", 17, 700, "white", "middle")}
-  ${text(108, 647, "Clear provider disclosure", 14, 700, "#c7c1ff")}${text(108, 673, "Versioned consent • local credentials • optional website access", 13, 500, "#aaa6b7")}
+  ${text(108, 647, "Clear provider disclosure", 14, 700, "#c7c1ff")}${text(108, 673, "Versioned consent • session-only keys • optional website access", 13, 500, "#aaa6b7")}
 `);
 
 rmSync(temporary, { recursive: true, force: true });

@@ -1,0 +1,76 @@
+name: Submit verified release to Chrome Web Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing GitHub release tag to submit (for example v1.1.0)
+        required: true
+        type: string
+      publish_type:
+        description: Stage after approval or publish automatically after approval
+        required: true
+        default: STAGED_PUBLISH
+        type: choice
+        options:
+          - STAGED_PUBLISH
+          - DEFAULT_PUBLISH
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: chrome-web-store
+    env:
+      CWS_ITEM_ID: pilpighhgdglgngmakjepoadacbhpoeo
+      CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.release_tag }}
+
+      - name: Download immutable release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          test "$(gh release view "$RELEASE_TAG" --json isPrerelease --jq .isPrerelease)" = "false"
+          gh release download "$RELEASE_TAG" --pattern '*.zip' --pattern SHA256SUMS --dir dist
+          test "$(find dist -name '*.zip' | wc -l)" -eq 1
+          (cd dist && sha256sum -c SHA256SUMS)
+          node scripts/verify-package.mjs "$(find dist -name '*.zip' -print -quit)"
+
+      - name: Authenticate as the dedicated Web Store service account
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          credentials_json: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/chromewebstore
+
+      - name: Upload package and block on every warning
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          PUBLISH_TYPE: ${{ inputs.publish_type }}
+        run: |
+          test -n "$CWS_PUBLISHER_ID"
+          ZIP_PATH="$(find dist -name '*.zip' -print -quit)"
+          RESOURCE="publishers/$CWS_PUBLISHER_ID/items/$CWS_ITEM_ID"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Authorization: Bearer $ACCESS_TOKEN" \
+            --header 'Content-Type: application/zip' \
+            --data-binary "@$ZIP_PATH" \
+            "https://chromewebstore.googleapis.com/upload/v2/$RESOURCE:upload" > upload-response.json
+          jq -e --arg item "$CWS_ITEM_ID" '.itemId == $item and (.state | type == "string")' upload-response.json
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Authorization: Bearer $ACCESS_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data "$(jq -cn --arg publishType "$PUBLISH_TYPE" '{publishType:$publishType,skipReview:false,blockOnWarnings:true}')" \
+            "https://chromewebstore.googleapis.com/v2/$RESOURCE:publish" > publish-response.json
+          jq -e --arg item "$CWS_ITEM_ID" '.itemId == $item and (.state | type == "string")' publish-response.json
+          jq '{itemId, state, warningInfo}' publish-response.json

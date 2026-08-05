@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Auto Page Translator — Settings</title>
     <link rel="stylesheet" href="options.css">
+    <link rel="stylesheet" href="advanced.css">
   </head>
   <body>
     <main class="shell">
       <header>
         <img src="../icons/icon-128.png" width="72" height="72" alt="">
-        <div><p class="eyebrow">INDEPENDENT AUTO PAGE TRANSLATOR</p><h1>Translation control centre</h1><p class="intro">Control website access, provider privacy, live-page behaviour and every automatic translation rule.</p></div>
+        <div><p class="eyebrow" data-i18n="independentExtension">INDEPENDENT AUTO PAGE TRANSLATOR</p><h1 data-i18n="controlCentre">Translation control centre</h1><p class="intro" data-i18n="controlIntro">Control website access, provider privacy, live-page behaviour and every automatic translation rule.</p></div>
       </header>
 
       <form id="settingsForm">
@@ -20,7 +21,7 @@
         </section>
 
         <section class="card">
-          <div class="card-heading"><div><span class="number">01</span><h2>Access and automatic behaviour</h2></div><label class="switch-row"><input id="enabled" type="checkbox"><span>Automatic translation enabled</span></label></div>
+          <div class="card-heading"><div><span class="number">01</span><h2 data-i18n="accessBehaviour">Access and automatic behaviour</h2></div><label class="switch-row"><input id="enabled" type="checkbox"><span>Automatic translation enabled</span></label></div>
           <div class="grid two">
             <label class="field"><span>Translation mode</span>
               <select id="behaviourMode">
@@ -39,7 +40,7 @@
         </section>
 
         <section class="card">
-          <div class="card-heading"><div><span class="number">02</span><h2>Translation provider</h2></div><span class="local-chip">Secrets stay on this device</span></div>
+          <div class="card-heading"><div><span class="number">02</span><h2 data-i18n="translationProvider">Translation provider</h2></div><span class="local-chip">Secrets stay on this device</span></div>
           <div class="grid two">
             <label class="field"><span>Provider</span>
               <select id="providerMode">
@@ -47,6 +48,7 @@
                 <option value="on-device">Browser on-device translator</option>
                 <option value="google-cloud">Google Cloud Translation</option>
                 <option value="libretranslate">LibreTranslate</option>
+                <option value="deepl">DeepL API</option>
                 <option value="google-web">Google web compatibility service</option>
               </select>
               <small>Automatic tries on-device first, configured official/custom providers next, then the compatibility fallback if enabled.</small>
@@ -54,17 +56,27 @@
             <label class="check-row"><input id="allowGoogleWebFallback" type="checkbox"><span><strong>Allow Google web compatibility fallback</strong><small>Readable page text is sent to Google's web translation service. This endpoint has no published production guarantee.</small></span></label>
           </div>
           <div class="grid two top-gap">
-            <label class="field"><span>Google Cloud API key</span><input id="googleCloudApiKey" type="password" autocomplete="off" placeholder="Stored locally, never synchronized"><small>Uses the supported Cloud Translation Basic API. Billing and quota belong to your Google Cloud project.</small></label>
+            <label class="field"><span>Google Cloud API key</span><input id="googleCloudApiKey" type="password" autocomplete="off" placeholder="Stored for this browser session by default"><small>This is an optional translation-service key—not a website password or PIN. Uses the supported Cloud Translation Basic API.</small></label>
             <div class="stack">
               <label class="field"><span>LibreTranslate endpoint</span><input id="libreTranslateEndpoint" type="url" placeholder="https://translate.example.com/translate"></label>
               <label class="field"><span>LibreTranslate API key (optional)</span><input id="libreTranslateApiKey" type="password" autocomplete="off"></label>
             </div>
           </div>
+          <div class="grid two top-gap">
+            <label class="field"><span>DeepL API key</span><input id="deepLApiKey" type="password" autocomplete="off" placeholder="Stored for this browser session by default"><small>This is an optional translation-service key—not a website password or PIN. It is never placed in the request URL.</small></label>
+            <label class="field"><span>DeepL API plan</span><select id="deepLApiPlan"><option value="free">API Free</option><option value="pro">API Pro</option></select><small>Select the plan that matches your DeepL API account.</small></label>
+          </div>
+          <label class="check-row top-gap"><input id="rememberProviderCredentials" type="checkbox"><span><strong>Remember provider credentials on this device</strong><small>Off by default. When off, keys are kept only in temporary browser-session storage and must be entered again after the browser fully closes.</small></span></label>
+          <div class="provider-disclosure top-gap" id="providerDisclosure" role="region" aria-live="polite">
+            <strong id="providerDisclosureTitle">Provider data route</strong>
+            <p id="providerDisclosureText"></p>
+            <label class="agree"><input id="providerConsent" type="checkbox"><span id="providerConsentLabel">I understand and allow the selected external provider to receive readable page text for translation.</span></label>
+          </div>
           <div class="inline-actions"><button class="ghost" id="testProvider" type="button">Test configured provider</button><span id="providerStatus" role="status"></span></div>
         </section>
 
         <section class="card">
-          <div class="card-heading"><div><span class="number">03</span><h2>Page behaviour and safeguards</h2></div></div>
+          <div class="card-heading"><div><span class="number">03</span><h2 data-i18n="pageSafeguards">Page behaviour and safeguards</h2></div></div>
           <div class="grid two">
             <div class="stack">
               <label class="check-row"><input id="translateDynamicContent" type="checkbox"><span>Translate text added by live and scrolling pages</span></label>
@@ -80,7 +92,7 @@
         </section>
 
         <section class="card">
-          <div class="card-heading"><div><span class="number">04</span><h2>Exclusions and per-site targets</h2></div></div>
+          <div class="card-heading"><div><span class="number">04</span><h2 data-i18n="rulesTargets">Exclusions and per-site targets</h2></div><span class="local-chip">Stored locally on this device</span></div>
           <div class="grid two">
             <label class="field"><span>Languages to leave alone</span><input id="excludedLanguages" type="text" placeholder="fr, de, es"><small>Comma-separated language codes.</small></label>
             <label class="field"><span>Websites to leave alone</span><textarea id="excludedHosts" rows="6" placeholder="example.com&#10;private.example.org"></textarea><small>One hostname per line; rules cover subdomains.</small></label>
@@ -89,11 +101,27 @@
         </section>
 
         <section class="card">
-          <div class="card-heading"><div><span class="number">05</span><h2>Terminology</h2></div><span class="local-chip">No cloud storage beyond translation requests</span></div>
+          <div class="card-heading"><div><span class="number">05</span><h2 data-i18n="terminology">Terminology</h2></div><span class="local-chip">Stored locally on this device</span></div>
           <div class="grid two">
             <label class="field"><span>Custom glossary</span><textarea id="glossary" rows="7" placeholder="MissionChief => MissionChief&#10;Bomberos => Fire Brigade"></textarea><small>One “source term =&gt; preferred result” per line, maximum 200.</small></label>
             <label class="field"><span>Never translate these terms</span><textarea id="neverTranslateTerms" rows="7" placeholder="TKB&#10;Brave"></textarea><small>One word or phrase per line.</small></label>
           </div>
+        </section>
+
+        <section class="card">
+          <div class="card-heading"><div><span class="number">06</span><h2 data-i18n="privacyDashboard">Privacy dashboard</h2></div><span class="local-chip">No analytics or advertising</span></div>
+          <div class="privacy-grid">
+            <div><span>Current text route</span><strong id="privacyRoute">Checking…</strong></div>
+            <div><span>Rules and glossary</span><strong>Local device storage</strong></div>
+            <div><span>Provider credentials</span><strong id="credentialStorage">Browser session only</strong></div>
+            <div><span>Website permission</span><strong id="privacyPermission">Checking…</strong></div>
+          </div>
+          <p class="muted" id="providerConsentSummary"></p>
+        </section>
+
+        <section class="card compact-card">
+          <div><h2 data-i18n="settingsBackup">Settings backup</h2><p class="muted">Export or restore preferences, site rules and glossary entries. Provider credentials and consent records are never included.</p></div>
+          <div class="inline-actions"><button class="ghost" id="exportSettings" type="button">Export settings</button><button class="ghost" id="importSettings" type="button">Import settings</button><input id="settingsFile" type="file" accept="application/json,.json" hidden></div>
         </section>
 
         <section class="notice">
@@ -104,11 +132,12 @@
         </section>
 
         <section class="card compact-card">
-          <div><h2>Local diagnostics</h2><p class="muted">Export versions, configuration counts and error-independent environment details. The report excludes webpage text and URLs.</p></div>
-          <div class="inline-actions"><button class="ghost" id="exportDiagnostics" type="button">Export diagnostic report</button><button class="ghost" id="clearCache" type="button">Clear translation cache</button><button class="danger" id="reset" type="button">Restore default settings</button></div>
+          <div><h2 data-i18n="localDiagnostics">Local diagnostics</h2><p class="muted">Export versions, configuration counts and error-independent environment details. The report excludes webpage text and URLs.</p></div>
+          <div class="inline-actions"><button class="ghost" id="previewDiagnostics" type="button">Preview support report</button><button class="ghost" id="exportDiagnostics" type="button">Export report</button><button class="ghost" id="clearCache" type="button">Clear translation cache</button><button class="danger" id="reset" type="button">Restore default settings</button></div>
+          <div class="support-preview" id="supportPreview" hidden><label class="field"><span>Review before sharing</span><textarea id="diagnosticsPreview" rows="12" readonly></textarea></label><div class="inline-actions"><button class="ghost" id="copyDiagnostics" type="button">Copy report</button><a class="ghost button-link" href="https://github.com/Conroy1988/Brave-Auto-Page-Translator/issues/new/choose" target="_blank" rel="noreferrer">Open GitHub support</a></div></div>
         </section>
 
-        <div class="toolbar"><span id="saveStatus" role="status"></span><button class="primary" type="submit">Save settings</button></div>
+        <div class="toolbar"><span id="saveStatus" role="status"></span><button class="primary" type="submit" data-i18n="saveSettings">Save settings</button></div>
       </form>
     </main>
     <script type="module" src="options.js"></script>

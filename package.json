@@ -1,6 +1,6 @@
 {
   "name": "brave-auto-page-translator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "A configurable automatic webpage translator for Brave and Chromium browsers.",
@@ -11,6 +11,9 @@
     "validate": "node scripts/validate.mjs && npm test",
     "validate:full": "npm run validate && npm run test:e2e",
     "package": "node scripts/package.mjs",
+    "package:verify": "node scripts/verify-package.mjs",
+    "checksums": "node scripts/checksums.mjs",
+    "audit": "npm audit --audit-level=high",
     "store:assets": "node scripts/generate-store-assets.mjs"
   },
   "devDependencies": {

@@ -36,7 +36,9 @@ The extension detects a webpage's primary language and translates readable text 
 - Private-page safeguard for password and payment forms
 - Progress, cancellation, provider status and one-click original restoration
 - Page, selection and keyboard-shortcut commands
-- On-device, Google Cloud, LibreTranslate and disclosed compatibility provider choices
+- On-device, Google Cloud, DeepL API, LibreTranslate and separately disclosed compatibility provider choices
+- Provider-specific consent, session-only credentials by default and a visible privacy dashboard
+- Credential-free settings backup and review-before-sharing support reports
 - No analytics, advertising, telemetry or developer-operated translation server
 
 ## Install from source (development)
@@ -54,7 +56,7 @@ The default mode is manual. Automatic access is requested only when selected by 
 
 ## Provider choices
 
-Automatic provider selection prefers the browser's on-device Translator API where available. A user can configure an official Google Cloud Translation API key or a LibreTranslate server. The current Google web method remains available as a clearly disclosed compatibility fallback rather than the only engine.
+Automatic provider selection prefers the browser's on-device Translator API where available. A user can configure official Google Cloud or DeepL API credentials, or a LibreTranslate server. Every external text route requires its own explicit approval. The Google web method is off by default and remains available only as a clearly disclosed compatibility fallback.
 
 Read [docs/PROVIDER_GUIDE.md](docs/PROVIDER_GUIDE.md) before configuring an external service.
 
@@ -67,13 +69,14 @@ Requires Node.js 20 or newer.
 ```bash
 npm ci
 npm run validate
-npm run test:e2e
 npm run package
+npm run package:verify
+npm run test:e2e
 ```
 
 `npm run validate` checks the Manifest V3 package, JavaScript syntax, icons, minimum permissions, consent architecture, provider boundaries and unit regressions. Playwright tests load the real extension into Chromium against local fixtures with mocked provider responses.
 
-Tags matching `v*` trigger the release workflow, which validates the extension, builds the ZIP and attaches it to a GitHub Release.
+Tags matching `v*` trigger the release workflow, which audits dependencies, validates the extension, tests the exact packaged ZIP, verifies its contents, creates SHA-256 checksums, a CycloneDX dependency inventory and a GitHub build-provenance attestation, then attaches the artifacts to a GitHub Release. A separate protected manual workflow can submit an existing verified release to the Chrome Web Store using its V2 API; review is never skipped and warnings block submission.
 
 ## Keyboard shortcuts
 
@@ -93,6 +96,7 @@ Translation quality and availability depend on the selected provider. The extens
 - [Support and troubleshooting](SUPPORT.md)
 - [Compatibility matrix](docs/COMPATIBILITY.md)
 - [Privacy policy](PRIVACY.md)
+- [User data map](DATA_MAP.md)
 - [Security policy](SECURITY.md)
 - [Changelog](CHANGELOG.md)
 

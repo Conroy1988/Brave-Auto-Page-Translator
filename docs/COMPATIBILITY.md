@@ -10,6 +10,8 @@ Every public release must pass:
 | Chrome stable desktop | Manual, approved-site and all-site modes |
 | Chromium used by Playwright | Automated fixture suite |
 
+The nightly GitHub Actions matrix runs the packaged extension suite against current Chromium, Google Chrome stable and Brave stable. A nightly failure blocks the next release until triaged, but does not automatically publish or roll back a store version.
+
 ## Page fixture coverage
 
 - Static text and whitespace preservation
@@ -25,6 +27,10 @@ Every public release must pass:
 - Original restoration, cancellation and navigation
 - Provider success, malformed response, timeout, offline, HTTP 429 and HTTP 5xx
 - Large-page batching and simultaneous tabs
+- Versioned storage migration and credential-free backup import/export
+- Provider-specific consent and external-provider outage fallback
+- Incognito/manual-only rule non-persistence
+- Popup, onboarding and settings control-name accessibility checks
 
 ## Intentionally unsupported surfaces
 

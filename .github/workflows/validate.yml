@@ -9,47 +9,57 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install development dependencies
         run: npm ci
 
+      - name: Audit high-severity dependency findings
+        run: npm run audit
+
       - name: Validate source and run unit tests
         run: npm run validate
 
-      - name: Install Chromium for extension tests
+      - name: Build and inspect the release ZIP
+        run: npm run package && npm run package:verify && npm run checksums
+
+      - name: Install Chromium for packaged-extension tests
         run: npx playwright install --with-deps chromium
 
-      - name: Run extension browser tests
-        run: xvfb-run -a npm run test:e2e
+      - name: Test the exact packaged extension
+        run: BAPT_E2E_PACKAGE="$(find dist -name '*.zip' -print -quit)" xvfb-run -a npm run test:e2e
 
-      - name: Build extension package
-        run: npm run package
-
-      - name: Verify ZIP archive
-        run: unzip -t dist/*.zip
-
-      - name: Upload extension package
-        uses: actions/upload-artifact@v4
+      - name: Upload verified extension package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: brave-auto-page-translator
-          path: dist/*.zip
+          name: brave-auto-page-translator-${{ github.sha }}
+          path: |
+            dist/*.zip
+            dist/SHA256SUMS
           if-no-files-found: error
+          retention-days: 14
 
       - name: Upload browser-test report on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ github.sha }}
           path: playwright-report/
           if-no-files-found: ignore
+          retention-days: 7

@@ -4,6 +4,7 @@ import {
   clearTranslationCache,
   groupTranslationTexts,
   joinTranslationBatch,
+  parseDeepLTranslations,
   parseGoogleCloudTranslations,
   parseGoogleTranslation,
   parseLibreTranslations,
@@ -29,6 +30,7 @@ test("parses provider response formats", () => {
   assert.equal(parseGoogleTranslation([[['Hello ', 'Hola '], ['world', 'mundo']], null, 'es']), "Hello world");
   assert.deepEqual(parseGoogleCloudTranslations({ data: { translations: [{ translatedText: "Hello" }] } }, 1), ["Hello"]);
   assert.deepEqual(parseLibreTranslations({ translatedText: ["Hello", "Goodbye"] }, 2), ["Hello", "Goodbye"]);
+  assert.deepEqual(parseDeepLTranslations({ translations: [{ text: "Hello" }, { text: "Goodbye" }] }, 2), ["Hello", "Goodbye"]);
 });
 
 test("joins and restores ordered translation batches", () => {
@@ -149,6 +151,43 @@ test("uses a configured LibreTranslate endpoint", async () => {
   assert.deepEqual(result, { translations: ["Hello"], engine: "libretranslate" });
 });
 
+test("uses the official DeepL API without exposing the key in the URL", async () => {
+  const fakeFetch = async (url, options) => {
+    assert.equal(url, "https://api-free.deepl.com/v2/translate");
+    assert.equal(options.headers.authorization, "DeepL-Auth-Key local-deepl-key");
+    assert.doesNotMatch(url, /local-deepl-key/);
+    const body = new URLSearchParams(options.body);
+    assert.deepEqual(body.getAll("text"), ["Hola", "Adiós"]);
+    assert.equal(body.get("target_lang"), "EN-GB");
+    return {
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      async json() { return { translations: [{ text: "Hello" }, { text: "Goodbye" }] }; }
+    };
+  };
+  const result = await translateTexts(["Hola", "Adiós"], {
+    sourceLanguage: "es",
+    targetLanguage: "en",
+    providerMode: "deepl",
+    deepLApiKey: "local-deepl-key",
+    deepLApiPlan: "free",
+    allowGoogleWebFallback: false,
+    fetchImpl: fakeFetch
+  });
+  assert.deepEqual(result, { translations: ["Hello", "Goodbye"], engine: "deepl" });
+});
+
+test("blocks an external provider until its provider-specific disclosure is accepted", async () => {
+  await assert.rejects(() => translateTexts(["Hola"], {
+    sourceLanguage: "es",
+    targetLanguage: "en",
+    providerMode: "google-web",
+    allowedExternalProviders: [],
+    fetchImpl: async () => responseFor("Hello")
+  }), (error) => error.code === "provider-consent-required");
+});
+
 test("rejects provider credentials embedded in a custom endpoint URL", async () => {
   await assert.rejects(() => translateTexts(["Hola"], {
     sourceLanguage: "es",
@@ -171,6 +210,37 @@ test("falls back when on-device translation is unavailable", async () => {
     fetchImpl: fakeFetch
   });
   assert.deepEqual(result, { translations: ["Hello"], engine: "google-web" });
+});
+
+test("automatic mode falls through a failed official provider to an approved custom provider", async () => {
+  const fakeFetch = async (url) => {
+    if (new URL(url).hostname === "translation.googleapis.com") {
+      return {
+        ok: false,
+        status: 401,
+        headers: { get: () => null },
+        async json() { return { error: { message: "invalid test key" } }; }
+      };
+    }
+    assert.equal(url, "https://translate.example.test/translate");
+    return {
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      async json() { return { translatedText: ["Hello"] }; }
+    };
+  };
+  const result = await translateTexts(["Hola"], {
+    sourceLanguage: "es",
+    targetLanguage: "en",
+    providerMode: "auto",
+    googleCloudApiKey: "invalid-test-key",
+    libreTranslateEndpoint: "https://translate.example.test/translate",
+    allowedExternalProviders: ["google-cloud", "libretranslate"],
+    onDeviceTranslate: async () => { throw new Error("not supported"); },
+    fetchImpl: fakeFetch
+  });
+  assert.deepEqual(result, { translations: ["Hello"], engine: "libretranslate" });
 });
 
 test("cancels a translation before a request starts", async () => {

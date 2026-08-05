@@ -1,13 +1,20 @@
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { extractZip } from "./zip-utils.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const target = path.join(root, ".e2e-extension");
 const entries = ["src", "popup", "options", "onboarding", "offscreen", "_locales", "icons"];
+const packagedExtension = process.env.BAPT_E2E_PACKAGE;
 
 rmSync(target, { recursive: true, force: true });
 mkdirSync(target, { recursive: true });
-for (const entry of entries) cpSync(path.join(root, entry), path.join(target, entry), { recursive: true });
+if (packagedExtension) {
+  const archive = path.resolve(root, packagedExtension);
+  extractZip(archive, target);
+} else {
+  for (const entry of entries) cpSync(path.join(root, entry), path.join(target, entry), { recursive: true });
+}
 
 const manifest = JSON.parse(readFileSync(path.join(root, "manifest.json"), "utf8"));
 manifest.host_permissions = [...new Set([

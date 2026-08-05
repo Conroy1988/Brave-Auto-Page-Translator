@@ -41,18 +41,13 @@ async function configure({ consent = true, behaviourMode = "manual" } = {}) {
   await harness.evaluate(async ({ consent, behaviourMode, endpoint }) => {
     await chrome.storage.sync.clear();
     await chrome.storage.local.clear();
+    await chrome.storage.session.clear();
     await chrome.storage.sync.set({
       enabled: true,
       behaviourMode,
       targetLanguage: "en",
       providerMode: "libretranslate",
       allowGoogleWebFallback: false,
-      excludedLanguages: [],
-      excludedHosts: [],
-      approvedHosts: [],
-      siteTargetLanguages: {},
-      glossary: [],
-      neverTranslateTerms: [],
       translateDynamicContent: true,
       translateAttributes: false,
       sensitivePageMode: "manual",
@@ -61,12 +56,22 @@ async function configure({ consent = true, behaviourMode = "manual" } = {}) {
       showBadge: true
     });
     await chrome.storage.local.set({
-      privacyConsentVersion: consent ? 1 : 0,
+      privacyConsentVersion: consent ? 2 : 0,
       privacyConsentAt: consent ? new Date().toISOString() : "",
+      providerConsents: consent ? { libretranslate: new Date().toISOString() } : {},
+      rememberProviderCredentials: false,
+      settingsSchemaVersion: 2,
+      excludedLanguages: [],
+      excludedHosts: [],
+      approvedHosts: [],
+      siteTargetLanguages: {},
+      glossary: [],
+      neverTranslateTerms: [],
       googleCloudApiKey: "",
-      libreTranslateEndpoint: endpoint,
+      libreTranslateEndpoint: "",
       libreTranslateApiKey: ""
     });
+    await chrome.storage.session.set({ libreTranslateEndpoint: endpoint, libreTranslateApiKey: "" });
     await chrome.runtime.sendMessage({ type: "refresh-settings" });
   }, { consent, behaviourMode, endpoint: `${baseUrl}/translate` });
 }
@@ -95,6 +100,9 @@ test.beforeAll(async () => {
     if (url.pathname === "/frames") {
       return send(response, "<!doctype html><html lang='es'><body><h1>Hola mundo</h1><iframe id='srcdoc' srcdoc=\"<html lang='es'><body><p id='srcdoc-text'>Marco srcdoc</p></body></html>\"></iframe></body></html>");
     }
+    if (url.pathname === "/large") {
+      return send(response, `<!doctype html><html lang="es"><body>${Array.from({ length: 120 }, (_, index) => `<p id="row-${index}">Hola mundo ${index}</p>`).join("")}</body></html>`);
+    }
     return send(response, `<!doctype html><html lang="es"><body>
       <h1 id="headline">Hola mundo</h1>
       <button id="action">Texto del botón</button>
@@ -113,6 +121,7 @@ test.beforeAll(async () => {
   profileDirectory = mkdtempSync(path.join(tmpdir(), "bapt-e2e-profile-"));
   context = await chromium.launchPersistentContext(profileDirectory, {
     headless: false,
+    executablePath: process.env.BAPT_BROWSER_EXECUTABLE || undefined,
     args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`]
   });
   const worker = context.serviceWorkers()[0] || await context.waitForEvent("serviceworker");
@@ -197,4 +206,45 @@ test("pauses automatic translation on password forms", async () => {
   expect(inspection.status).toBe("sensitive-page");
   await expect(page.locator("#private-title")).toHaveText("Cuenta privada");
   await page.close();
+});
+
+test("translates a large page within a bounded time and preserves every section", async () => {
+  const page = await context.newPage();
+  await page.goto(`${baseUrl}/large`);
+  await page.bringToFront();
+  const tabId = await harness.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
+  const started = Date.now();
+  const result = await backgroundMessage({ type: "translate-now", tabId });
+  expect(result.status).toBe("translated");
+  expect(Date.now() - started).toBeLessThan(15_000);
+  await expect(page.locator("#row-0")).toContainText("Hello world");
+  await expect(page.locator("#row-119")).toContainText("Hello world");
+  await page.close();
+});
+
+test("popup and onboarding controls have accessible names and unique IDs", async () => {
+  const worker = context.serviceWorkers()[0];
+  const extensionId = new URL(worker.url()).host;
+  for (const pathName of ["popup/popup.html", "onboarding/onboarding.html", "options/options.html"]) {
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/${pathName}`);
+    const issues = await page.evaluate(() => {
+      const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);
+      const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
+      const unnamed = [...document.querySelectorAll("button, a, input, select, textarea")]
+        .filter((element) => {
+          if (element.type === "hidden" || element.hidden) return false;
+          const label = element.labels?.[0]?.textContent || element.getAttribute("aria-label") || element.textContent || element.title;
+          return !String(label || "").trim();
+        })
+        .map((element) => ({
+          tag: element.tagName.toLowerCase(),
+          id: element.id,
+          type: element.getAttribute("type") || ""
+        }));
+      return { duplicateIds, unnamed };
+    });
+    expect(issues).toEqual({ duplicateIds: [], unnamed: [] });
+    await page.close();
+  }
 });
