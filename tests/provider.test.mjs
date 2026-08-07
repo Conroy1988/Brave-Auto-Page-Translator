@@ -65,7 +65,7 @@ test("keeps private values untouched for the on-device route", async () => {
     targetLanguage: "en",
     providerMode: "on-device",
     includePrivacyMetrics: true,
-    onDeviceTranslate: async (texts) => texts.map((text) => text.replace("Email", "Email"))
+    onDeviceTranslate: async (texts) => texts
   });
   assert.equal(result.privacy.route, "on-device");
   assert.equal(result.privacy.maskedValues, 0);
