@@ -25,7 +25,9 @@ function translate(value) {
     .replaceAll("Cuenta privada", "Private account")
     .replaceAll("Texto temporal", "Temporary text")
     .replaceAll("Texto del botón", "Button text")
-    .replaceAll("Buenos días", "Good morning");
+    .replaceAll("Buenos días", "Good morning")
+    .replaceAll("Hola", "Hello")
+    .replaceAll("mundo", "world");
 }
 
 function send(response, body, contentType = "text/html; charset=utf-8") {
