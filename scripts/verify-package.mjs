@@ -33,3 +33,4 @@ if (failures.length) {
 }
 
 console.log(`Verified ${path.relative(root, archive)}: ${entries.length} files, MV3 ${packagedManifest.version}, no development files, remote code, or recognized secrets.`);
+

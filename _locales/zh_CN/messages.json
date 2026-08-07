@@ -1,0 +1,6 @@
+{
+  "extensionName":{"message":"隐私自动网页翻译器"},"extensionShortName":{"message":"自动翻译器"},"extensionDescription":{"message":"支持上下文翻译、双语阅读、写作翻译、网站规则和隐私防火墙的网页翻译工具。"},
+  "independentExtension":{"message":"独立扩展程序"},"privateWindowNotice":{"message":"无痕窗口：仅可手动翻译。此处不会保存网站和语言规则。"},"translatePagesInto":{"message":"将网页翻译为"},"translateThisPage":{"message":"翻译此网页"},"automaticSite":{"message":"自动翻译此网站"},"neverSite":{"message":"永不翻译此网站"},"neverLanguage":{"message":"永不翻译此语言"},"settingsPrivacy":{"message":"设置和隐私"},
+  "onboardingTitle":{"message":"由你掌控翻译。"},"onboardingIntro":{"message":"选择扩展程序可访问的内容，以及翻译前文本的处理位置。"},"yourLanguage":{"message":"你的语言"},"whenTranslationRuns":{"message":"何时可以运行翻译"},"translationProvider":{"message":"翻译服务提供商"},"privacyCheckpoint":{"message":"隐私确认"},"acceptFinish":{"message":"接受并完成设置"},
+  "controlCentre":{"message":"翻译控制中心"},"controlIntro":{"message":"管理网站访问、提供商隐私、动态网页和自动翻译规则。"},"accessBehaviour":{"message":"访问权限和自动行为"},"pageSafeguards":{"message":"网页行为和保护措施"},"rulesTargets":{"message":"排除项和网站目标语言"},"terminology":{"message":"术语"},"privacyDashboard":{"message":"隐私面板"},"settingsBackup":{"message":"设置备份"},"localDiagnostics":{"message":"本地诊断"},"saveSettings":{"message":"保存设置"}
+}

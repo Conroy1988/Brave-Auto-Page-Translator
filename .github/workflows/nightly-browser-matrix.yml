@@ -40,3 +40,4 @@ jobs:
         env:
           BAPT_BROWSER_EXECUTABLE: ${{ matrix.browser == 'chrome' && '/usr/bin/google-chrome' || matrix.browser == 'brave' && '/usr/bin/brave-browser' || '' }}
         run: xvfb-run -a npm run test:e2e
+

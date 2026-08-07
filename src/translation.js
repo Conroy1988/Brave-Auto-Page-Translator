@@ -98,10 +98,32 @@ export function resolvePageLanguage(detectedLanguage, declaredLanguage) {
 }
 
 export function targetLanguageForHost(hostname, settings) {
+  const profile = siteProfileForHost(hostname, settings);
+  if (profile?.targetLanguage) return profile.targetLanguage;
   for (const [rule, language] of Object.entries(settings.siteTargetLanguages || {})) {
     if (hostMatchesRule(hostname, rule)) return language;
   }
   return settings.targetLanguage;
+}
+
+export function siteProfileForHost(hostname, settings) {
+  const matches = Object.entries(settings.siteProfiles || {})
+    .filter(([rule]) => hostMatchesRule(hostname, rule))
+    .sort(([left], [right]) => right.length - left.length);
+  return matches[0]?.[1] || null;
+}
+
+export function providerModeForHost(hostname, settings) {
+  return siteProfileForHost(hostname, settings)?.providerMode || settings.providerMode;
+}
+
+export function readingModeForHost(hostname, settings) {
+  return siteProfileForHost(hostname, settings)?.readingMode || settings.readingMode || "translated";
+}
+
+export function sensitivePageModeForHost(hostname, settings) {
+  const value = siteProfileForHost(hostname, settings)?.sensitivePageMode;
+  return value && value !== "inherit" ? value : settings.sensitivePageMode;
 }
 
 export function shouldTranslateLanguage(detectedLanguage, settings, targetLanguage = settings.targetLanguage) {
@@ -119,8 +141,11 @@ export function shouldTranslateLanguage(detectedLanguage, settings, targetLangua
 }
 
 export function isAutomaticHostAllowed(hostname, settings) {
-  if (!settings.enabled || settings.behaviourMode === "manual") return false;
+  if (!settings.enabled) return false;
   if (settings.excludedHosts.some((rule) => hostMatchesRule(hostname, rule))) return false;
+  const profile = siteProfileForHost(hostname, settings);
+  if (typeof profile?.automatic === "boolean") return profile.automatic;
+  if (settings.behaviourMode === "manual") return false;
   if (settings.behaviourMode === "all-sites") return true;
   return settings.approvedHosts.some((rule) => hostMatchesRule(hostname, rule));
 }

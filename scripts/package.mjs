@@ -13,6 +13,7 @@ const packageEntries = [
   "options",
   "onboarding",
   "offscreen",
+  "sidepanel",
   "_locales",
   "icons",
   "LICENSE",

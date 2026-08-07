@@ -43,3 +43,4 @@ body:
     attributes:
       label: Privacy-safe diagnostic report
       description: Paste only the report exported by the extension settings page.
+

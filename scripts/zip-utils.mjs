@@ -48,3 +48,4 @@ export function extractZip(filename, target) {
     writeFileSync(destination, data);
   }
 }
+

@@ -12,11 +12,17 @@ The extension tries providers in this order:
 
 Only providers whose named text-route disclosure has been explicitly accepted can be included. The compatibility fallback is off by default.
 
-If a selected provider is unavailable, the popup reports which engine ultimately handled the page.
+If a selected provider is unavailable, the popup and side panel report which engine ultimately handled the page. Per-site profiles can override the default provider after the required route consent and narrow host permission are granted.
+
+## Privacy Firewall
+
+When enabled, the Privacy Firewall replaces recognized email addresses, URLs, IPv4 addresses, phone numbers, dates, currency values, reference identifiers and configured confidential terms with temporary tokens before text reaches an external provider. The original values are restored locally. If a provider removes or changes any token, the result is rejected instead of risking an incorrect substitution.
+
+Masking is a risk-reduction layer, not complete anonymization. Review the text and the selected provider before translating sensitive material. On-device translation is marked separately because text remains inside the browser translation service rather than being sent to an external translation endpoint.
 
 ## Browser on-device translator
 
-No provider credential is required. Browser support and supported language pairs vary. The browser may download language models. If an automatic page has no reliable source-language result, an external fallback may be required.
+No provider credential is required. Browser support and supported language pairs vary. The browser may download language models. Use the side-panel or Settings language-pack manager to prepare a known source/target pair. If an automatic page has no reliable source-language result, an external fallback may be required.
 
 ## Google Cloud Translation
 

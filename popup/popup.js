@@ -12,8 +12,8 @@ import { applyTranslations } from "../src/i18n.js";
 import { baseLanguage, hostMatchesRule, hostPermissionPatterns, hostnameFromUrl, providerPermissionPatterns } from "../src/translation.js";
 
 const elements = Object.fromEntries([
-  "enabled", "targetLanguage", "statusPulse", "statusTitle", "statusDetail", "providerDetail",
-  "translateNow", "automaticSite", "siteRule", "languageRule", "privateNotice", "openOptions", "version"
+  "enabled", "targetLanguage", "readingMode", "statusPulse", "statusTitle", "statusDetail", "providerDetail",
+  "translateNow", "openSidePanel", "automaticSite", "siteRule", "languageRule", "privateNotice", "openOptions", "version"
 ].map((id) => [id, document.querySelector(`#${id}`)]));
 applyTranslations();
 const providerNames = {
@@ -73,8 +73,12 @@ async function inspect() {
     return;
   }
   inspection = await chrome.runtime.sendMessage({ type: "inspect-tab", tabId: activeTab.id });
+  elements.readingMode.value = inspection.pageState?.readingMode || inspection.readingMode || settings.readingMode;
   const language = languageName(inspection.language);
-  const provider = `Provider: ${providerNames[inspection.pageState?.engine || settings.providerMode] || inspection.pageState?.engine || settings.providerMode}`;
+  const providerKey = inspection.pageState?.engine || inspection.providerMode || settings.providerMode;
+  const privacy = inspection.pageState?.privacy;
+  const route = privacy?.route === "on-device" ? " · on-device" : privacy?.route === "external" ? ` · ${privacy.maskedValues || 0} protected` : "";
+  const provider = `Provider: ${providerNames[providerKey] || providerKey}${route}`;
   const statusMap = {
     unsupported: ["This page cannot be translated", "Browser and extension pages are protected.", "paused"],
     "consent-required": ["Privacy setup required", "Review how webpage text is processed before translation runs.", "paused"],
@@ -110,19 +114,20 @@ function customEndpointOrigin(value) {
 }
 
 async function ensureProviderAccess() {
+  const providerMode = inspection?.providerMode || settings.providerMode;
   const unapproved = externalProvidersForConfiguration(settings, localState)
     .filter((provider) => !hasProviderConsent(localState, provider));
-  if (unapproved.includes(settings.providerMode)) {
+  if (unapproved.includes(providerMode) || (["google-cloud", "libretranslate", "deepl", "google-web"].includes(providerMode) && !hasProviderConsent(localState, providerMode))) {
     setStatus("Provider approval required", "Review the provider text route in Settings & privacy before translating.", "paused");
     return false;
   }
-  const origins = providerPermissionPatterns(settings.providerMode, {
+  const origins = providerPermissionPatterns(providerMode, {
     allowGoogleWebFallback: settings.allowGoogleWebFallback && hasProviderConsent(localState, "google-web"),
     googleCloudApiKey: hasProviderConsent(localState, "google-cloud") ? localState.googleCloudApiKey : "",
     deepLApiKey: hasProviderConsent(localState, "deepl") ? localState.deepLApiKey : "",
     deepLApiPlan: settings.deepLApiPlan
   });
-  if (["auto", "libretranslate"].includes(settings.providerMode) && localState.libreTranslateEndpoint && hasProviderConsent(localState, "libretranslate")) {
+  if (["auto", "libretranslate"].includes(providerMode) && localState.libreTranslateEndpoint && hasProviderConsent(localState, "libretranslate")) {
     const endpoint = customEndpointOrigin(localState.libreTranslateEndpoint);
     if (endpoint) origins.push(endpoint);
   }
@@ -143,6 +148,7 @@ async function init() {
   hostname = hostnameFromUrl(activeTab?.url || "");
   elements.enabled.checked = settings.enabled;
   elements.targetLanguage.value = settings.targetLanguage;
+  elements.readingMode.value = inspection?.pageState?.readingMode || settings.readingMode;
   elements.version.textContent = `v${chrome.runtime.getManifest().version}`;
   await inspect();
 }
@@ -163,6 +169,23 @@ elements.targetLanguage.addEventListener("change", async () => {
   await inspect();
 });
 
+elements.readingMode.addEventListener("change", async () => {
+  await persist({ readingMode: elements.readingMode.value });
+  if (activeTab?.id && inspection?.status === "translated") {
+    await chrome.runtime.sendMessage({ type: "set-reading-mode", tabId: activeTab.id, readingMode: elements.readingMode.value });
+  }
+  await inspect();
+});
+
+elements.openSidePanel.addEventListener("click", async () => {
+  if (!activeTab?.id || !chrome.sidePanel?.open) {
+    setStatus("Open from the side-panel menu", "Choose Private Auto Page Translator in the browser's side-panel picker.", "paused");
+    return;
+  }
+  await chrome.sidePanel.open({ tabId: activeTab.id });
+  window.close();
+});
+
 elements.translateNow.addEventListener("click", async () => {
   if (inspection?.status === "consent-required") {
     await chrome.runtime.sendMessage({ type: "open-onboarding" });
@@ -180,7 +203,7 @@ elements.translateNow.addEventListener("click", async () => {
     return;
   }
   const providerAccess = await ensureProviderAccess();
-  if (!providerAccess && ["google-cloud", "google-web", "libretranslate", "deepl"].includes(settings.providerMode)) {
+  if (!providerAccess && ["google-cloud", "google-web", "libretranslate", "deepl"].includes(inspection?.providerMode || settings.providerMode)) {
     setStatus("Provider access declined", "Translation needs access to the provider selected in Settings.", "error");
     return;
   }

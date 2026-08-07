@@ -23,17 +23,23 @@ test("defaults to manual translation with sensitive safeguards", () => {
   assert.equal(settings.allowGoogleWebFallback, false);
   assert.equal(settings.translateAttributes, false);
   assert.equal(settings.sensitivePageMode, "manual");
+  assert.equal(settings.readingMode, "translated");
+  assert.equal(settings.viewportFirst, true);
+  assert.equal(settings.privacyFirewall, true);
+  assert.equal(settings.smartCompose, true);
 });
 
 test("normalizes rules, targets and glossary entries", () => {
   const settings = normalizeSettings({
     approvedHosts: ["https://www.Example.com/path", "example.com"],
     siteTargetLanguages: { "Forum.Example.com": "fr" },
-    glossary: [{ source: " Bomberos ", replacement: " Fire Brigade " }]
+    glossary: [{ source: " Bomberos ", replacement: " Fire Brigade " }],
+    siteProfiles: { "News.Example.com": { providerMode: "deepl", readingMode: "bilingual", automatic: true } }
   });
   assert.deepEqual(settings.approvedHosts, ["example.com"]);
   assert.deepEqual(settings.siteTargetLanguages, { "forum.example.com": "fr" });
   assert.deepEqual(settings.glossary, [{ source: "Bomberos", replacement: "Fire Brigade" }]);
+  assert.deepEqual(settings.siteProfiles, { "news.example.com": { providerMode: "deepl", readingMode: "bilingual", automatic: true } });
 });
 
 test("requires the current consent version", () => {
@@ -63,12 +69,17 @@ test("describes every external provider that automatic mode may contact", () => 
     libreTranslateEndpoint: "https://translate.example.test/translate",
     deepLApiKey: "deepl-key"
   }), ["google-cloud", "libretranslate", "deepl", "google-web"]);
+  assert.deepEqual(externalProvidersForConfiguration({
+    providerMode: "on-device",
+    siteProfiles: { "example.com": { providerMode: "deepl" } }
+  }), ["deepl"]);
 });
 
 test("exports and validates credential-free settings backups", () => {
-  const backup = createSettingsBackup({ approvedHosts: ["example.com"], glossary: [{ source: "Hola", replacement: "Hello" }] }, "2026-08-05T00:00:00.000Z");
+  const backup = createSettingsBackup({ approvedHosts: ["example.com"], glossary: [{ source: "Hola", replacement: "Hello" }], privacyFirewallTerms: ["Project Lantern"] }, "2026-08-05T00:00:00.000Z");
   assert.equal(backup.schemaVersion, SETTINGS_SCHEMA_VERSION);
   assert.equal("googleCloudApiKey" in backup.settings, false);
+  assert.deepEqual(backup.settings.privacyFirewallTerms, []);
   assert.deepEqual(parseSettingsBackup(JSON.stringify(backup)).approvedHosts, ["example.com"]);
   assert.throws(() => parseSettingsBackup({ format: "other", settings: {} }), /not an Auto Page Translator/i);
 });

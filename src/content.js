@@ -8,6 +8,43 @@
   ].join(",");
   const ATTRIBUTE_NAMES = ["placeholder", "title", "aria-label", "alt", "value"];
   const RTL_LANGUAGES = new Set(["ar", "he", "fa", "ur"]);
+  const BLOCK_SELECTOR = "p,li,dt,dd,blockquote,figcaption,h1,h2,h3,h4,h5,h6,td,th,caption,summary,label,article,section";
+  const READING_MODES = new Set(["translated", "bilingual", "hover"]);
+
+  function inlineMarker(index) {
+    return `BAPTINLINE${String(index).padStart(4, "0")}BAPT`;
+  }
+
+  function joinContextualRecords(records) {
+    return records.map((record, index) => `${inlineMarker(index)} ${record.text}`).join(" ");
+  }
+
+  function splitContextualTranslation(value, expectedCount) {
+    const pattern = /BAPT\s*INLINE\s*(\d{4})\s*BAPT/gi;
+    const source = String(value);
+    const matches = [...source.matchAll(pattern)];
+    if (matches.length !== expectedCount) return null;
+    const output = Array(expectedCount).fill("");
+    for (let index = 0; index < matches.length; index += 1) {
+      const itemIndex = Number(matches[index][1]);
+      if (!Number.isInteger(itemIndex) || itemIndex < 0 || itemIndex >= expectedCount) return null;
+      output[itemIndex] = source.slice(matches[index].index + matches[index][0].length, matches[index + 1]?.index ?? source.length).trim();
+    }
+    return output.every(Boolean) ? output : null;
+  }
+
+  function isElementInViewport(element, viewport = { width: innerWidth, height: innerHeight }) {
+    if (!element?.getBoundingClientRect) return false;
+    const rect = element.getBoundingClientRect();
+    return rect.bottom >= 0 && rect.right >= 0 && rect.top <= viewport.height && rect.left <= viewport.width;
+  }
+
+  function partitionViewportRecords(records) {
+    const visible = [];
+    const deferred = [];
+    for (const record of records) (record.visible ? visible : deferred).push(record);
+    return { visible, deferred };
+  }
 
   function splitWhitespace(value) {
     const match = String(value).match(/^(\s*)([\s\S]*?)(\s*)$/);
@@ -86,6 +123,10 @@
       elementIsExcluded,
       chunkRecords,
       createTextApplication,
+      joinContextualRecords,
+      splitContextualTranslation,
+      isElementInViewport,
+      partitionViewportRecords,
       minimizeRoots,
       sensitivePageMetadata
     });
@@ -94,6 +135,8 @@
 
   const textOriginals = new WeakMap();
   const textTranslations = new WeakMap();
+  const textTranslationCores = new WeakMap();
+  const textParts = new WeakMap();
   const trackedTextNodes = new Set();
   const textDisconnectedAt = new WeakMap();
   const attributeOriginals = new WeakMap();
@@ -112,6 +155,14 @@
   let pageControl = null;
   let pageControlShadow = null;
   let selectionBubble = null;
+  let composeTrigger = null;
+  let composePreview = null;
+  let activeEditable = null;
+  let currentReadingMode = "translated";
+  let smartComposeEnabled = true;
+  let configuredTargetLanguage = "en";
+  const bilingualElements = new Set();
+  const hoverBlocks = new WeakSet();
   let originalDocumentDirection = null;
   let state = {
     active: false,
@@ -121,6 +172,8 @@
     translatedSections: 0,
     totalSections: 0,
     engine: "",
+    readingMode: "translated",
+    privacy: { route: "", charactersProcessed: 0, maskedValues: 0, maskedKinds: [] },
     error: "",
     errorCode: ""
   };
@@ -135,21 +188,140 @@
     sendStatus();
   }
 
+  function translationBlockFor(node) {
+    const parent = node?.parentElement;
+    return parent?.closest?.(BLOCK_SELECTOR) || parent;
+  }
+
+  function renderTextNode(node, showOriginal = false) {
+    const parts = textParts.get(node);
+    const translated = textTranslationCores.get(node);
+    if (!parts || typeof translated !== "string") return;
+    const core = showOriginal || currentReadingMode === "bilingual" ? parts.core : translated;
+    const rendered = `${parts.prefix}${core}${parts.suffix}`;
+    node.nodeValue = rendered;
+    if (!showOriginal && currentReadingMode !== "bilingual") textTranslations.set(node, rendered);
+  }
+
+  function removeBilingualElements() {
+    for (const element of bilingualElements) element.remove();
+    bilingualElements.clear();
+  }
+
+  function bindHoverBlock(block) {
+    if (!block || hoverBlocks.has(block)) return;
+    hoverBlocks.add(block);
+    block.addEventListener("mouseenter", () => {
+      if (currentReadingMode !== "hover") return;
+      applying = true;
+      try {
+        for (const node of trackedTextNodes) if (translationBlockFor(node) === block) renderTextNode(node, true);
+      } finally { applying = false; }
+    }, { passive: true });
+    block.addEventListener("mouseleave", () => {
+      if (currentReadingMode !== "hover") return;
+      applying = true;
+      try {
+        for (const node of trackedTextNodes) if (translationBlockFor(node) === block) renderTextNode(node, false);
+      } finally { applying = false; }
+    }, { passive: true });
+  }
+
+  function renderReadingMode() {
+    removeBilingualElements();
+    applying = true;
+    try {
+      for (const node of trackedTextNodes) renderTextNode(node);
+      if (currentReadingMode === "bilingual") {
+        const byBlock = new Map();
+        for (const node of trackedTextNodes) {
+          if (!node.isConnected || !textTranslationCores.has(node)) continue;
+          const block = translationBlockFor(node);
+          if (!block || block.dataset?.baptUi) continue;
+          if (!byBlock.has(block)) byBlock.set(block, []);
+          byBlock.get(block).push(textTranslationCores.get(node));
+        }
+        for (const [block, translations] of byBlock) {
+          if (!block.parentNode || !translations.length) continue;
+          const companion = document.createElement("div");
+          companion.dataset.baptUi = "true";
+          companion.dataset.baptBilingual = "true";
+          companion.dir = "auto";
+          companion.textContent = translations.join(" ");
+          companion.style.cssText = "margin:.4em 0 .8em;padding:.55em .75em;border-left:3px solid #6d5dfc;border-radius:.35em;background:color-mix(in srgb,#6d5dfc 9%,transparent);color:inherit;font:inherit;line-height:1.45;opacity:.92";
+          block.insertAdjacentElement("afterend", companion);
+          bilingualElements.add(companion);
+        }
+      } else if (currentReadingMode === "hover") {
+        for (const node of trackedTextNodes) bindHoverBlock(translationBlockFor(node));
+      }
+    } finally {
+      applying = false;
+    }
+    setState({ readingMode: currentReadingMode });
+  }
+
+  function contextualizeRecords(records) {
+    const groups = new Map();
+    for (const record of records) {
+      const key = record.block || record.identity;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(record);
+    }
+    return [...groups.values()].flatMap((recordsInBlock) => {
+      const chunks = [];
+      let chunk = [];
+      let length = 0;
+      for (const record of recordsInBlock) {
+        if (chunk.length && (chunk.length >= 28 || length + record.text.length > 4200)) {
+          chunks.push(chunk); chunk = []; length = 0;
+        }
+        chunk.push(record); length += record.text.length;
+      }
+      if (chunk.length) chunks.push(chunk);
+      return chunks.map((group) => {
+        if (group.length === 1) return group[0];
+        return {
+          text: joinContextualRecords(group),
+          identity: group,
+          block: group[0].block,
+          visible: group.some((record) => record.visible),
+          fallbackRecords: group,
+          apply(value) {
+            const values = splitContextualTranslation(value, group.length);
+            if (!values) return false;
+            values.forEach((translation, index) => group[index].apply(translation));
+            return true;
+          }
+        };
+      });
+    });
+  }
+
   function textRecord(textNode) {
     if (!textNode || elementIsExcluded(textNode.parentElement)) return null;
     const current = textNode.nodeValue || "";
-    if (textTranslations.get(textNode) === current) {
+    if (textTranslations.get(textNode) === current || (trackedTextNodes.has(textNode) && textTranslationCores.has(textNode) && textOriginals.get(textNode) === current)) {
       trackedTextNodes.add(textNode);
       return null;
     }
     const parts = splitWhitespace(current);
     if (!shouldTranslateText(parts.core)) return null;
     textOriginals.set(textNode, current);
+    textParts.set(textNode, parts);
     trackedTextNodes.add(textNode);
+    const block = translationBlockFor(textNode);
     return {
       text: parts.core,
       identity: textNode,
-      apply: createTextApplication(textNode, parts, (translated) => textTranslations.set(textNode, translated))
+      block,
+      visible: isElementInViewport(block),
+      apply(value) {
+        if (!textNode) return true;
+        textTranslationCores.set(textNode, String(value));
+        renderTextNode(textNode);
+        return true;
+      }
     };
   }
 
@@ -165,7 +337,7 @@
         if (record) records.push(record);
       }
     }
-    return records;
+    return contextualizeRecords(records);
   }
 
   function buildAttributeRecords(root = document.body, enabled = false) {
@@ -196,6 +368,7 @@
           records.push({
             text: current.trim(),
             identity: `${name}:${current}`,
+            visible: isElementInViewport(element),
             apply(value) {
               if (!element.isConnected) return;
               element.setAttribute(name, value);
@@ -205,6 +378,7 @@
                 attributeTranslations.set(element, translated);
               }
               translated.set(name, value);
+              return true;
             }
           });
         }
@@ -287,6 +461,7 @@
     }
     trackedTextNodes.clear();
     trackedAttributes.clear();
+    removeBilingualElements();
     stopObservation();
     restoreDirection();
     pageControl?.remove();
@@ -324,6 +499,16 @@
     const action = document.createElement("button");
     action.type = "button";
     action.addEventListener("click", () => state.busy ? cancelTranslation() : restoreOriginal());
+    const mode = document.createElement("button");
+    mode.type = "button";
+    mode.className = "secondary mode";
+    mode.setAttribute("aria-label", "Change reading mode");
+    mode.title = "Switch between translated, bilingual and original-on-hover modes";
+    mode.addEventListener("click", () => {
+      const modes = ["translated", "bilingual", "hover"];
+      currentReadingMode = modes[(modes.indexOf(currentReadingMode) + 1) % modes.length];
+      renderReadingMode();
+    });
     const dismiss = document.createElement("button");
     dismiss.type = "button";
     dismiss.className = "secondary";
@@ -334,7 +519,7 @@
       pageControl = null;
       pageControlShadow = null;
     });
-    bar.append(dot, label, action, dismiss);
+    bar.append(dot, label, action, mode, dismiss);
     shadow.append(style, bar);
     document.documentElement.append(host);
     pageControl = host;
@@ -347,6 +532,7 @@
     const dot = pageControlShadow.querySelector(".dot");
     const label = pageControlShadow.querySelector(".label");
     const action = pageControlShadow.querySelector("button:not(.secondary)");
+    const mode = pageControlShadow.querySelector("button.mode");
     dot.classList.toggle("busy", state.busy);
     if (state.busy) {
       label.textContent = state.totalSections
@@ -355,9 +541,15 @@
       action.textContent = "Cancel";
     } else {
       const provider = state.engine ? ` · ${state.engine}` : "";
-      label.textContent = `Translated to ${state.targetLanguage.toUpperCase()}${provider}`;
+      const privacy = state.privacy.route === "on-device"
+        ? " · on-device"
+        : state.privacy.route === "external"
+          ? ` · ${state.privacy.maskedValues || 0} protected`
+          : "";
+      label.textContent = `Translated to ${state.targetLanguage.toUpperCase()}${provider}${privacy}`;
       action.textContent = "Show original";
     }
+    if (mode) mode.textContent = currentReadingMode === "bilingual" ? "A+B" : currentReadingMode === "hover" ? "Hover" : "A→B";
   }
 
   function cancelTranslation() {
@@ -366,11 +558,11 @@
     restoreOriginal();
   }
 
-  async function translateRecords(records, sourceLanguage, targetLanguage, job, jobId, baseCount = 0) {
+  async function translateRecords(records, sourceLanguage, targetLanguage, job, jobId, baseCount = 0, totalCount = 0) {
     let translatedCount = 0;
     let engine = state.engine;
     const chunks = chunkRecords(records);
-    setState({ totalSections: baseCount + records.length });
+    setState({ totalSections: totalCount || baseCount + records.length });
     for (const chunk of chunks) {
       activeJobId = jobId;
       const response = await chrome.runtime.sendMessage({
@@ -386,15 +578,44 @@
         throw Object.assign(new Error(response?.message || "Translation provider returned an incomplete page."), { code: response?.code || response?.status || "provider-error" });
       }
       applying = true;
+      const fallbacks = [];
       try {
-        response.translations.forEach((value, index) => chunk[index].apply(value));
+        response.translations.forEach((value, index) => {
+          if (chunk[index].apply(value) === false) fallbacks.push(...(chunk[index].fallbackRecords || []));
+        });
       } finally {
         applying = false;
       }
+      if (fallbacks.length) {
+        const fallbackResponse = await chrome.runtime.sendMessage({
+          type: "translate-texts",
+          jobId,
+          texts: fallbacks.map((record) => record.text),
+          sourceLanguage,
+          targetLanguage
+        });
+        if (fallbackResponse?.status !== "ok" || fallbackResponse.translations?.length !== fallbacks.length) {
+          throw Object.assign(new Error("Context markers changed and safe fallback translation failed."), { code: "context-integrity" });
+        }
+        applying = true;
+        try { fallbackResponse.translations.forEach((value, index) => fallbacks[index].apply(value)); }
+        finally { applying = false; }
+      }
       translatedCount += chunk.length;
       engine = response.engine || engine;
-      setState({ translatedSections: baseCount + translatedCount, engine });
+      const privacy = response.privacy || {};
+      setState({
+        translatedSections: baseCount + translatedCount,
+        engine,
+        privacy: {
+          route: privacy.route || state.privacy.route,
+          charactersProcessed: state.privacy.charactersProcessed + Number(privacy.charactersProcessed || 0),
+          maskedValues: state.privacy.maskedValues + Number(privacy.maskedValues || 0),
+          maskedKinds: [...new Set([...(state.privacy.maskedKinds || []), ...(privacy.maskedKinds || [])])]
+        }
+      });
     }
+    renderReadingMode();
     return { translatedCount, engine };
   }
 
@@ -480,6 +701,9 @@
 
     const job = ++jobNumber;
     const jobId = options.jobId || `${Date.now()}-${job}`;
+    currentReadingMode = READING_MODES.has(options.readingMode) ? options.readingMode : "translated";
+    smartComposeEnabled = options.smartCompose !== false;
+    configuredTargetLanguage = options.targetLanguage || configuredTargetLanguage;
     setState({
       active: false,
       busy: true,
@@ -488,6 +712,8 @@
       translatedSections: 0,
       totalSections: 0,
       engine: "",
+      readingMode: currentReadingMode,
+      privacy: { route: "", charactersProcessed: 0, maskedValues: 0, maskedKinds: [] },
       error: "",
       errorCode: ""
     });
@@ -500,7 +726,17 @@
     }
 
     try {
-      const result = await translateRecords(records, state.sourceLanguage, state.targetLanguage, job, jobId);
+      const { visible, deferred } = options.viewportFirst === false
+        ? { visible: records, deferred: [] }
+        : partitionViewportRecords(records);
+      const first = visible.length ? visible : deferred.splice(0, Math.min(12, deferred.length));
+      const firstResult = await translateRecords(first, state.sourceLanguage, state.targetLanguage, job, jobId, 0, records.length);
+      let result = firstResult;
+      if (deferred.length) {
+        await waitForIdle();
+        const deferredResult = await translateRecords(deferred, state.sourceLanguage, state.targetLanguage, job, jobId, firstResult.translatedCount, records.length);
+        result = { translatedCount: firstResult.translatedCount + deferredResult.translatedCount, engine: deferredResult.engine || firstResult.engine };
+      }
       if (job !== jobNumber) return { status: "superseded", state };
       setState({ active: true, busy: false, translatedSections: result.translatedCount, totalSections: result.translatedCount, engine: result.engine, error: "", errorCode: "" });
       applyTargetDirection(state.targetLanguage, options.adjustTextDirection !== false);
@@ -526,7 +762,7 @@
     host.style.cssText = "all:initial;position:fixed;right:18px;bottom:18px;z-index:2147483647";
     const shadow = host.attachShadow({ mode: "closed" });
     const style = document.createElement("style");
-    style.textContent = `.card{width:min(360px,calc(100vw - 36px));padding:16px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#12111c;color:#f7f7fb;box-shadow:0 14px 42px rgba(0,0,0,.36);font:13px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#aaa7b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.value{margin-top:9px;font-size:15px}button{border:0;background:transparent;color:#cbc7df;font-size:18px;cursor:pointer}button:focus-visible{outline:3px solid #c7c1ff}`;
+    style.textContent = `.card{width:min(360px,calc(100vw - 36px));padding:16px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#12111c;color:#f7f7fb;box-shadow:0 14px 42px rgba(0,0,0,.36);font:13px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}.top,.tools{display:flex;justify-content:space-between;gap:8px;align-items:center}.top{color:#aaa7b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.value{margin-top:9px;font-size:15px}.tools{justify-content:flex-start;margin-top:12px}button{border:0;border-radius:8px;padding:5px 7px;background:#242130;color:#cbc7df;font:700 11px system-ui;cursor:pointer}.close{background:transparent;font-size:18px}button:focus-visible{outline:3px solid #c7c1ff}`;
     const card = document.createElement("div");
     card.className = "card";
     card.setAttribute("role", "dialog");
@@ -537,6 +773,7 @@
     title.textContent = `${message.targetLanguage.toUpperCase()} · ${message.engine}`;
     const close = document.createElement("button");
     close.type = "button";
+    close.className = "close";
     close.textContent = "×";
     close.setAttribute("aria-label", "Close translation");
     close.addEventListener("click", () => host.remove());
@@ -544,14 +781,191 @@
     value.className = "value";
     value.dir = "auto";
     value.textContent = message.translated;
+    const tools = document.createElement("div");
+    tools.className = "tools";
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.textContent = "Copy";
+    copy.addEventListener("click", () => navigator.clipboard.writeText(value.textContent || ""));
+    const speak = document.createElement("button");
+    speak.type = "button";
+    speak.textContent = "Listen";
+    speak.addEventListener("click", () => {
+      speechSynthesis.cancel();
+      speechSynthesis.speak(new SpeechSynthesisUtterance(value.textContent || ""));
+    });
+    const reverse = document.createElement("button");
+    reverse.type = "button";
+    reverse.textContent = "Reverse";
+    reverse.addEventListener("click", async () => {
+      if (!message.original || !state.sourceLanguage || state.sourceLanguage === "auto") return;
+      reverse.disabled = true;
+      try {
+        const response = await requestComposeTranslation(value.textContent || "", { sourceLanguage: message.targetLanguage, targetLanguage: state.sourceLanguage });
+        value.textContent = response.translated;
+      } finally { reverse.disabled = false; }
+    });
+    tools.append(copy, speak, reverse);
     top.append(title, close);
-    card.append(top, value);
+    card.append(top, value, tools);
     shadow.append(style, card);
     document.documentElement.append(host);
     selectionBubble = host;
   }
 
+  function safeEditable(element) {
+    if (!element || element.closest?.("[data-bapt-ui]") || element.disabled || element.readOnly) return false;
+    const sensitiveDescriptor = `${element.name || ""} ${element.id || ""} ${element.autocomplete || ""} ${element.getAttribute?.("aria-label") || ""} ${element.getAttribute?.("placeholder") || ""} ${element.form?.action || ""}`;
+    if (/password|passcode|one.?time.?code|otp|pin|card|payment|security|cvv|cvc|username|user.?name|log.?in|sign.?in|auth/i.test(sensitiveDescriptor)) return false;
+    if (element instanceof HTMLTextAreaElement) return true;
+    if (element instanceof HTMLInputElement) {
+      return ["text", "search"].includes((element.type || "text").toLowerCase())
+        && !element.closest?.("form")?.querySelector?.("input[type='password']");
+    }
+    return element.isContentEditable && !element.closest?.("[aria-hidden='true']") && !element.closest?.("form")?.querySelector?.("input[type='password']");
+  }
+
+  function editableText(element) {
+    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) return element.value;
+    return element.innerText || "";
+  }
+
+  function replaceEditableText(element, value) {
+    element.focus();
+    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+      const prototype = element instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+      Object.getOwnPropertyDescriptor(prototype, "value")?.set?.call(element, value);
+    } else element.textContent = value;
+    element.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertReplacementText", data: value }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function removeComposeTrigger() {
+    composeTrigger?.remove();
+    composeTrigger = null;
+  }
+
+  function showComposeTrigger(element) {
+    removeComposeTrigger();
+    if (!smartComposeEnabled || !safeEditable(element)) return;
+    activeEditable = element;
+    const host = document.createElement("div");
+    host.dataset.baptUi = "true";
+    host.style.cssText = "all:initial;position:fixed;right:18px;bottom:18px;z-index:2147483647";
+    const shadow = host.attachShadow({ mode: "closed" });
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Translate writing";
+    button.title = "Translate your writing before sending (Alt+Enter)";
+    button.style.cssText = "border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:9px 13px;background:#6d5dfc;color:white;box-shadow:0 10px 30px rgba(0,0,0,.3);font:700 12px system-ui;cursor:pointer";
+    button.addEventListener("mousedown", (event) => event.preventDefault());
+    button.addEventListener("click", () => openComposeFor(element));
+    shadow.append(button);
+    document.documentElement.append(host);
+    composeTrigger = host;
+  }
+
+  async function requestComposeTranslation(text, { sourceLanguage = "auto", targetLanguage = configuredTargetLanguage, style = "natural" } = {}) {
+    const response = await chrome.runtime.sendMessage({ type: "translate-compose-text", text, sourceLanguage, targetLanguage, style });
+    if (response?.status !== "ok") throw new Error(response?.message || "Writing translation failed.");
+    return response;
+  }
+
+  function createComposePreview(element, original) {
+    composePreview?.remove();
+    const host = document.createElement("aside");
+    host.dataset.baptUi = "true";
+    host.style.cssText = "all:initial;position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:rgba(5,5,12,.52);padding:18px";
+    const shadow = host.attachShadow({ mode: "closed" });
+    const style = document.createElement("style");
+    style.textContent = `.card{width:min(560px,calc(100vw - 36px));padding:20px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:#12111c;color:#f7f7fb;box-shadow:0 24px 70px rgba(0,0,0,.46);font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}.top,.actions,.route{display:flex;align-items:center;justify-content:space-between;gap:10px}.top h2{margin:0;font-size:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.pane{min-height:112px;padding:12px;border:1px solid #393548;border-radius:12px;background:#1b1926;white-space:pre-wrap;overflow-wrap:anywhere}.label{display:block;margin-bottom:6px;color:#aaa7b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}select,button{border:1px solid #464158;border-radius:10px;padding:9px 11px;background:#242130;color:#f7f7fb;font:700 12px system-ui;cursor:pointer}button.primary{border-color:#6d5dfc;background:#6d5dfc}.route{justify-content:flex-start;color:#aaa7b8;font-size:11px;margin:10px 0 16px}.error{color:#ff9898}.busy{opacity:.65}@media(max-width:560px){.grid{grid-template-columns:1fr}}`;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.setAttribute("role", "dialog");
+    card.setAttribute("aria-modal", "true");
+    card.setAttribute("aria-label", "Translate writing preview");
+    card.innerHTML = `<div class="top"><h2>Translate your writing</h2><select aria-label="Writing style"><option value="natural">Natural</option><option value="formal">Formal</option><option value="informal">Informal</option></select></div><div class="grid"><div><span class="label">Original</span><div class="pane original" dir="auto"></div></div><div><span class="label">Translation</span><div class="pane translated" dir="auto">Translating…</div></div></div><div class="route" aria-live="polite"></div><div class="actions"><div><button type="button" data-action="swap">Swap languages</button><button type="button" data-action="copy">Copy</button></div><div><button type="button" data-action="cancel">Cancel</button><button class="primary" type="button" data-action="replace">Replace writing</button></div></div>`;
+    card.querySelector(".original").textContent = original;
+    shadow.append(style, card);
+    document.documentElement.append(host);
+    composePreview = host;
+    let latest = null;
+    let swapped = false;
+    const translated = card.querySelector(".translated");
+    const route = card.querySelector(".route");
+    const styleSelect = card.querySelector("select");
+    async function run() {
+      card.classList.add("busy");
+      translated.textContent = "Translating…";
+      route.className = "route";
+      try {
+        latest = await requestComposeTranslation(swapped && latest ? latest.translated : original, {
+          sourceLanguage: swapped ? configuredTargetLanguage : "auto",
+          targetLanguage: swapped && state.sourceLanguage && state.sourceLanguage !== "auto" ? state.sourceLanguage : configuredTargetLanguage,
+          style: styleSelect.value
+        });
+        translated.textContent = latest.translated;
+        route.textContent = latest.privacy?.route === "on-device"
+          ? "On-device — nothing left this browser"
+          : `${latest.engine} — ${latest.privacy?.charactersProcessed || original.length} characters, ${latest.privacy?.maskedValues || 0} protected values`;
+      } catch (error) {
+        translated.textContent = "Translation was not completed.";
+        route.textContent = error.message;
+        route.className = "route error";
+      } finally { card.classList.remove("busy"); }
+    }
+    styleSelect.addEventListener("change", run);
+    card.addEventListener("click", async (event) => {
+      const action = event.target.closest?.("button")?.dataset.action;
+      if (action === "cancel") host.remove();
+      if (action === "replace" && latest) { replaceEditableText(element, latest.translated); host.remove(); }
+      if (action === "copy" && latest) await navigator.clipboard.writeText(latest.translated);
+      if (action === "swap" && latest) { swapped = !swapped; await run(); }
+    });
+    run();
+  }
+
+  function openComposeFor(element = activeEditable || document.activeElement) {
+    if (!safeEditable(element)) return;
+    const text = editableText(element).trim();
+    if (!text) return;
+    createComposePreview(element, text);
+  }
+
+  document.addEventListener("focusin", (event) => {
+    if (safeEditable(event.target)) showComposeTrigger(event.target);
+  }, true);
+  document.addEventListener("keydown", (event) => {
+    if (event.altKey && event.key === "Enter" && safeEditable(document.activeElement)) {
+      event.preventDefault();
+      openComposeFor(document.activeElement);
+    }
+    if (event.key === "Escape") composePreview?.remove();
+  }, true);
+
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message?.type === "configure-content") {
+      smartComposeEnabled = message.smartCompose !== false;
+      configuredTargetLanguage = message.targetLanguage || configuredTargetLanguage;
+      if (!smartComposeEnabled) removeComposeTrigger();
+      sendResponse({ status: "configured" });
+      return false;
+    }
+    if (message?.type === "set-reading-mode") {
+      if (!READING_MODES.has(message.readingMode)) {
+        sendResponse({ status: "invalid-reading-mode" });
+        return false;
+      }
+      currentReadingMode = message.readingMode;
+      renderReadingMode();
+      sendResponse({ status: "ok", state });
+      return false;
+    }
+    if (message?.type === "open-smart-compose") {
+      openComposeFor(document.activeElement);
+      sendResponse({ status: "opened" });
+      return false;
+    }
     if (message?.type === "translate-page") {
       translatePage(message).then(sendResponse).catch((error) => sendResponse({ status: "error", message: error.message }));
       return true;

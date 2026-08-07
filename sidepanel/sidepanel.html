@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Private Auto Page Translator — Workspace</title>
+    <link rel="stylesheet" href="sidepanel.css">
+  </head>
+  <body>
+    <main>
+      <header class="hero"><img src="../icons/icon-48.png" width="42" height="42" alt=""><div><p>PRIVATE AUTO PAGE TRANSLATOR</p><h1>Translation workspace</h1></div></header>
+
+      <section class="status-card" aria-live="polite"><span class="pulse" id="pulse"></span><div><strong id="statusTitle">Checking this page…</strong><small id="statusDetail"></small></div></section>
+
+      <section class="card">
+        <div class="grid two"><label>Target language<select id="targetLanguage"></select></label><label>Reading mode<select id="readingMode"><option value="translated">Translated</option><option value="bilingual">Bilingual</option><option value="hover">Original on hover</option></select></label></div>
+        <div class="actions"><button class="primary" id="translatePage" type="button">Translate page</button><button id="restorePage" type="button">Show original</button></div>
+        <div class="route" id="privacyRoute">Translation route not active</div>
+      </section>
+
+      <section class="card">
+        <div class="heading"><div><span class="eyebrow">QUICK TRANSLATE</span><h2>Text workspace</h2></div></div>
+        <textarea id="workspaceText" rows="4" maxlength="5000" placeholder="Paste or type text to translate"></textarea>
+        <div class="actions"><button class="primary" id="translateText" type="button">Translate text</button><button id="copyResult" type="button">Copy result</button></div>
+        <div class="result" id="workspaceResult" dir="auto" aria-live="polite">Your translation will appear here.</div>
+      </section>
+
+      <section class="card">
+        <div class="heading"><div><span class="eyebrow">SITE INTELLIGENCE</span><h2 id="siteTitle">This website</h2></div><span class="chip">Local only</span></div>
+        <div class="grid two"><label>Provider<select id="siteProvider"><option value="auto">Automatic</option><option value="on-device">On-device</option><option value="google-cloud">Google Cloud</option><option value="libretranslate">LibreTranslate</option><option value="deepl">DeepL</option><option value="google-web">Google web</option></select></label><label>Target<select id="siteTarget"></select></label></div>
+        <label>Reading mode<select id="siteReading"><option value="translated">Translated</option><option value="bilingual">Bilingual</option><option value="hover">Original on hover</option></select></label>
+        <label class="check"><input id="siteAutomatic" type="checkbox"><span>Automatically translate this website</span></label>
+        <label class="check"><input id="siteSensitive" type="checkbox"><span>Allow automatic translation on sensitive forms here</span></label>
+        <div class="actions"><button class="primary" id="saveSite" type="button">Save website profile</button><button id="resetSite" type="button">Use global defaults</button></div>
+      </section>
+
+      <section class="card">
+        <div class="heading"><div><span class="eyebrow">ON-DEVICE PACKS</span><h2>Prepare a language pair</h2></div></div>
+        <div class="grid two"><label>From<select id="packSource"></select></label><label>To<select id="packTarget"></select></label></div>
+        <button id="preparePack" type="button">Check and prepare</button><p class="muted" id="packStatus" aria-live="polite">No language pair checked yet.</p>
+      </section>
+
+      <section class="card">
+        <div class="heading"><div><span class="eyebrow">THIS SESSION</span><h2>Recent translations</h2></div><button class="link" id="refreshHistory" type="button">Refresh</button></div>
+        <div id="history" class="history"><p class="muted">No recent translations.</p></div>
+      </section>
+
+      <footer><button class="link" id="openSettings" type="button">Settings & privacy</button><span id="version"></span></footer>
+    </main>
+    <script type="module" src="sidepanel.js"></script>
+  </body>
+</html>

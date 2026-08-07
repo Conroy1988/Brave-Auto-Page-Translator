@@ -1,0 +1,6 @@
+{
+  "extensionName":{"message":"隱私自動網頁翻譯器"},"extensionShortName":{"message":"自動翻譯器"},"extensionDescription":{"message":"支援情境翻譯、雙語閱讀、寫作翻譯、網站規則和隱私防火牆的網頁翻譯工具。"},
+  "independentExtension":{"message":"獨立擴充功能"},"privateWindowNotice":{"message":"無痕視窗：僅可手動翻譯。此處不會儲存網站和語言規則。"},"translatePagesInto":{"message":"將網頁翻譯為"},"translateThisPage":{"message":"翻譯此網頁"},"automaticSite":{"message":"自動翻譯此網站"},"neverSite":{"message":"永不翻譯此網站"},"neverLanguage":{"message":"永不翻譯此語言"},"settingsPrivacy":{"message":"設定與隱私"},
+  "onboardingTitle":{"message":"由你掌控翻譯。"},"onboardingIntro":{"message":"選擇擴充功能可存取的內容，以及翻譯前文字的處理位置。"},"yourLanguage":{"message":"你的語言"},"whenTranslationRuns":{"message":"何時可以執行翻譯"},"translationProvider":{"message":"翻譯服務供應商"},"privacyCheckpoint":{"message":"隱私確認"},"acceptFinish":{"message":"接受並完成設定"},
+  "controlCentre":{"message":"翻譯控制中心"},"controlIntro":{"message":"管理網站存取、供應商隱私、動態網頁和自動翻譯規則。"},"accessBehaviour":{"message":"存取權限與自動行為"},"pageSafeguards":{"message":"網頁行為與保護措施"},"rulesTargets":{"message":"排除項目與網站目標語言"},"terminology":{"message":"術語"},"privacyDashboard":{"message":"隱私面板"},"settingsBackup":{"message":"設定備份"},"localDiagnostics":{"message":"本機診斷"},"saveSettings":{"message":"儲存設定"}
+}

@@ -1,7 +1,7 @@
 {
-  "extensionName": { "message": "Traductor automático de páginas para Brave" },
+  "extensionName": { "message": "Traductor privado automático de páginas" },
   "extensionShortName": { "message": "Traductor automático" },
-  "extensionDescription": { "message": "Traduce automáticamente páginas web extranjeras con controles de privacidad, reglas por sitio y restauración del texto original." },
+  "extensionDescription": { "message": "Traducción web contextual con lectura bilingüe, ayuda de escritura, reglas por sitio y cortafuegos de privacidad." },
   "independentExtension": { "message": "EXTENSIÓN INDEPENDIENTE" },
   "privateWindowNotice": { "message": "Ventana privada: solo traducción manual. Aquí no se guardan reglas de sitios ni idiomas." },
   "translatePagesInto": { "message": "Traducir páginas al" },

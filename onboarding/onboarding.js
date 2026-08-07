@@ -140,3 +140,4 @@ form.addEventListener("submit", async (event) => {
   document.querySelector("button[type='submit']").textContent = "Setup complete";
   document.querySelector("button[type='submit']").disabled = true;
 });
+

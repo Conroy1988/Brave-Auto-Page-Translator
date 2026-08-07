@@ -1,9 +1,9 @@
 {
   "name": "brave-auto-page-translator",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
-  "description": "A configurable automatic webpage translator for Brave and Chromium browsers.",
+  "description": "Private, context-aware webpage and writing translation for Brave and Chromium browsers.",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "prepare:e2e": "node scripts/prepare-e2e-extension.mjs",

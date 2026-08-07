@@ -40,6 +40,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         availability: await translatorAvailability(message.sourceLanguage, message.targetLanguage)
       };
     }
+    if (message.type === "prepare-on-device") {
+      const translator = await getTranslator(message.sourceLanguage, message.targetLanguage);
+      return {
+        status: "ok",
+        availability: await translatorAvailability(message.sourceLanguage, message.targetLanguage),
+        ready: Boolean(translator)
+      };
+    }
     if (message.type !== "translate-on-device") return { status: "invalid-message" };
     const translator = await getTranslator(message.sourceLanguage, message.targetLanguage);
     const translations = [];
