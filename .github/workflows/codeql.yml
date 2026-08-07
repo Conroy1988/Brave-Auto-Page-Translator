@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   analyse:
+    name: CodeQL
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
