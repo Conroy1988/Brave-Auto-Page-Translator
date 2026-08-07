@@ -27,6 +27,9 @@ const requiredFiles = [
   "onboarding/onboarding.js",
   "offscreen/offscreen.html",
   "offscreen/offscreen.js",
+  "sidepanel/sidepanel.html",
+  "sidepanel/sidepanel.css",
+  "sidepanel/sidepanel.js",
   "_locales/en/messages.json",
   "_locales/de/messages.json",
   "_locales/es/messages.json",
@@ -51,7 +54,7 @@ if (manifest.default_locale !== "en") failures.push("default_locale must be en")
 if (manifest.content_security_policy?.extension_pages !== "script-src 'self'; object-src 'none'") failures.push("extension pages must use the strict packaged-code content security policy");
 if (manifest.content_scripts?.length) failures.push("website scripts must be registered dynamically after consent");
 
-const requiredPermissions = ["activeTab", "contextMenus", "offscreen", "scripting", "storage"];
+const requiredPermissions = ["activeTab", "contextMenus", "offscreen", "sidePanel", "scripting", "storage"];
 for (const permission of requiredPermissions) {
   if (!manifest.permissions?.includes(permission)) failures.push(`missing required permission: ${permission}`);
 }

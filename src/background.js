@@ -23,7 +23,11 @@ import {
   isSupportedPageUrl,
   normalizeLanguageCode,
   originPatternFromUrl,
+  providerModeForHost,
+  readingModeForHost,
   resolvePageLanguage,
+  sensitivePageModeForHost,
+  siteProfileForHost,
   shouldTranslateLanguage,
   targetLanguageForHost
 } from "./translation.js";
@@ -32,6 +36,8 @@ const AUTO_SCRIPT_ID = "auto-page-translator";
 const ALL_SITE_ORIGINS = ["http://*/*", "https://*/*"];
 const activeJobs = new Map();
 const recentlyHandled = new Map();
+const languagePackProgress = new Map();
+const recentTranslations = new Map();
 let jobCounter = 0;
 let settingsPromise = loadSettings();
 let localStatePromise = loadLocalState();
@@ -83,13 +89,16 @@ function matchPatternsForHost(hostname) {
 async function syncRegisteredContentScript() {
   await chrome.scripting.unregisterContentScripts({ ids: [AUTO_SCRIPT_ID] }).catch(() => {});
   const { settings, localState } = await runtimeState();
-  if (!hasCurrentConsent(localState) || !settings.enabled || settings.behaviourMode === "manual") return;
+  if (!hasCurrentConsent(localState) || !settings.enabled) return;
 
   let matches = [];
   if (settings.behaviourMode === "all-sites" && await hasOrigins(ALL_SITE_ORIGINS)) {
     matches = ["http://*/*", "https://*/*"];
-  } else if (settings.behaviourMode === "approved-sites") {
-    for (const host of settings.approvedHosts) {
+  } else {
+    const profiledHosts = Object.entries(settings.siteProfiles || {})
+      .filter(([, profile]) => profile.automatic === true)
+      .map(([host]) => host);
+    for (const host of [...new Set([...(settings.behaviourMode === "approved-sites" ? settings.approvedHosts : []), ...profiledHosts])]) {
       const origins = hostPermissionPatterns(host);
       if (await hasOrigins(origins)) matches.push(...matchPatternsForHost(host));
     }
@@ -132,14 +141,23 @@ async function inspectTab(tabId, tab, { inject = false } = {}) {
   const url = tab?.url || "";
   const hostname = hostnameFromUrl(url);
   const targetLanguage = targetLanguageForHost(hostname, settings);
+  const readingMode = readingModeForHost(hostname, settings);
+  const providerMode = providerModeForHost(hostname, settings);
   if (!isSupportedPageUrl(url)) {
-    return { status: "unsupported", settings, hostname, language: "", targetLanguage, consented: hasCurrentConsent(localState), incognito: Boolean(tab?.incognito) };
+    return { status: "unsupported", settings, hostname, language: "", targetLanguage, readingMode, providerMode, consented: hasCurrentConsent(localState), incognito: Boolean(tab?.incognito) };
   }
   if (!hasCurrentConsent(localState)) {
     return { status: "consent-required", settings, hostname, language: "", targetLanguage, consented: false, incognito: Boolean(tab?.incognito) };
   }
 
-  if (inject || await hasPagePermission(url)) await ensureContentScript(tabId).catch(() => {});
+  if (inject || await hasPagePermission(url)) {
+    await ensureContentScript(tabId).catch(() => {});
+    await chrome.tabs.sendMessage(tabId, {
+      type: "configure-content",
+      smartCompose: settings.smartCompose,
+      targetLanguage
+    }, { frameId: 0 }).catch(() => {});
+  }
   try {
     const page = await chrome.tabs.sendMessage(tabId, { type: "get-translation-state" }, { frameId: 0 });
     if (page?.state?.busy) return { status: "translating", settings, hostname, language: page.state.sourceLanguage, targetLanguage, pageState: page.state, consented: true };
@@ -162,7 +180,7 @@ async function inspectTab(tabId, tab, { inject = false } = {}) {
   if (isExcludedHost(hostname, settings.excludedHosts)) {
     return { status: "excluded-site", settings, hostname, language, targetLanguage, metadata, languageMismatch: resolved.mismatch, consented: true };
   }
-  if (metadata.sensitive && settings.sensitivePageMode === "manual") {
+  if (metadata.sensitive && sensitivePageModeForHost(hostname, settings) === "manual") {
     return { status: "sensitive-page", settings, hostname, language, targetLanguage, metadata, languageMismatch: resolved.mismatch, consented: true };
   }
   if (language && language !== "auto" && baseLanguage(language) === baseLanguage(targetLanguage)) {
@@ -179,6 +197,9 @@ async function inspectTab(tabId, tab, { inject = false } = {}) {
     detectedLanguage,
     declaredLanguage: metadata.declaredLanguage,
     targetLanguage,
+    readingMode,
+    providerMode,
+    siteProfile: siteProfileForHost(hostname, settings),
     metadata,
     languageMismatch: resolved.mismatch,
     consented: true,
@@ -198,7 +219,14 @@ function abortTabJobs(tabId) {
   }
 }
 
-async function translateTab(tabId, tab, { manual = false } = {}) {
+function rememberTranslation(tabId, entry) {
+  if (!Number.isInteger(tabId)) return;
+  const history = recentTranslations.get(tabId) || [];
+  history.unshift({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, at: new Date().toISOString(), ...entry });
+  recentTranslations.set(tabId, history.slice(0, 20));
+}
+
+async function translateTab(tabId, tab, { manual = false, readingModeOverride = "" } = {}) {
   const { settings, localState } = await runtimeState();
   const url = tab?.url || "";
   const hostname = hostnameFromUrl(url);
@@ -243,6 +271,9 @@ async function translateTab(tabId, tab, { manual = false } = {}) {
       targetLanguage: inspection.targetLanguage,
       translateDynamicContent: settings.translateDynamicContent,
       translateAttributes: settings.translateAttributes,
+      readingMode: readingModeOverride || readingModeForHost(hostname, settings),
+      viewportFirst: settings.viewportFirst,
+      smartCompose: settings.smartCompose,
       adjustTextDirection: settings.adjustTextDirection,
       showPageControl: settings.showPageControl
     };
@@ -303,9 +334,29 @@ async function onDeviceAvailability(sourceLanguage, targetLanguage) {
   });
 }
 
-async function providerConfig(settings, localState, signal) {
+async function prepareOnDevice(sourceLanguage, targetLanguage) {
+  await ensureOffscreenDocument();
+  const key = `${sourceLanguage}:${targetLanguage}`;
+  languagePackProgress.set(key, { sourceLanguage, targetLanguage, loaded: 0, state: "downloading" });
+  const response = await chrome.runtime.sendMessage({
+    target: "offscreen",
+    type: "prepare-on-device",
+    sourceLanguage,
+    targetLanguage
+  });
+  languagePackProgress.set(key, {
+    sourceLanguage,
+    targetLanguage,
+    loaded: response?.status === "ok" ? 1 : 0,
+    state: response?.status === "ok" ? "ready" : "error",
+    message: response?.message || ""
+  });
+  return { ...response, progress: languagePackProgress.get(key) };
+}
+
+async function providerConfig(settings, localState, signal, { hostname = "", formality = "" } = {}) {
   return {
-    providerMode: settings.providerMode,
+    providerMode: providerModeForHost(hostname, settings),
     allowGoogleWebFallback: settings.allowGoogleWebFallback,
     googleCloudApiKey: localState.googleCloudApiKey,
     libreTranslateEndpoint: localState.libreTranslateEndpoint,
@@ -315,6 +366,10 @@ async function providerConfig(settings, localState, signal) {
     allowedExternalProviders: EXTERNAL_PROVIDER_MODES.filter((provider) => hasProviderConsent(localState, provider)),
     glossary: settings.glossary,
     neverTranslateTerms: settings.neverTranslateTerms,
+    privacyFirewall: settings.privacyFirewall,
+    privacyFirewallTerms: settings.privacyFirewallTerms,
+    includePrivacyMetrics: true,
+    formality,
     signal,
     onDeviceTranslate: translateOnDevice
   };
@@ -331,16 +386,25 @@ async function translateSelection(info, tab) {
   const hostname = hostnameFromUrl(tab.url || "");
   const targetLanguage = targetLanguageForHost(hostname, settings);
   const result = await translateTexts([info.selectionText], {
-    ...(await providerConfig(settings, localState)),
+    ...(await providerConfig(settings, localState, undefined, { hostname })),
     sourceLanguage: "auto",
     targetLanguage
+  });
+  rememberTranslation(tab.id, {
+    kind: "selection",
+    original: info.selectionText,
+    translated: result.translations[0],
+    targetLanguage,
+    engine: result.engine,
+    privacy: result.privacy
   });
   await chrome.tabs.sendMessage(tab.id, {
     type: "show-selection-translation",
     original: info.selectionText,
     translated: result.translations[0],
     targetLanguage,
-    engine: result.engine
+    engine: result.engine,
+    privacy: result.privacy
   }, { frameId: info.frameId || 0 });
 }
 
@@ -349,6 +413,7 @@ function createContextMenus() {
     chrome.contextMenus.create({ id: "translate-page", title: "Translate this page", contexts: ["page"] });
     chrome.contextMenus.create({ id: "restore-page", title: "Show original page text", contexts: ["page"] });
     chrome.contextMenus.create({ id: "translate-selection", title: "Translate selected text", contexts: ["selection"] });
+    chrome.contextMenus.create({ id: "translate-compose", title: "Translate this writing", contexts: ["editable"] });
   });
 }
 
@@ -389,6 +454,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   recentlyHandled.delete(tabId);
+  recentTranslations.delete(tabId);
   abortTabJobs(tabId);
 });
 
@@ -399,6 +465,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     chrome.tabs.sendMessage(tab.id, { type: "restore-page" }).catch(() => {});
   }
   if (info.menuItemId === "translate-selection") translateSelection(info, tab).catch(() => {});
+  if (info.menuItemId === "translate-compose" && tab?.id) {
+    ensureContentScript(tab.id).then(() => chrome.tabs.sendMessage(tab.id, { type: "open-smart-compose" }, { frameId: info.frameId || 0 })).catch(() => {});
+  }
 });
 
 chrome.commands.onCommand.addListener(async (command) => {
@@ -432,6 +501,64 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       clearTranslationCache();
       return { status: "cleared" };
     }
+    if (message.type === "translate-compose-text") {
+      if (!sender.tab?.id) return { status: "forbidden", message: "Writing translation requests must come from a webpage." };
+      const original = String(message.text || "").trim();
+      if (!original || original.length > 5000) return { status: "invalid-text", message: "Select between 1 and 5,000 characters." };
+      const { settings, localState } = await runtimeState();
+      if (!hasCurrentConsent(localState)) return { status: "consent-required", message: "Privacy consent is required." };
+      const hostname = hostnameFromUrl(sender.tab.url || "");
+      const targetLanguage = normalizeLanguageCode(message.targetLanguage) || targetLanguageForHost(hostname, settings);
+      const sourceLanguage = normalizeLanguageCode(message.sourceLanguage) || "auto";
+      const style = ["natural", "formal", "informal"].includes(message.style) ? message.style : settings.composeStyle;
+      const result = await translateTexts([original], {
+        ...(await providerConfig(settings, localState, undefined, {
+          hostname,
+          formality: style === "formal" ? "prefer_more" : style === "informal" ? "prefer_less" : ""
+        })),
+        sourceLanguage,
+        targetLanguage
+      });
+      const response = {
+        status: "ok",
+        original,
+        translated: result.translations[0],
+        sourceLanguage,
+        targetLanguage,
+        style,
+        engine: result.engine,
+        privacy: result.privacy
+      };
+      rememberTranslation(sender.tab.id, { kind: "compose", ...response });
+      return response;
+    }
+    if (message.type === "translate-panel-text") {
+      const tabId = Number(message.tabId);
+      const original = String(message.text || "").trim();
+      if (!Number.isInteger(tabId) || !original || original.length > 5000) return { status: "invalid-text", message: "Enter between 1 and 5,000 characters." };
+      const tab = await chrome.tabs.get(tabId);
+      const { settings, localState } = await runtimeState();
+      if (!hasCurrentConsent(localState)) return { status: "consent-required", message: "Privacy consent is required." };
+      const hostname = hostnameFromUrl(tab.url || "");
+      const targetLanguage = normalizeLanguageCode(message.targetLanguage) || targetLanguageForHost(hostname, settings);
+      const result = await translateTexts([original], {
+        ...(await providerConfig(settings, localState, undefined, { hostname })),
+        sourceLanguage: normalizeLanguageCode(message.sourceLanguage) || "auto",
+        targetLanguage
+      });
+      const response = { status: "ok", original, translated: result.translations[0], targetLanguage, engine: result.engine, privacy: result.privacy };
+      rememberTranslation(tabId, { kind: "workspace", ...response });
+      return response;
+    }
+    if (message.type === "get-recent-translations") {
+      const tabId = Number(message.tabId || sender.tab?.id);
+      return { status: "ok", translations: recentTranslations.get(tabId) || [] };
+    }
+    if (message.type === "set-reading-mode") {
+      const tabId = Number(message.tabId || sender.tab?.id);
+      if (!Number.isInteger(tabId)) return { status: "invalid-tab" };
+      return chrome.tabs.sendMessage(tabId, { type: "set-reading-mode", readingMode: message.readingMode });
+    }
     if (message.type === "translate-texts") {
       if (!sender.tab?.id) return { status: "forbidden", message: "Translation requests must come from a webpage." };
       const { settings, localState } = await runtimeState();
@@ -440,8 +567,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const key = `${sender.tab.id}:${sender.frameId || 0}:${message.jobId || "page"}`;
       activeJobs.set(key, { tabId: sender.tab.id, controller });
       try {
+        const hostname = hostnameFromUrl(sender.tab.url || "");
         const result = await translateTexts(message.texts, {
-          ...(await providerConfig(settings, localState, controller.signal)),
+          ...(await providerConfig(settings, localState, controller.signal, { hostname })),
           sourceLanguage: normalizeLanguageCode(message.sourceLanguage) || "auto",
           targetLanguage: normalizeLanguageCode(message.targetLanguage)
         });
@@ -474,7 +602,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         normalizeLanguageCode(message.targetLanguage) || "fr"
       );
     }
+    if (message.type === "download-on-device-language-pack") {
+      return prepareOnDevice(
+        normalizeLanguageCode(message.sourceLanguage) || "en",
+        normalizeLanguageCode(message.targetLanguage) || "fr"
+      );
+    }
+    if (message.type === "get-on-device-language-pack-progress") {
+      const sourceLanguage = normalizeLanguageCode(message.sourceLanguage) || "en";
+      const targetLanguage = normalizeLanguageCode(message.targetLanguage) || "fr";
+      const key = `${sourceLanguage}:${targetLanguage}`;
+      return { status: "ok", progress: languagePackProgress.get(key) || null };
+    }
     if (message.type === "on-device-download-progress") {
+      const sourceLanguage = normalizeLanguageCode(message.sourceLanguage);
+      const targetLanguage = normalizeLanguageCode(message.targetLanguage);
+      languagePackProgress.set(`${sourceLanguage}:${targetLanguage}`, {
+        sourceLanguage,
+        targetLanguage,
+        loaded: Math.max(0, Math.min(1, Number(message.loaded || 0))),
+        state: "downloading"
+      });
       return { status: "recorded" };
     }
     if (message.type === "get-diagnostics") {
@@ -501,8 +649,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             excludedLanguageCount: settings.excludedLanguages.length,
             excludedHostCount: settings.excludedHosts.length,
             approvedHostCount: settings.approvedHosts.length,
+            siteProfileCount: Object.keys(settings.siteProfiles || {}).length,
             glossaryCount: settings.glossary.length,
-            neverTranslateTermCount: settings.neverTranslateTerms.length
+            neverTranslateTermCount: settings.neverTranslateTerms.length,
+            privacyFirewallTermCount: settings.privacyFirewallTerms.length
           }
         }
       };
@@ -529,8 +679,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "translate-now") return translateTab(tabId, tab, { manual: true });
     if (message.type === "restore-page") {
       abortTabJobs(tabId);
-      const result = await chrome.tabs.sendMessage(tabId, { type: "restore-page" }, { frameId: 0 });
-      chrome.tabs.sendMessage(tabId, { type: "restore-page" }).catch(() => {});
+      const result = await chrome.tabs.sendMessage(tabId, { type: "restore-page" });
       await setBadge(tabId, "");
       return result;
     }

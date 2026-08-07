@@ -12,6 +12,7 @@ let frameBaseUrl;
 let context;
 let harness;
 let profileDirectory;
+let lastProviderValues = [];
 
 function translate(value) {
   return String(value)
@@ -23,7 +24,10 @@ function translate(value) {
     .replaceAll("Marco srcdoc", "Srcdoc frame")
     .replaceAll("Cuenta privada", "Private account")
     .replaceAll("Texto temporal", "Temporary text")
-    .replaceAll("Texto del botón", "Button text");
+    .replaceAll("Texto del botón", "Button text")
+    .replaceAll("Buenos días", "Good morning")
+    .replaceAll("Hola", "Hello")
+    .replaceAll("mundo", "world");
 }
 
 function send(response, body, contentType = "text/html; charset=utf-8") {
@@ -37,8 +41,8 @@ async function readBody(request) {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-async function configure({ consent = true, behaviourMode = "manual" } = {}) {
-  await harness.evaluate(async ({ consent, behaviourMode, endpoint }) => {
+async function configure({ consent = true, behaviourMode = "manual", readingMode = "translated" } = {}) {
+  await harness.evaluate(async ({ consent, behaviourMode, readingMode, endpoint }) => {
     await chrome.storage.sync.clear();
     await chrome.storage.local.clear();
     await chrome.storage.session.clear();
@@ -50,30 +54,37 @@ async function configure({ consent = true, behaviourMode = "manual" } = {}) {
       allowGoogleWebFallback: false,
       translateDynamicContent: true,
       translateAttributes: false,
+      readingMode,
+      viewportFirst: true,
+      privacyFirewall: true,
+      smartCompose: true,
+      composeStyle: "natural",
       sensitivePageMode: "manual",
       adjustTextDirection: true,
       showPageControl: true,
       showBadge: true
     });
     await chrome.storage.local.set({
-      privacyConsentVersion: consent ? 2 : 0,
+      privacyConsentVersion: consent ? 3 : 0,
       privacyConsentAt: consent ? new Date().toISOString() : "",
       providerConsents: consent ? { libretranslate: new Date().toISOString() } : {},
       rememberProviderCredentials: false,
-      settingsSchemaVersion: 2,
+      settingsSchemaVersion: 3,
       excludedLanguages: [],
       excludedHosts: [],
       approvedHosts: [],
       siteTargetLanguages: {},
+      siteProfiles: {},
       glossary: [],
       neverTranslateTerms: [],
+      privacyFirewallTerms: [],
       googleCloudApiKey: "",
       libreTranslateEndpoint: "",
       libreTranslateApiKey: ""
     });
     await chrome.storage.session.set({ libreTranslateEndpoint: endpoint, libreTranslateApiKey: "" });
     await chrome.runtime.sendMessage({ type: "refresh-settings" });
-  }, { consent, behaviourMode, endpoint: `${baseUrl}/translate` });
+  }, { consent, behaviourMode, readingMode, endpoint: `${baseUrl}/translate` });
 }
 
 async function backgroundMessage(message) {
@@ -89,6 +100,7 @@ test.beforeAll(async () => {
     if (request.method === "POST" && url.pathname === "/translate") {
       const payload = JSON.parse(await readBody(request));
       const values = Array.isArray(payload.q) ? payload.q : [payload.q];
+      lastProviderValues.push(...values);
       return send(response, JSON.stringify({ translatedText: values.map(translate) }), "application/json; charset=utf-8");
     }
     if (url.pathname === "/frame") {
@@ -105,7 +117,10 @@ test.beforeAll(async () => {
     }
     return send(response, `<!doctype html><html lang="es"><body>
       <h1 id="headline">Hola mundo</h1>
+      <p id="contextual">Hola <strong>mundo</strong></p>
+      <p id="private-value">Correo dan@example.com</p>
       <button id="action">Texto del botón</button>
+      <textarea id="compose">Buenos días</textarea>
       <div id="shadow-host"></div><div id="dynamic"></div>
       <iframe id="frame" src="/frame"></iframe>
       <iframe id="cross-frame" src="${frameBaseUrl}/frame"></iframe>
@@ -155,6 +170,7 @@ test("blocks translation until the privacy checkpoint is complete", async () => 
 });
 
 test("translates static, dynamic, open-shadow and frame text, then restores originals", async () => {
+  lastProviderValues = [];
   const page = await context.newPage();
   await page.goto(baseUrl);
   await page.bringToFront();
@@ -164,6 +180,9 @@ test("translates static, dynamic, open-shadow and frame text, then restores orig
 
   await expect(page.locator("#headline")).toHaveText("Hello world");
   await expect(page.locator("#action")).toHaveText("Button text");
+  await expect(page.locator("#contextual")).toHaveText("Hello world");
+  await expect(page.locator("#private-value")).toHaveText("Correo dan@example.com");
+  expect(lastProviderValues.join(" ")).not.toContain("dan@example.com");
   await expect(page.locator("#shadow-host").locator("#shadow-text")).toHaveText("Open shadow");
   await expect(page.frameLocator("#frame").locator("#frame-text")).toHaveText("Spanish frame");
   await expect(page.frameLocator("#cross-frame").locator("#cross-frame-text")).toHaveText("Cross-origin frame");
@@ -184,6 +203,37 @@ test("translates static, dynamic, open-shadow and frame text, then restores orig
   expect((await backgroundMessage({ type: "restore-page", tabId })).status).toBe("restored");
   await expect(page.locator("#headline")).toHaveText("Hola mundo");
   await expect(page.locator("#shadow-host").locator("#shadow-text")).toHaveText("Sombra abierta");
+  expect((await backgroundMessage({ type: "translate-now", tabId })).status).toBe("translated");
+  await expect(page.locator("#headline")).toHaveText("Hello world");
+  await page.close();
+});
+
+test("switches a translated page to bilingual mode without another provider request", async () => {
+  lastProviderValues = [];
+  const page = await context.newPage();
+  await page.goto(baseUrl);
+  await page.bringToFront();
+  const tabId = await harness.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
+  expect((await backgroundMessage({ type: "translate-now", tabId })).status).toBe("translated");
+  await expect(page.locator("#dynamic-text")).toHaveText("Dynamic content");
+  const requestSnapshot = JSON.stringify(lastProviderValues);
+  expect((await backgroundMessage({ type: "set-reading-mode", tabId, readingMode: "bilingual" })).status).toBe("ok");
+  await expect(page.locator("#headline")).toHaveText("Hola mundo");
+  await expect(page.locator("[data-bapt-bilingual]").first()).toBeVisible();
+  expect(JSON.stringify(lastProviderValues)).toBe(requestSnapshot);
+  await page.close();
+});
+
+test("opens Smart Compose explicitly and never changes writing before confirmation", async () => {
+  const page = await context.newPage();
+  await page.goto(baseUrl);
+  await page.bringToFront();
+  const tabId = await harness.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
+  await backgroundMessage({ type: "inspect-tab", tabId });
+  await page.locator("#compose").focus();
+  await page.keyboard.press("Alt+Enter");
+  await expect(page.locator("aside[data-bapt-ui]")).toHaveCount(1);
+  await expect(page.locator("#compose")).toHaveValue("Buenos días");
   await page.close();
 });
 
@@ -222,10 +272,10 @@ test("translates a large page within a bounded time and preserves every section"
   await page.close();
 });
 
-test("popup and onboarding controls have accessible names and unique IDs", async () => {
+test("popup, onboarding, options and side-panel controls have accessible names and unique IDs", async () => {
   const worker = context.serviceWorkers()[0];
   const extensionId = new URL(worker.url()).host;
-  for (const pathName of ["popup/popup.html", "onboarding/onboarding.html", "options/options.html"]) {
+  for (const pathName of ["popup/popup.html", "onboarding/onboarding.html", "options/options.html", "sidepanel/sidepanel.html"]) {
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/${pathName}`);
     const issues = await page.evaluate(() => {

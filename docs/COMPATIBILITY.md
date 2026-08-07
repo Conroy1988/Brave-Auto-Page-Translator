@@ -15,6 +15,9 @@ The nightly GitHub Actions matrix runs the packaged extension suite against curr
 ## Page fixture coverage
 
 - Static text and whitespace preservation
+- Contextual inline-element grouping and damaged-boundary fallback
+- Viewport-first ordering and deferred off-screen translation
+- Translated, bilingual and original-on-hover reading modes without repeat requests
 - SPA rerender and rapid node replacement
 - Infinite-scroll/live content
 - Open Shadow DOM
@@ -29,8 +32,11 @@ The nightly GitHub Actions matrix runs the packaged extension suite against curr
 - Large-page batching and simultaneous tabs
 - Versioned storage migration and credential-free backup import/export
 - Provider-specific consent and external-provider outage fallback
+- Privacy Firewall masking, custom terms and token-integrity failure
+- Smart Compose preview, style selection and confirm-before-replace behavior
+- Side-panel status, quick translation, site profile and language-pack controls
 - Incognito/manual-only rule non-persistence
-- Popup, onboarding and settings control-name accessibility checks
+- Popup, side panel, onboarding and settings control-name accessibility checks
 
 ## Intentionally unsupported surfaces
 
@@ -40,3 +46,4 @@ The nightly GitHub Actions matrix runs the packaged extension suite against curr
 - Canvas, image and video text
 - Frames whose browser security boundary prevents extension access
 - Content deliberately marked `translate="no"` or `.notranslate`
+- Rich-text editors whose application state cannot safely accept normal input/change events

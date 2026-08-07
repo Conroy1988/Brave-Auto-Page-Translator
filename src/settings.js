@@ -1,5 +1,5 @@
-export const CONSENT_VERSION = 2;
-export const SETTINGS_SCHEMA_VERSION = 2;
+export const CONSENT_VERSION = 3;
+export const SETTINGS_SCHEMA_VERSION = 3;
 export const SETTINGS_BACKUP_FORMAT = "auto-page-translator-settings";
 
 export const SUPPORTED_LANGUAGES = Object.freeze([
@@ -50,6 +50,8 @@ export const SUPPORTED_LANGUAGES = Object.freeze([
 export const BEHAVIOUR_MODES = Object.freeze(["manual", "approved-sites", "all-sites"]);
 export const PROVIDER_MODES = Object.freeze(["auto", "on-device", "google-cloud", "libretranslate", "deepl", "google-web"]);
 export const EXTERNAL_PROVIDER_MODES = Object.freeze(["google-cloud", "libretranslate", "deepl", "google-web"]);
+export const READING_MODES = Object.freeze(["translated", "bilingual", "hover"]);
+export const COMPOSE_STYLES = Object.freeze(["natural", "formal", "informal"]);
 
 export const DEFAULT_SETTINGS = Object.freeze({
   enabled: true,
@@ -62,10 +64,17 @@ export const DEFAULT_SETTINGS = Object.freeze({
   excludedHosts: ["localhost", "127.0.0.1"],
   approvedHosts: [],
   siteTargetLanguages: {},
+  siteProfiles: {},
   glossary: [],
   neverTranslateTerms: [],
+  privacyFirewallTerms: [],
   translateDynamicContent: true,
   translateAttributes: false,
+  readingMode: "translated",
+  viewportFirst: true,
+  privacyFirewall: true,
+  smartCompose: true,
+  composeStyle: "natural",
   sensitivePageMode: "manual",
   adjustTextDirection: true,
   showPageControl: true,
@@ -93,6 +102,11 @@ export const SYNC_SETTING_KEYS = Object.freeze([
   "deepLApiPlan",
   "translateDynamicContent",
   "translateAttributes",
+  "readingMode",
+  "viewportFirst",
+  "privacyFirewall",
+  "smartCompose",
+  "composeStyle",
   "sensitivePageMode",
   "adjustTextDirection",
   "showPageControl",
@@ -104,8 +118,10 @@ export const LOCAL_SETTING_KEYS = Object.freeze([
   "excludedHosts",
   "approvedHosts",
   "siteTargetLanguages",
+  "siteProfiles",
   "glossary",
-  "neverTranslateTerms"
+  "neverTranslateTerms",
+  "privacyFirewallTerms"
 ]);
 
 const SECRET_KEYS = Object.freeze([
@@ -141,6 +157,22 @@ function cleanSiteTargets(value) {
   return Object.fromEntries(Object.entries(value)
     .map(([host, language]) => [cleanHost(host), VALID_TARGET_LOOKUP.get(String(language).toLowerCase())])
     .filter(([host, language]) => host && language));
+}
+
+function cleanSiteProfiles(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(Object.entries(value).flatMap(([rawHost, rawProfile]) => {
+    const host = cleanHost(rawHost);
+    if (!host || !rawProfile || typeof rawProfile !== "object" || Array.isArray(rawProfile)) return [];
+    const profile = {};
+    const targetLanguage = VALID_TARGET_LOOKUP.get(String(rawProfile.targetLanguage || "").toLowerCase());
+    if (targetLanguage) profile.targetLanguage = targetLanguage;
+    if (PROVIDER_MODES.includes(rawProfile.providerMode)) profile.providerMode = rawProfile.providerMode;
+    if (READING_MODES.includes(rawProfile.readingMode)) profile.readingMode = rawProfile.readingMode;
+    if (["inherit", "manual", "allow"].includes(rawProfile.sensitivePageMode)) profile.sensitivePageMode = rawProfile.sensitivePageMode;
+    if (typeof rawProfile.automatic === "boolean") profile.automatic = rawProfile.automatic;
+    return Object.keys(profile).length ? [[host, profile]] : [];
+  }));
 }
 
 function cleanGlossary(value) {
@@ -186,10 +218,17 @@ export function normalizeSettings(value = {}) {
     excludedHosts: cleanList(value.excludedHosts, cleanHost),
     approvedHosts: cleanList(value.approvedHosts, cleanHost),
     siteTargetLanguages: cleanSiteTargets(value.siteTargetLanguages),
+    siteProfiles: cleanSiteProfiles(value.siteProfiles),
     glossary: cleanGlossary(value.glossary),
     neverTranslateTerms: cleanList(value.neverTranslateTerms).slice(0, 200),
+    privacyFirewallTerms: cleanList(value.privacyFirewallTerms).slice(0, 200),
     translateDynamicContent: value.translateDynamicContent !== false,
     translateAttributes: value.translateAttributes === true,
+    readingMode: READING_MODES.includes(value.readingMode) ? value.readingMode : DEFAULT_SETTINGS.readingMode,
+    viewportFirst: value.viewportFirst !== false,
+    privacyFirewall: value.privacyFirewall !== false,
+    smartCompose: value.smartCompose !== false,
+    composeStyle: COMPOSE_STYLES.includes(value.composeStyle) ? value.composeStyle : DEFAULT_SETTINGS.composeStyle,
     sensitivePageMode: value.sensitivePageMode === "allow" ? "allow" : "manual",
     adjustTextDirection: value.adjustTextDirection !== false,
     showPageControl: value.showPageControl !== false,
@@ -232,17 +271,21 @@ export function recordProviderConsents(localState, providers, acceptedAt = new D
 export function externalProvidersForConfiguration(settings, localState = {}) {
   const normalizedSettings = normalizeSettings(settings);
   const normalizedLocal = normalizeLocalState(localState);
+  const profiledProviders = Object.values(normalizedSettings.siteProfiles || {})
+    .map((profile) => profile.providerMode)
+    .filter((provider) => EXTERNAL_PROVIDER_MODES.includes(provider));
   if (normalizedSettings.providerMode !== "auto") {
     const providers = EXTERNAL_PROVIDER_MODES.includes(normalizedSettings.providerMode) ? [normalizedSettings.providerMode] : [];
     if (normalizedSettings.allowGoogleWebFallback && normalizedSettings.providerMode !== "google-web") providers.push("google-web");
-    return [...new Set(providers)];
+    return [...new Set([...providers, ...profiledProviders])];
   }
-  return [
+  return [...new Set([
     ...(normalizedLocal.googleCloudApiKey ? ["google-cloud"] : []),
     ...(normalizedLocal.libreTranslateEndpoint ? ["libretranslate"] : []),
     ...(normalizedLocal.deepLApiKey ? ["deepl"] : []),
-    ...(normalizedSettings.allowGoogleWebFallback ? ["google-web"] : [])
-  ];
+    ...(normalizedSettings.allowGoogleWebFallback ? ["google-web"] : []),
+    ...profiledProviders
+  ])];
 }
 
 export function suggestedTargetLanguage(uiLanguage = "en") {
@@ -346,11 +389,12 @@ export async function clearProviderSecrets() {
 }
 
 export function createSettingsBackup(settings, createdAt = new Date().toISOString()) {
+  const normalized = normalizeSettings(settings);
   return {
     format: SETTINGS_BACKUP_FORMAT,
     schemaVersion: SETTINGS_SCHEMA_VERSION,
     createdAt,
-    settings: normalizeSettings(settings)
+    settings: { ...normalized, privacyFirewallTerms: [] }
   };
 }
 

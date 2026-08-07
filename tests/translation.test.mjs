@@ -12,6 +12,8 @@ import {
   normalizeLanguageCode,
   originPatternFromUrl,
   providerPermissionPatterns,
+  providerModeForHost,
+  readingModeForHost,
   resolvePageLanguage,
   shouldTranslateLanguage,
   targetLanguageForHost
@@ -76,11 +78,16 @@ test("applies behaviour and per-site target rules", () => {
     approvedHosts: ["example.com"],
     excludedHosts: [],
     targetLanguage: "en",
-    siteTargetLanguages: { "forum.example.com": "fr" }
+    siteTargetLanguages: { "forum.example.com": "fr" },
+    siteProfiles: { "news.example.com": { targetLanguage: "de", providerMode: "deepl", readingMode: "bilingual", automatic: true } },
+    readingMode: "translated",
+    providerMode: "auto"
   };
   assert.equal(isAutomaticHostAllowed("news.example.com", settings), true);
   assert.equal(isAutomaticHostAllowed("elsewhere.test", settings), false);
   assert.equal(targetLanguageForHost("forum.example.com", settings), "fr");
-  assert.equal(targetLanguageForHost("news.example.com", settings), "en");
+  assert.equal(targetLanguageForHost("news.example.com", settings), "de");
+  assert.equal(providerModeForHost("news.example.com", settings), "deepl");
+  assert.equal(readingModeForHost("news.example.com", settings), "bilingual");
   assert.equal(isRtlLanguage("ar-SA"), true);
 });

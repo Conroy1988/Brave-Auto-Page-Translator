@@ -27,7 +27,10 @@ Include only:
 - HTTPS external-provider requests, except user-configured localhost services.
 - Provider secrets stored in browser-session storage by default, optionally remembered locally after explicit opt-in, and excluded from diagnostics and backups.
 - Provider-specific consent enforced before any external engine can receive page text.
-- Trusted-context storage access levels, versioned storage migration and local-only site/glossary rules.
+- Privacy Firewall masking for recognized values and user-defined terms, with fail-closed token restoration.
+- Smart Compose restricted to explicit user actions on supported non-sensitive editors, with preview before replacement.
+- Memory-only recent translation history that is deleted when its tab closes or the browser session ends.
+- Trusted-context storage access levels, versioned storage migration and local-only site/glossary/privacy rules.
 - Exact release-ZIP tests, archive policy inspection, recognized-secret scanning, checksums, dependency audit, CodeQL and dependency update monitoring.
 - No analytics, ads, telemetry or developer-operated relay.
 - DOM text is applied through text properties rather than executable HTML.
@@ -36,4 +39,4 @@ Include only:
 
 ## Threat-model boundaries
 
-The extension cannot control what a user-selected translation provider records after receiving a request. Users should review that provider's contract and privacy policy. A compromised browser profile or browser process remains outside the extension's trust boundary. Users should avoid remembering provider credentials on shared devices.
+The Privacy Firewall reduces accidental disclosure but is not a general anonymizer and cannot identify every sensitive value. The extension cannot control what a user-selected translation provider records after receiving a request. Users should review that provider's contract and privacy policy. A compromised browser profile or browser process remains outside the extension's trust boundary. Users should avoid remembering provider credentials on shared devices.

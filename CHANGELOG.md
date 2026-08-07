@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.0 — 7 August 2026 — Private, contextual translation workspace
+
+- Rebranded the extension as **Private Auto Page Translator** while keeping the existing Chrome Web Store identity and independent/unofficial disclaimer.
+- Added a contextual translation engine that keeps inline sentence fragments together and safely falls back if a provider changes its internal boundary markers.
+- Added translated, bilingual and original-on-hover reading modes that can be switched without another provider request.
+- Added viewport-first translation so visible content is prioritized on long pages.
+- Added a fail-closed Privacy Firewall that masks common private values and user-defined confidential terms before external-provider requests.
+- Added Smart Compose for explicitly translating writing in supported editable fields, with preview, natural/formal/informal styles, copy, swap and confirm-before-replace controls.
+- Added a persistent side-panel workspace for page controls, quick text translation, site intelligence, language-pack preparation and memory-only recent translations.
+- Added per-site provider, target-language, reading-mode, automatic behaviour and sensitive-page settings.
+- Added an on-device language-pack manager and download/readiness progress.
+- Expanded localized core setup and navigation coverage from 6 to 20 language catalogs.
+- Extended automated coverage for contextual boundaries, viewport priority, privacy-token integrity, site profiles, reading-mode reuse and Smart Compose non-replacement.
+
 ## 1.1.0 — Privacy, reliability and release hardening
 
 - Made the Google web compatibility fallback opt-in instead of enabled by default.

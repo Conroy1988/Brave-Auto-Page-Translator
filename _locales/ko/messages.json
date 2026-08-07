@@ -1,0 +1,6 @@
+{
+  "extensionName":{"message":"개인정보 보호 자동 페이지 번역기"},"extensionShortName":{"message":"자동 번역기"},"extensionDescription":{"message":"문맥 번역, 이중 언어 읽기, 글쓰기 번역, 사이트 규칙과 개인정보 보호 방화벽을 제공하는 웹 번역기입니다."},
+  "independentExtension":{"message":"독립 확장 프로그램"},"privateWindowNotice":{"message":"시크릿 창에서는 수동 번역만 가능합니다. 사이트 및 언어 규칙은 저장되지 않습니다."},"translatePagesInto":{"message":"페이지 번역 언어"},"translateThisPage":{"message":"이 페이지 번역"},"automaticSite":{"message":"이 사이트 자동 번역"},"neverSite":{"message":"이 사이트 번역 안 함"},"neverLanguage":{"message":"이 언어 번역 안 함"},"settingsPrivacy":{"message":"설정 및 개인정보 보호"},
+  "onboardingTitle":{"message":"원하는 방식으로 번역하세요."},"onboardingIntro":{"message":"확장 프로그램의 접근 범위와 번역 전 텍스트 처리 위치를 선택하세요."},"yourLanguage":{"message":"사용 언어"},"whenTranslationRuns":{"message":"번역 실행 시점"},"translationProvider":{"message":"번역 제공업체"},"privacyCheckpoint":{"message":"개인정보 보호 확인"},"acceptFinish":{"message":"동의하고 설정 완료"},
+  "controlCentre":{"message":"번역 제어 센터"},"controlIntro":{"message":"사이트 접근, 제공업체 개인정보 보호, 동적 페이지 및 자동 규칙을 관리합니다."},"accessBehaviour":{"message":"접근 및 자동 동작"},"pageSafeguards":{"message":"페이지 동작 및 보호"},"rulesTargets":{"message":"제외 및 사이트별 대상"},"terminology":{"message":"용어"},"privacyDashboard":{"message":"개인정보 보호 대시보드"},"settingsBackup":{"message":"설정 백업"},"localDiagnostics":{"message":"로컬 진단"},"saveSettings":{"message":"설정 저장"}
+}

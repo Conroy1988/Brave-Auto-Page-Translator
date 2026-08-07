@@ -1,7 +1,7 @@
 {
-  "extensionName": { "message": "Brave 用ページ自動翻訳" },
+  "extensionName": { "message": "プライベート自動ページ翻訳" },
   "extensionShortName": { "message": "ページ自動翻訳" },
-  "extensionDescription": { "message": "プライバシー管理、サイト別ルール、原文復元機能を備え、外国語のウェブページを自動翻訳します。" },
+  "extensionDescription": { "message": "文脈対応翻訳、バイリンガル表示、文章翻訳、サイト別ルール、プライバシーファイアウォールを搭載。" },
   "independentExtension": { "message": "独立した拡張機能" },
   "privateWindowNotice": { "message": "プライベートウィンドウでは手動翻訳のみです。サイトと言語のルールは保存されません。" },
   "translatePagesInto": { "message": "ページの翻訳先" },

@@ -20,6 +20,16 @@ const circuitState = new Map();
 let activeRequests = 0;
 const requestWaiters = [];
 
+const PRIVACY_PATTERNS = Object.freeze([
+  ["email", /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/giu],
+  ["url", /\b(?:https?:\/\/|www\.)[^\s<>"']+/giu],
+  ["ipv4", /\b(?:25[0-5]|2[0-4]\d|1?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}\b/gu],
+  ["currency", /(?<!\w)(?:£|€|\$|¥)\s?\d[\d,.]*(?:\s?(?:GBP|EUR|USD|JPY))?\b|\b\d[\d,.]*\s?(?:GBP|EUR|USD|JPY)\b/giu],
+  ["date", /\b(?:\d{1,2}[\/.\-]\d{1,2}[\/.\-](?:\d{2}|\d{4})|\d{4}-\d{2}-\d{2})\b/gu],
+  ["reference", /\b(?=[A-Z0-9-]{8,}\b)(?=[A-Z0-9-]*\d)[A-Z0-9]+(?:-[A-Z0-9]+)+\b/giu],
+  ["phone", /(?<!\w)(?:\+?\d[\d\s().-]{7,}\d)(?!\w)/gu]
+]);
+
 export class TranslationProviderError extends Error {
   constructor(message, { code = "provider-error", retryable = false, status = 0 } = {}) {
     super(message);
@@ -242,6 +252,52 @@ export function protectTerms(text, glossary = [], neverTranslateTerms = []) {
   };
 }
 
+export function protectSensitivePatterns(text, customTerms = []) {
+  const replacements = [];
+  let protectedText = String(text);
+  const patterns = [
+    ...[...new Set((customTerms || []).map((value) => String(value || "").trim()).filter(Boolean))]
+      .sort((a, b) => b.length - a.length)
+      .map((value) => ["custom", new RegExp(escapeRegExp(value), "giu")]),
+    ...PRIVACY_PATTERNS
+  ];
+  for (const [kind, pattern] of patterns) {
+    protectedText = protectedText.replace(pattern, (value) => {
+      const token = `BAPTPRIVATE${String(replacements.length).padStart(4, "0")}BAPT`;
+      replacements.push({ token, value, kind });
+      return token;
+    });
+  }
+  return {
+    text: protectedText,
+    maskedCount: replacements.length,
+    maskedKinds: [...new Set(replacements.map(({ kind }) => kind))],
+    restore(value) {
+      let restored = String(value);
+      for (const { token, value: original } of replacements) {
+        const index = token.match(/BAPTPRIVATE(\d{4})BAPT/)?.[1] || "";
+        const flexible = new RegExp(`BAPT\\s*PRIVATE\\s*${index}\\s*BAPT`, "gi");
+        const occurrences = restored.match(flexible)?.length || 0;
+        if (occurrences !== 1) {
+          throw new TranslationProviderError("A protected value was changed by the translation provider, so the original text was kept.", {
+            code: "privacy-token-integrity",
+            retryable: false
+          });
+        }
+        flexible.lastIndex = 0;
+        restored = restored.replace(flexible, original);
+      }
+      if (/BAPT\s*PRIVATE\s*\d{4}\s*BAPT/i.test(restored)) {
+        throw new TranslationProviderError("A protected value was changed by the translation provider, so the original text was kept.", {
+          code: "privacy-token-integrity",
+          retryable: false
+        });
+      }
+      return restored;
+    }
+  };
+}
+
 function cacheKey(text, sourceLanguage, targetLanguage, engine, terminologyKey) {
   return `${engine}\u0000${sourceLanguage || "auto"}\u0000${targetLanguage}\u0000${terminologyKey}\u0000${text}`;
 }
@@ -352,6 +408,7 @@ async function translateDeepL(texts, sourceLanguage, targetLanguage, apiKey, api
   body.set("target_lang", deepLLanguage(targetLanguage, { target: true }));
   const source = deepLLanguage(sourceLanguage);
   if (source) body.set("source_lang", source);
+  if (["prefer_more", "prefer_less"].includes(options.formality)) body.set("formality", options.formality);
   const payload = await requestJson(endpoint, {
     method: "POST",
     headers: {
@@ -389,7 +446,7 @@ function providerCandidates(config) {
 }
 
 async function runProvider(engine, texts, config) {
-  const common = { fetchImpl: config.fetchImpl || fetch, signal: config.signal };
+  const common = { fetchImpl: config.fetchImpl || fetch, signal: config.signal, formality: config.formality };
   if (engine === "on-device") {
     if (typeof config.onDeviceTranslate !== "function") throw new TranslationProviderError("On-device translation is not available in this browser.", { code: "provider-unavailable", retryable: false });
     return config.onDeviceTranslate(texts, config.sourceLanguage, config.targetLanguage, config.signal);
@@ -408,16 +465,34 @@ export async function translateTexts(texts, config = {}) {
   const targetLanguage = String(config.targetLanguage || "").toLowerCase();
   if (!targetLanguage) throw new TranslationProviderError("A target language is required.", { code: "missing-target", retryable: false });
 
-  const protectedValues = texts.map((text) => {
+  const validatedTexts = texts.map((text) => {
     const value = String(text).trim();
     if (!value || value.length > 5000) throw new TranslationProviderError("A text section is empty or too large to translate safely.", { code: "invalid-section", retryable: false });
-    return protectTerms(value, config.glossary, config.neverTranslateTerms);
+    return value;
   });
-  const terminologyKey = JSON.stringify([config.glossary || [], config.neverTranslateTerms || []]);
   let lastError;
 
   for (const engine of providerCandidates(config)) {
     try {
+      const protectedValues = validatedTexts.map((value) => {
+        const privacy = engine === "on-device" || config.privacyFirewall === false
+          ? { text: value, maskedCount: 0, maskedKinds: [], restore: (translated) => String(translated) }
+          : protectSensitivePatterns(value, config.privacyFirewallTerms);
+        const terminology = protectTerms(privacy.text, config.glossary, config.neverTranslateTerms);
+        return {
+          text: terminology.text,
+          maskedCount: privacy.maskedCount,
+          maskedKinds: privacy.maskedKinds,
+          restore(translated) {
+            return privacy.restore(terminology.restore(translated));
+          }
+        };
+      });
+      const terminologyKey = JSON.stringify([
+        config.glossary || [],
+        config.neverTranslateTerms || [],
+        engine === "on-device" ? "on-device" : [config.privacyFirewall !== false, config.privacyFirewallTerms || []]
+      ]);
       const output = Array(texts.length);
       const missing = [];
       const positions = new Map();
@@ -444,7 +519,16 @@ export async function translateTexts(texts, config = {}) {
           for (const position of positions.get(source) || []) output[position] = protectedValues[position].restore(value);
         });
       }
-      return { translations: output, engine };
+      const result = { translations: output, engine };
+      if (config.includePrivacyMetrics) {
+        result.privacy = {
+          route: engine === "on-device" ? "on-device" : "external",
+          charactersProcessed: texts.reduce((sum, value) => sum + String(value).length, 0),
+          maskedValues: protectedValues.reduce((sum, value) => sum + value.maskedCount, 0),
+          maskedKinds: [...new Set(protectedValues.flatMap((value) => value.maskedKinds))]
+        };
+      }
+      return result;
     } catch (error) {
       lastError = error;
       if (error?.code === "cancelled" || config.signal?.aborted) throw error;

@@ -4,7 +4,7 @@ import { extractZip } from "./zip-utils.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const target = path.join(root, ".e2e-extension");
-const entries = ["src", "popup", "options", "onboarding", "offscreen", "_locales", "icons"];
+const entries = ["src", "popup", "options", "onboarding", "offscreen", "sidepanel", "_locales", "icons"];
 const packagedExtension = process.env.BAPT_E2E_PACKAGE;
 
 rmSync(target, { recursive: true, force: true });

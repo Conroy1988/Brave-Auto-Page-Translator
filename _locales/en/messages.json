@@ -1,13 +1,13 @@
 {
   "extensionName": {
-    "message": "Auto Page Translator for Brave",
+    "message": "Private Auto Page Translator",
     "description": "Independent extension name"
   },
   "extensionShortName": {
     "message": "Auto Translator"
   },
   "extensionDescription": {
-    "message": "Automatically translates foreign-language webpages with privacy controls, site rules and restorable in-page translation."
+    "message": "Context-aware webpage translation with bilingual reading, Smart Compose, site rules and a built-in privacy firewall."
   },
   "independentExtension": { "message": "INDEPENDENT EXTENSION" },
   "privateWindowNotice": { "message": "Private window: manual translation only. Site and language rules are not saved here." },

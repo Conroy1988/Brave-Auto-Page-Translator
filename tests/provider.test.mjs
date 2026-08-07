@@ -9,6 +9,7 @@ import {
   parseGoogleTranslation,
   parseLibreTranslations,
   protectTerms,
+  protectSensitivePatterns,
   splitTranslationBatch,
   translateTexts
 } from "../src/provider.js";
@@ -47,6 +48,48 @@ test("protects glossary and never-translate terms", () => {
   const protectedValue = protectTerms("Hola TKB and Bomberos", [{ source: "Bomberos", replacement: "Fire Brigade" }], ["TKB"]);
   assert.match(protectedValue.text, /BAPTGLOSSARY/);
   assert.equal(protectedValue.restore(protectedValue.text.replace("Hola", "Hello").replace("and", "and")), "Hello TKB and Fire Brigade");
+});
+
+test("masks private patterns and fails closed if a provider damages a token", () => {
+  const value = protectSensitivePatterns("Email dan@example.com, call +44 7700 900123, ref CASE-2026-9911.");
+  assert.equal(value.maskedCount, 3);
+  assert.deepEqual(new Set(value.maskedKinds), new Set(["email", "phone", "reference"]));
+  assert.equal(value.restore(value.text), "Email dan@example.com, call +44 7700 900123, ref CASE-2026-9911.");
+  assert.throws(() => value.restore("Provider removed every token"), (error) => error.code === "privacy-token-integrity");
+  assert.throws(() => value.restore(`${value.text} ${value.text}`), (error) => error.code === "privacy-token-integrity");
+});
+
+test("keeps private values untouched for the on-device route", async () => {
+  const result = await translateTexts(["Email dan@example.com"], {
+    sourceLanguage: "es",
+    targetLanguage: "en",
+    providerMode: "on-device",
+    includePrivacyMetrics: true,
+    onDeviceTranslate: async (texts) => texts
+  });
+  assert.equal(result.privacy.route, "on-device");
+  assert.equal(result.privacy.maskedValues, 0);
+  assert.equal(result.translations[0], "Email dan@example.com");
+});
+
+test("masks private values only before an external provider request", async () => {
+  let providerText = "";
+  const result = await translateTexts(["Email dan@example.com on 2026-08-07 for £1,240.00"], {
+    sourceLanguage: "en",
+    targetLanguage: "fr",
+    providerMode: "libretranslate",
+    libreTranslateEndpoint: "https://translate.example.test/translate",
+    includePrivacyMetrics: true,
+    fetchImpl: async (_url, options) => {
+      providerText = JSON.parse(options.body).q[0];
+      return { ok: true, status: 200, headers: { get: () => null }, async json() { return { translatedText: [providerText] }; } };
+    }
+  });
+  assert.doesNotMatch(providerText, /dan@example\.com|2026-08-07|£1,240\.00/);
+  assert.equal(result.privacy.route, "external");
+  assert.equal(result.privacy.maskedValues, 3);
+  assert.deepEqual(new Set(result.privacy.maskedKinds), new Set(["email", "date", "currency"]));
+  assert.equal(result.translations[0], "Email dan@example.com on 2026-08-07 for £1,240.00");
 });
 
 test("translates batches while preserving duplicate positions", async () => {

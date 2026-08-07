@@ -1,7 +1,7 @@
 {
-  "extensionName": { "message": "Automatischer Seitenübersetzer für Brave" },
+  "extensionName": { "message": "Privater automatischer Seitenübersetzer" },
   "extensionShortName": { "message": "Auto-Übersetzer" },
-  "extensionDescription": { "message": "Übersetzt fremdsprachige Webseiten automatisch – mit Datenschutzkontrollen, Website-Regeln und Wiederherstellung des Originals." },
+  "extensionDescription": { "message": "Kontextbezogene Webseitenübersetzung mit zweisprachigem Lesen, Schreibhilfe, Website-Regeln und Datenschutz-Firewall." },
   "independentExtension": { "message": "UNABHÄNGIGE ERWEITERUNG" },
   "privateWindowNotice": { "message": "Privates Fenster: nur manuelle Übersetzung. Website- und Sprachregeln werden hier nicht gespeichert." },
   "translatePagesInto": { "message": "Seiten übersetzen in" },

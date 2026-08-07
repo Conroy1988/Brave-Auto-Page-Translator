@@ -66,3 +66,17 @@ test("detects password and payment form safeguards", () => {
     sensitiveReasons: ["password-field", "payment-field"]
   });
 });
+
+test("assembles contextual inline text and rejects damaged markers", () => {
+  const records = [{ text: "Hola" }, { text: "mundo" }];
+  const joined = content.joinContextualRecords(records);
+  assert.deepEqual(content.splitContextualTranslation(joined.replace("Hola", "Hello").replace("mundo", "world"), 2), ["Hello", "world"]);
+  assert.equal(content.splitContextualTranslation("markers removed", 2), null);
+});
+
+test("prioritizes records in the current viewport", () => {
+  assert.equal(content.isElementInViewport({ getBoundingClientRect: () => ({ top: 5, left: 5, bottom: 20, right: 20 }) }, { width: 100, height: 100 }), true);
+  assert.equal(content.isElementInViewport({ getBoundingClientRect: () => ({ top: 150, left: 5, bottom: 180, right: 20 }) }, { width: 100, height: 100 }), false);
+  const records = [{ visible: false, text: "later" }, { visible: true, text: "first" }];
+  assert.deepEqual(content.partitionViewportRecords(records), { visible: [records[1]], deferred: [records[0]] });
+});
