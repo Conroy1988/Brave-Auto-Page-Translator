@@ -10,4 +10,3 @@ export function applyTranslations(root = document) {
     if (translated) element.placeholder = translated;
   }
 }
-

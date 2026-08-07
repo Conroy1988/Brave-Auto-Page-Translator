@@ -9,4 +9,3 @@ if (!archives.length) throw new Error("No extension ZIP was found in dist/. Run 
 const lines = archives.map((name) => `${createHash("sha256").update(readFileSync(path.join(dist, name))).digest("hex")}  ${name}`);
 writeFileSync(path.join(dist, "SHA256SUMS"), `${lines.join("\n")}\n`);
 console.log(`Created dist/SHA256SUMS for ${archives.length} extension package(s).`);
-

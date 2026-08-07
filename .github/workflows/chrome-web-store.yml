@@ -74,4 +74,3 @@ jobs:
             "https://chromewebstore.googleapis.com/v2/$RESOURCE:publish" > publish-response.json
           jq -e --arg item "$CWS_ITEM_ID" '.itemId == $item and (.state | type == "string")' publish-response.json
           jq '{itemId, state, warningInfo}' publish-response.json
-

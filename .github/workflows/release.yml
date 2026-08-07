@@ -85,4 +85,3 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run chrome-web-store.yml --ref main --field release_tag="$RELEASE_TAG" --field publish_type=STAGED_PUBLISH
-
