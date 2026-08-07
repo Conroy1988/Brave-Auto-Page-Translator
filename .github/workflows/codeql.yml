@@ -22,3 +22,15 @@ jobs:
         with:
           languages: javascript-typescript
       - uses: github/codeql-action/analyze@c4dd10e44af883a891fe31ced449bcb4a6728b9b # v3
+
+  required-context-compatibility:
+    name: CodeQL / analyse
+    needs: analyse
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Confirm CodeQL analysis passed
+        env:
+          CODEQL_RESULT: ${{ needs.analyse.result }}
+        run: test "$CODEQL_RESULT" = "success"
