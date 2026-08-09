@@ -1,6 +1,6 @@
 # User Data Map and Chrome Web Store Disclosure Record
 
-Last reviewed: 9 August 2026 for extension version 1.2.1.
+Last reviewed: 9 August 2026 for extension version 1.2.2.
 
 This file is the engineering source of truth for the Chrome Web Store Privacy Practices form. Any change to data handling must update this map, `PRIVACY.md`, the in-product disclosure and the Web Store form before release.
 
@@ -15,6 +15,7 @@ This file is the engineering source of truth for the Chrome Web Store Privacy Pr
 | Privacy and provider consent records | Prove and enforce current disclosure choices | Local extension storage: version and timestamp only | No | Until extension data is removed; material policy changes require renewed consent | App functionality/security record |
 | User-supplied Google Cloud, LibreTranslate and DeepL API credentials/endpoints | Authenticate directly to the translation provider selected by the user | Session storage by default; local device storage only after explicit opt-in; never sync | Directly to the corresponding translation provider as required for authentication | Session end by default; until cleared/reset/uninstall if remembered | **Authentication information** — this broad Store category refers only to optional provider API keys, never website passwords, PINs, security answers, login fields or payment details |
 | Diagnostic environment and configuration counts | Help the user troubleshoot | Generated on demand in memory and previewed before sharing | Only if the user copies/exports and shares it | Ends with the extension page unless explicitly exported by user | App functionality/support; excludes URLs, page text and credentials |
+| Ko-fi support link | Let a user voluntarily open the project's support page | No | No extension data is transmitted; the browser navigates to Ko-fi only after an explicit click | None in extension storage | Not collected by the extension; destination website practices apply after navigation |
 
 ## Prohibited uses
 

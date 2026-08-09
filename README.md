@@ -9,6 +9,7 @@
     <img alt="Analytics" src="https://img.shields.io/badge/Analytics-None-0f9f8f?style=for-the-badge">
     <img alt="License" src="https://img.shields.io/badge/License-MIT-222233?style=for-the-badge">
   </p>
+  <p><a href="https://ko-fi.com/D4P124RWI9"><img height="36" src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Support Private Auto Page Translator on Ko-fi"></a></p>
 </div>
 
 > [!IMPORTANT]
@@ -89,6 +90,7 @@ On-device translation and language-pair downloads depend on browser support. Tra
 
 ## Support and security
 
+- [Support independent development on Ko-fi](https://ko-fi.com/D4P124RWI9)
 - [Support and troubleshooting](SUPPORT.md)
 - [Compatibility matrix](docs/COMPATIBILITY.md)
 - [Privacy policy](PRIVACY.md)
