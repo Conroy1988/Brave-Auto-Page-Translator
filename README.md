@@ -38,7 +38,7 @@ The extension translates readable text directly inside the original webpage. The
 
 ## Provider choices
 
-Automatic provider selection prefers the browser's on-device Translator API where available. You can instead configure Google Cloud Translation, DeepL API or a LibreTranslate server. A separately disclosed Google web compatibility route remains off by default.
+Automatic provider selection prefers the browser's on-device Translator API where available. If Brave does not expose that API and no configured provider is available, the one-time privacy setup recommends the Google web compatibility route and names the data flow before asking for approval. It remains disabled until that explicit approval and optional host permission are granted. You can instead configure Google Cloud Translation, DeepL API or a LibreTranslate server.
 
 External providers receive only the text needed for the requested translation. When the Privacy Firewall is enabled, recognized private values are masked first. Each external route requires explicit approval, and no developer-operated translation relay sits between the extension and the selected provider.
 

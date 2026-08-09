@@ -14,6 +14,7 @@ import {
   parseSettingsBackup,
   recordProviderConsents,
   saveLocalState,
+  shouldRecommendGoogleWebFallback,
   suggestedTargetLanguage
 } from "../src/settings.js";
 
@@ -73,6 +74,15 @@ test("describes every external provider that automatic mode may contact", () => 
     providerMode: "on-device",
     siteProfiles: { "example.com": { providerMode: "deepl" } }
   }), ["deepl"]);
+});
+
+test("recommends the disclosed Brave fallback only when automatic mode has no working route", () => {
+  assert.equal(shouldRecommendGoogleWebFallback({ providerMode: "auto" }, {}, "unsupported"), true);
+  assert.equal(shouldRecommendGoogleWebFallback({ providerMode: "auto" }, {}, "unavailable"), true);
+  assert.equal(shouldRecommendGoogleWebFallback({ providerMode: "auto" }, {}, "downloadable"), false);
+  assert.equal(shouldRecommendGoogleWebFallback({ providerMode: "auto", allowGoogleWebFallback: true }, {}, "unsupported"), false);
+  assert.equal(shouldRecommendGoogleWebFallback({ providerMode: "auto" }, { deepLApiKey: "configured" }, "unsupported"), false);
+  assert.equal(shouldRecommendGoogleWebFallback({ providerMode: "on-device" }, {}, "unsupported"), false);
 });
 
 test("exports and validates credential-free settings backups", () => {

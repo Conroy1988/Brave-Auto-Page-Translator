@@ -9,6 +9,7 @@ import {
   recordProviderConsents,
   saveLocalState,
   saveSettings,
+  shouldRecommendGoogleWebFallback,
   suggestedTargetLanguage
 } from "../src/settings.js";
 import { applyTranslations } from "../src/i18n.js";
@@ -84,7 +85,13 @@ try {
     downloading: "language pack download is in progress",
     unavailable: "not currently available for this language pair"
   };
-  deviceAvailability.textContent = `On-device translator: ${labels[availability?.availability] || availability?.availability || "availability could not be confirmed"}.`;
+  if (shouldRecommendGoogleWebFallback(existing, existingLocal, availability?.availability)) {
+    allowGoogleWebFallback.checked = true;
+    renderProviderConsent();
+    deviceAvailability.textContent = "On-device translation is unavailable in this browser. The protected Google web fallback is selected below so page translation works in Brave; review and approve that route to continue.";
+  } else {
+    deviceAvailability.textContent = `On-device translator: ${labels[availability?.availability] || availability?.availability || "availability could not be confirmed"}.`;
+  }
 } catch {
   deviceAvailability.textContent = "On-device translator availability could not be confirmed. Automatic mode will remain fail-safe if no approved provider is available.";
 }

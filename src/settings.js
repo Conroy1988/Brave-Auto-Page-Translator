@@ -1,4 +1,4 @@
-export const CONSENT_VERSION = 3;
+export const CONSENT_VERSION = 4;
 export const SETTINGS_SCHEMA_VERSION = 3;
 export const SETTINGS_BACKUP_FORMAT = "auto-page-translator-settings";
 
@@ -286,6 +286,16 @@ export function externalProvidersForConfiguration(settings, localState = {}) {
     ...(normalizedSettings.allowGoogleWebFallback ? ["google-web"] : []),
     ...profiledProviders
   ])];
+}
+
+export function shouldRecommendGoogleWebFallback(settings, localState = {}, availability = "") {
+  const normalizedSettings = normalizeSettings(settings);
+  const normalizedLocal = normalizeLocalState(localState);
+  if (normalizedSettings.providerMode !== "auto" || normalizedSettings.allowGoogleWebFallback) return false;
+  if (!["unsupported", "unavailable"].includes(String(availability || "").toLowerCase())) return false;
+  return !normalizedLocal.googleCloudApiKey
+    && !normalizedLocal.libreTranslateEndpoint
+    && !normalizedLocal.deepLApiKey;
 }
 
 export function suggestedTargetLanguage(uiLanguage = "en") {

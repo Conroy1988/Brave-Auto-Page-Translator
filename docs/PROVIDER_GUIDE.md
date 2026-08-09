@@ -10,7 +10,7 @@ The extension tries providers in this order:
 4. DeepL API if a user API key is configured.
 5. Google web compatibility translation only if its fallback is enabled.
 
-Only providers whose named text-route disclosure has been explicitly accepted can be included. The compatibility fallback is off by default.
+Only providers whose named text-route disclosure has been explicitly accepted can be included. The compatibility fallback is off by default. On Brave installations without the on-device Translator API, the one-time privacy setup selects this fallback for review so Automatic mode has a usable route; no page text is sent until the user explicitly approves it and grants its optional host permission.
 
 If a selected provider is unavailable, the popup and side panel report which engine ultimately handled the page. Per-site profiles can override the default provider after the required route consent and narrow host permission are granted.
 

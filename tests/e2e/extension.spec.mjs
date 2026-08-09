@@ -65,7 +65,7 @@ async function configure({ consent = true, behaviourMode = "manual", readingMode
       showBadge: true
     });
     await chrome.storage.local.set({
-      privacyConsentVersion: consent ? 3 : 0,
+      privacyConsentVersion: consent ? 4 : 0,
       privacyConsentAt: consent ? new Date().toISOString() : "",
       providerConsents: consent ? { libretranslate: new Date().toISOString() } : {},
       rememberProviderCredentials: false,
