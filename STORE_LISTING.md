@@ -11,7 +11,7 @@ Private Auto Page Translator
 - **Extension ID:** `pilpighhgdglgngmakjepoadacbhpoeo`
 - **Source and development:** [GitHub](https://github.com/Conroy1988/Brave-Auto-Page-Translator)
 
-The Chrome Web Store is the official distribution and automatic-update channel. This repository is the source and development home; the sections below are the canonical listing copy for the v1.2.0 update.
+The Chrome Web Store is the official distribution and automatic-update channel. This repository is the source and development home; the sections below are the canonical listing copy for the v1.2.1 update.
 
 ## Summary
 
@@ -35,6 +35,7 @@ Key features:
 - Translated, bilingual and original-on-hover reading modes
 - Viewport-first processing for long pages
 - Privacy Firewall that masks common private values and your confidential terms before external requests
+- Automatic Brave recovery when the browser lacks the on-device Translator API, with a named one-time fallback approval before any page text is sent
 - Smart Compose with preview and confirm-before-replace controls
 - Persistent side-panel translation workspace
 - Per-site provider, target, reading mode and automation profiles

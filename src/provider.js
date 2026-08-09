@@ -471,8 +471,9 @@ export async function translateTexts(texts, config = {}) {
     return value;
   });
   let lastError;
+  const candidates = providerCandidates(config);
 
-  for (const engine of providerCandidates(config)) {
+  for (const engine of candidates) {
     try {
       const protectedValues = validatedTexts.map((value) => {
         const privacy = engine === "on-device" || config.privacyFirewall === false
@@ -533,6 +534,12 @@ export async function translateTexts(texts, config = {}) {
       lastError = error;
       if (error?.code === "cancelled" || config.signal?.aborted) throw error;
     }
+  }
+  if ((config.providerMode || "auto") === "auto" && candidates.length === 1 && candidates[0] === "on-device" && lastError?.code === "provider-unavailable") {
+    throw new TranslationProviderError(
+      "This browser does not provide on-device translation. Open the one-time privacy setup to enable the protected Brave-compatible web fallback.",
+      { code: "provider-setup-required", retryable: false }
+    );
   }
   throw lastError || new TranslationProviderError("No translation provider is configured.", { code: "provider-unavailable", retryable: false });
 }

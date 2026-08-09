@@ -286,6 +286,38 @@ test("automatic mode falls through a failed official provider to an approved cus
   assert.deepEqual(result, { translations: ["Hello"], engine: "libretranslate" });
 });
 
+test("automatic mode uses an approved web fallback when the browser has no Translator API", async () => {
+  const fakeFetch = async (_url, options) => responseFor(new URLSearchParams(options.body).get("q").replace("Hallo", "Hello"));
+  const result = await translateTexts(["Hallo"], {
+    sourceLanguage: "de",
+    targetLanguage: "en",
+    providerMode: "auto",
+    allowGoogleWebFallback: true,
+    allowedExternalProviders: ["google-web"],
+    onDeviceTranslate: async () => {
+      const error = new Error("The browser does not provide the on-device Translator API.");
+      error.code = "provider-unavailable";
+      throw error;
+    },
+    fetchImpl: fakeFetch
+  });
+  assert.deepEqual(result, { translations: ["Hello"], engine: "google-web" });
+});
+
+test("automatic mode gives actionable setup guidance when no compatible fallback is approved", async () => {
+  await assert.rejects(() => translateTexts(["Hallo"], {
+    sourceLanguage: "de",
+    targetLanguage: "en",
+    providerMode: "auto",
+    allowedExternalProviders: [],
+    onDeviceTranslate: async () => {
+      const error = new Error("not supported");
+      error.code = "provider-unavailable";
+      throw error;
+    }
+  }), (error) => error.code === "provider-setup-required" && /privacy setup/i.test(error.message));
+});
+
 test("cancels a translation before a request starts", async () => {
   const controller = new AbortController();
   controller.abort();

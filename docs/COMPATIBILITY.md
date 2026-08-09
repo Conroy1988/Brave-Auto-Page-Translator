@@ -1,5 +1,9 @@
 # Compatibility Matrix
 
+## Brave without the on-device Translator API
+
+Version 1.2.1 detects this condition during the versioned privacy setup. When Automatic mode has no configured external route, setup recommends the disclosed Google web compatibility fallback, records provider-specific consent, and requests only the provider origins. Declining keeps translation on-device-only and transmits no page text.
+
 ## Browser release gate
 
 Every public release must pass:

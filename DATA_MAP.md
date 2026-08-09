@@ -1,6 +1,6 @@
 # User Data Map and Chrome Web Store Disclosure Record
 
-Last reviewed: 7 August 2026 for extension version 1.2.0.
+Last reviewed: 9 August 2026 for extension version 1.2.1.
 
 This file is the engineering source of truth for the Chrome Web Store Privacy Practices form. Any change to data handling must update this map, `PRIVACY.md`, the in-product disclosure and the Web Store form before release.
 

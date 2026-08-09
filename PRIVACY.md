@@ -61,7 +61,7 @@ The provider selected in Settings determines where text is processed:
 - **DeepL API:** text is sent directly to DeepL's documented API using the API key supplied by the user. The user's DeepL terms, quota and data-processing terms apply.
 - **Google web compatibility service:** text is sent directly to Google's web translation service. This compatibility method is not the authenticated Google Cloud Translation API and has no published production availability guarantee.
 
-Automatic provider selection tries the on-device provider first, then only configured external providers whose specific disclosure has been accepted. The Google web compatibility service is off by default and is considered only when its separate fallback setting and provider consent are both enabled.
+Automatic provider selection tries the on-device provider first, then only configured external providers whose specific disclosure has been accepted. When the browser reports that on-device translation is unavailable and no configured provider can translate, the one-time setup recommends the Google web compatibility service. It remains off until its separate fallback setting, named provider consent and optional host permission are all enabled.
 
 Provider terms and privacy practices are independent of the extension. Users should review the terms for the provider they choose.
 

@@ -48,7 +48,7 @@
 ## Listing assets
 
 - [ ] 128×128 store icon
-- [ ] Five 1280×800 screenshots reviewed against the v1.2.0 UI and feature set
+- [ ] Five 1280×800 screenshots reviewed against the v1.2.1 UI and feature set
 - [ ] 440×280 small promotional tile
 - [ ] Optional 1400×560 marquee tile
 - [ ] Images are sharp when downscaled and contain no private page content
@@ -69,7 +69,7 @@
 - [ ] Release ZIP checksum recorded
 - [ ] GitHub build-provenance attestation generated
 - [ ] GitHub release published
-- [ ] Canonical v1.2.0 listing copy and regenerated promotional assets reviewed
+- [ ] Canonical v1.2.1 listing copy and regenerated promotional assets reviewed
 - [ ] Web Store package uploaded from the verified release artifact
 - [ ] Protected submission workflow used with `skipReview: false` and `blockOnWarnings: true`, or equivalent dashboard checks completed manually
 - [ ] Review emails monitored

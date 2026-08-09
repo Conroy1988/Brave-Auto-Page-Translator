@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1 — 9 August 2026 — Brave provider fallback hotfix
+
+- Fixed Automatic provider selection failing outright when Brave does not expose Chrome's on-device Translator API.
+- Added a one-time, provider-specific privacy checkpoint that recommends the protected Google web compatibility fallback only when no on-device or configured external route is available.
+- Kept the compatibility route off until the user explicitly approves it and its optional host permission; Privacy Firewall masking remains enabled before external requests.
+- Added regression coverage for the exact Brave no-Translator path, the approved automatic fallback, and the actionable no-provider error.
+
 ## 1.2.0 — 7 August 2026 — Private, contextual translation workspace
 
 - Rebranded the extension as **Private Auto Page Translator** while keeping the existing Chrome Web Store identity and independent/unofficial disclaimer.
