@@ -21,6 +21,7 @@ const requiredFiles = [
   "options/options.html",
   "options/options.css",
   "options/advanced.css",
+  "options/support.css",
   "options/options.js",
   "onboarding/onboarding.html",
   "onboarding/onboarding.css",
@@ -101,6 +102,14 @@ for (const file of sourceFiles) {
   const relative = path.relative(root, file);
   if (/\b(?:eval|Function)\s*\(/.test(source)) failures.push(`${relative} uses dynamic code execution`);
   if (/<script\b[^>]*\bsrc=["']https?:\/\//i.test(source)) failures.push(`${relative} loads remote executable code`);
+  if (/<(?:img|link|video|audio|source|iframe)\b[^>]*(?:src|href)=["']https?:\/\//i.test(source)) failures.push(`${relative} loads a remote extension-page asset`);
+}
+
+const koFiUrl = "https://ko-fi.com/D4P124RWI9";
+for (const supportSurface of ["popup/popup.html", "sidepanel/sidepanel.html", "options/options.html"]) {
+  const source = readFileSync(path.join(root, supportSurface), "utf8");
+  if (!source.includes(`href="${koFiUrl}"`)) failures.push(`${supportSurface} is missing the canonical Ko-fi support link`);
+  if (!source.includes('target="_blank" rel="noreferrer"')) failures.push(`${supportSurface} must open external support links without a referrer`);
 }
 
 const backgroundSource = readFileSync(path.join(root, "src/background.js"), "utf8");

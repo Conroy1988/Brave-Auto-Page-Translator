@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2 — 9 August 2026 — Ko-fi support
+
+- Added an optional Ko-fi support link to the popup, translation workspace and settings page.
+- Kept the extension surfaces self-contained: the Ko-fi button is rendered locally and nothing contacts Ko-fi until the user clicks it.
+- Added the official Ko-fi support button to the public project README.
+
 ## 1.2.1 — 9 August 2026 — Brave provider fallback hotfix
 
 - Fixed Automatic provider selection failing outright when Brave does not expose Chrome's on-device Translator API.

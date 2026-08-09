@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: 7 August 2026
+Last updated: 9 August 2026
 
 Private Auto Page Translator is an independent browser extension. It is not developed, sponsored or endorsed by Brave Software or Google.
 
@@ -68,6 +68,8 @@ Provider terms and privacy practices are independent of the extension. Users sho
 ## Information not collected by the developer
 
 The extension contains no analytics, advertising, tracking pixels, affiliate code, telemetry, developer-operated translation server, user account system or browsing-history database. The developer does not receive translation requests or provider credentials and does not sell personal data.
+
+The optional Ko-fi support link is a normal external navigation initiated only when the user clicks it. No Ko-fi image, script, tracking pixel or other remote resource is loaded inside the extension. Once opened, the Ko-fi webpage is governed by Ko-fi's own privacy practices, like any website visited in the browser.
 
 ## Permissions
 

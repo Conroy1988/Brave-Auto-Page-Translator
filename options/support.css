@@ -1,0 +1,52 @@
+.support-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  border-color: rgba(41, 171, 224, .2);
+  background: radial-gradient(circle at 100% 0, rgba(41, 171, 224, .13), transparent 42%), rgba(18, 17, 28, .84);
+}
+
+.support-card > div {
+  max-width: 670px;
+}
+
+.support-card .eyebrow {
+  margin-bottom: 7px;
+  color: #80d8f7;
+}
+
+.kofi-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 16px;
+  border: 1px solid rgba(41, 171, 224, .42);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #29abe0, #1689bd);
+  box-shadow: 0 8px 22px rgba(41, 171, 224, .18);
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+  transition: .18s ease;
+}
+
+.kofi-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .support-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kofi-button {
+    transition: none;
+  }
+}

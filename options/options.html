@@ -6,6 +6,7 @@
     <title>Private Auto Page Translator — Settings</title>
     <link rel="stylesheet" href="options.css">
     <link rel="stylesheet" href="advanced.css">
+    <link rel="stylesheet" href="support.css">
   </head>
   <body>
     <main class="shell">
@@ -147,6 +148,11 @@
           <div><h2 data-i18n="localDiagnostics">Local diagnostics</h2><p class="muted">Export versions, configuration counts and error-independent environment details. The report excludes webpage text and URLs.</p></div>
           <div class="inline-actions"><button class="ghost" id="previewDiagnostics" type="button">Preview support report</button><button class="ghost" id="exportDiagnostics" type="button">Export report</button><button class="ghost" id="clearCache" type="button">Clear translation cache</button><button class="danger" id="reset" type="button">Restore default settings</button></div>
           <div class="support-preview" id="supportPreview" hidden><label class="field"><span>Review before sharing</span><textarea id="diagnosticsPreview" rows="12" readonly></textarea></label><div class="inline-actions"><button class="ghost" id="copyDiagnostics" type="button">Copy report</button><a class="ghost button-link" href="https://github.com/Conroy1988/Brave-Auto-Page-Translator/issues/new/choose" target="_blank" rel="noreferrer">Open GitHub support</a></div></div>
+        </section>
+
+        <section class="card support-card">
+          <div><p class="eyebrow">SUPPORT INDEPENDENT DEVELOPMENT</p><h2>Enjoying Private Auto Page Translator?</h2><p class="muted">The extension is free, has no advertising and collects no analytics. If it saves you time, you can support its continued development on Ko-fi.</p></div>
+          <a class="kofi-button" href="https://ko-fi.com/D4P124RWI9" target="_blank" rel="noreferrer" aria-label="Support this project on Ko-fi (opens in a new tab)"><span aria-hidden="true">☕</span> Support on Ko-fi</a>
         </section>
 
         <div class="toolbar"><span id="saveStatus" role="status"></span><button class="primary" type="submit" data-i18n="saveSettings">Save settings</button></div>
