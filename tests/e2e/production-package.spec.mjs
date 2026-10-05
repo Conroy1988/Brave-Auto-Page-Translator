@@ -1,7 +1,7 @@
 import { launchExtension } from "../browser.mjs";
 import { test, expect } from "@playwright/test";
 import { createServer } from "node:http";
-import { mkdtempSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, mkdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -12,8 +12,13 @@ let context, extensionId, worker, server, siteUrl, temporary, extensionPath, pac
 const root = path.resolve(import.meta.dirname, "../..");
 const archive = () => path.resolve(root, process.env.BAPT_E2E_PACKAGE || `dist/brave-auto-page-translator-${JSON.parse(readFileSync(path.join(root, "manifest.json"))).version}.zip`);
 async function extensionPage(file) { const page = await context.newPage(); await page.goto(`chrome-extension://${extensionId}/${file}`); return page; }
+async function inExtension(operation, argument) {
+  const page = await extensionPage("options/options.html");
+  try { return await page.evaluate(operation, argument); }
+  finally { await page.close(); }
+}
 async function seed(overrides = {}) {
-  await worker.evaluate(async (overrides) => {
+  await inExtension(async (overrides) => {
     const { DEFAULT_SETTINGS, CONSENT_VERSION, SETTINGS_SCHEMA_VERSION, saveSettings, saveLocalState } = await import(chrome.runtime.getURL("src/settings.js"));
     await saveSettings({ ...DEFAULT_SETTINGS, excludedHosts: [], ...overrides });
     await saveLocalState({ privacyConsentVersion: CONSENT_VERSION, privacyConsentAt: new Date().toISOString(), settingsSchemaVersion: SETTINGS_SCHEMA_VERSION });
@@ -57,9 +62,13 @@ test.afterAll(async () => {
     await context.close();
   }
   await new Promise((resolve) => server?.close(resolve));
-  if (temporary) rmSync(temporary, { force: true, recursive: true });
+  if (temporary) rmSync(temporary, { force: true, recursive: true, maxRetries: 5, retryDelay: 100 });
 });
-test.beforeEach(async () => { for (const page of context.pages()) await page.close(); });
+test.beforeEach(async () => {
+  // Keep one browser tab alive: closing the final tab can shut down the persistent browser.
+  const keepalive = await context.newPage();
+  for (const page of context.pages()) if (page !== keepalive) await page.close();
+});
 
 test("fresh production installation has no blanket host access and completes on-device-only consent", async () => {
   expect((await worker.evaluate(() => chrome.permissions.getAll())).origins || []).toEqual([]);
@@ -104,7 +113,7 @@ test("workspace re-enables controls after a rejected request and does not copy e
 
 test("production permissions and approved provider support translation and original restoration", async () => {
   await seed({ providerMode: "libretranslate" }); await grantHost("http://127.0.0.1/*");
-  await worker.evaluate(async (endpoint) => {
+  await inExtension(async (endpoint) => {
     const { loadLocalState, saveLocalState, recordProviderConsents } = await import(chrome.runtime.getURL("src/settings.js"));
     await saveLocalState(recordProviderConsents({ ...await loadLocalState(), libreTranslateEndpoint: endpoint }, ["libretranslate"]));
     await chrome.runtime.sendMessage({ type: "refresh-settings" });
@@ -130,7 +139,7 @@ test("favourites and glossary editing preserve existing preferences", async () =
   await options.locator('[data-field="replacement"]').last().fill("Bonjour");
   await options.getByRole("button", { name: "Save settings", exact: true }).click();
   await expect(options.locator("#saveStatus")).toHaveText("Settings saved");
-  const saved = await worker.evaluate(async () => (await import(chrome.runtime.getURL("src/settings.js"))).loadSettings());
+  const saved = await inExtension(async () => (await import(chrome.runtime.getURL("src/settings.js"))).loadSettings());
   expect(saved.glossary).toEqual([{ source: "Keep", replacement: "Retain" }, { source: "Hello", replacement: "Bonjour" }]);
   expect(saved.siteProfiles["example.com"].targetLanguage).toBe("ja"); expect(saved.targetLanguage).toBe("fr");
   const popup = await extensionPage("popup/popup.html");

@@ -9,7 +9,7 @@ export async function launchExtension(profileDirectory, extensionPath) {
     args: cdpInstall ? ["--enable-unsafe-extension-debugging"] : [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`]
   });
   if (cdpInstall) {
-    const session = await context.newCDPSession(context.pages()[0] || await context.newPage());
+    const session = await context.browser().newBrowserCDPSession();
     await session.send("Extensions.loadUnpacked", { path: extensionPath });
     await session.detach();
   }
