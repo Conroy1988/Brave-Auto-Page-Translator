@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1 — AT identity
+
+- Red AT monogram on a black background, retaining the two equal red bars as a signature.
+- The extension toolbar, interface icons and store promotional artwork share one SVG source.
+- Includes the v1.3.0 interface improvements and All websites default; translation behaviour and permissions are unchanged from v1.3.0.
+
 ## 1.3.0 — Red and black interface and workspace reliability
 
 - All websites is the default for new setup, with explicit permission and consent; existing saved modes are retained and declined all-site access falls back to Manual.
