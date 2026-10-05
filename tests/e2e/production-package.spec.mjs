@@ -33,6 +33,10 @@ async function grantHost(host) {
     chrome.developerPrivate.addHostPermission(extensionId, host, () => chrome.runtime.lastError ? reject(new Error(chrome.runtime.lastError.message)) : resolve());
   }), { extensionId, host });
   await management.close();
+  // Runtime approval alone does not activate optional permissions. Request the already-approved
+  // origin from the real extension, then assert its effective permission state.
+  expect(await inExtension((host) => chrome.permissions.request({ origins: [host] }), host)).toBe(true);
+  expect(await worker.evaluate((host) => chrome.permissions.contains({ origins: [host] }), host)).toBe(true);
 }
 
 test.beforeAll(async () => {
@@ -157,9 +161,12 @@ test("favourites and glossary editing preserve existing preferences", async () =
 });
 
 test("visual surfaces fit at narrow widths and expose translated controls", async () => {
-  await seed(); const screenshots = path.join(root, "test-results", "visual"); mkdirSync(screenshots, { recursive: true });
+  await seed(); await grantHost("http://127.0.0.1/*");
+  const site = await context.newPage(); await site.goto(siteUrl);
+  const screenshots = path.join(root, "test-results", "visual"); mkdirSync(screenshots, { recursive: true });
   for (const [file, width] of [["popup/popup.html", 380], ["sidepanel/sidepanel.html", 320], ["options/options.html", 1100], ["onboarding/onboarding.html", 1100]]) {
     const page = await extensionPage(file); await page.setViewportSize({ width, height: 900 });
+    if (file.startsWith("sidepanel")) { await site.bringToFront(); await expect(page.locator("#siteTitle")).toHaveText("127.0.0.1"); }
     await expect(page.locator("select").first().locator("option").first()).toBeAttached();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: path.join(screenshots, file.replaceAll("/", "-") + ".png"), fullPage: true });

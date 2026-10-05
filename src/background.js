@@ -419,8 +419,10 @@ function createContextMenus() {
 
 chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   await restrictStorageAccess();
+  const stored = await chrome.storage.sync.get("targetLanguage");
   const normalized = normalizeSettings(await migrateSettingsStorage());
-  if (reason === "install") normalized.targetLanguage = suggestedTargetLanguage(chrome.i18n.getUILanguage());
+  // Unpacked reloads and reinstalls may report "install" with existing preferences.
+  if (reason === "install" && !stored.targetLanguage) normalized.targetLanguage = suggestedTargetLanguage(chrome.i18n.getUILanguage());
   await saveSettings(normalized);
   await chrome.storage.sync.remove("openInNewTab");
   const localState = await chrome.storage.local.get(DEFAULT_LOCAL_STATE);
