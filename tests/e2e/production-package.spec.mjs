@@ -30,7 +30,7 @@ async function grantHost(host) {
   // This tests real browser permission state, not a manifest with mandatory blanket permissions.
   const management = await context.newPage(); await management.goto("chrome://extensions");
   await management.evaluate(({ extensionId, host }) => new Promise((resolve, reject) => {
-    chrome.developerPrivate.addHostPermission({ extensionId, host }, () => chrome.runtime.lastError ? reject(new Error(chrome.runtime.lastError.message)) : resolve());
+    chrome.developerPrivate.addHostPermission(extensionId, host, () => chrome.runtime.lastError ? reject(new Error(chrome.runtime.lastError.message)) : resolve());
   }), { extensionId, host });
   await management.close();
 }
@@ -148,6 +148,12 @@ test("favourites and glossary editing preserve existing preferences", async () =
   await expect(popup.locator("#favouriteLanguage")).toHaveAttribute("aria-pressed", "true");
   await popup.reload();
   await expect(popup.locator("#targetLanguage option").first()).toHaveAttribute("value", "fr");
+  await context.close();
+  context = await launchExtension(path.join(temporary, "profile"), extensionPath);
+  worker = context.serviceWorkers()[0] || await context.waitForEvent("serviceworker");
+  expect(new URL(worker.url()).host).toBe(extensionId);
+  const afterRestart = await inExtension(async () => (await import(chrome.runtime.getURL("src/settings.js"))).loadSettings());
+  expect(afterRestart).toEqual({ ...saved, favouriteLanguages: ["fr"] });
 });
 
 test("visual surfaces fit at narrow widths and expose translated controls", async () => {
