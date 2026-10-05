@@ -36,7 +36,7 @@ The extension translates readable text directly inside the original webpage. The
 - **Site intelligence:** remember the target, provider, reading mode, automatic behaviour and sensitive-page override for individual sites.
 - **Language-pack manager:** prepare supported on-device language pairs before they are needed.
 - **Modern-page support:** incrementally handles feeds, SPAs, infinite scrolling, open Shadow DOM and accessible frames.
-- **Private by default:** manual `activeTab` access, explicit consent, provider-specific approval, session-only credentials, no account, no subscription and no analytics.
+- **Explicit permission and consent:** optional website access, provider-specific approval, session-only credentials, no account, no subscription and no analytics. Manual mode uses temporary `activeTab` access.
 - **20 localized catalogs:** core setup and navigation labels are available in Arabic, Chinese, Czech, Dutch, English, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Swedish, Turkish and Ukrainian.
 
 ## Provider choices
@@ -58,7 +58,7 @@ Most users should use the [Chrome Web Store listing](https://chromewebstore.goog
 5. Choose the repository folder containing `manifest.json`.
 6. Complete the privacy and access setup that opens after installation.
 
-The default mode is manual. Website-wide access is requested only when the user enables an automatic rule.
+All websites is preselected for a new setup. Automatic translation starts only after privacy setup and the browser's website-access permission are accepted. Choosing Manual only or Approved websites remains available, and existing saved choices are preserved. Declining all-site access saves Manual mode instead.
 
 ## Development
 

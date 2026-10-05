@@ -55,7 +55,7 @@ export const COMPOSE_STYLES = Object.freeze(["natural", "formal", "informal"]);
 
 export const DEFAULT_SETTINGS = Object.freeze({
   enabled: true,
-  behaviourMode: "manual",
+  behaviourMode: "all-sites",
   targetLanguage: "en",
   providerMode: "auto",
   allowGoogleWebFallback: false,

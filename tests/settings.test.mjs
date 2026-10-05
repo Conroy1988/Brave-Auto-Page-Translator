@@ -18,9 +18,9 @@ import {
   suggestedTargetLanguage
 } from "../src/settings.js";
 
-test("defaults to manual translation with sensitive safeguards", () => {
+test("defaults to all websites with sensitive safeguards", () => {
   const settings = normalizeSettings({});
-  assert.equal(settings.behaviourMode, "manual");
+  assert.equal(settings.behaviourMode, "all-sites");
   assert.equal(settings.allowGoogleWebFallback, false);
   assert.equal(settings.translateAttributes, false);
   assert.equal(settings.sensitivePageMode, "manual");
@@ -28,6 +28,12 @@ test("defaults to manual translation with sensitive safeguards", () => {
   assert.equal(settings.viewportFirst, true);
   assert.equal(settings.privacyFirewall, true);
   assert.equal(settings.smartCompose, true);
+});
+
+test("keeps existing manual and approved-site choices when applying defaults", () => {
+  for (const behaviourMode of ["manual", "approved-sites", "all-sites"]) {
+    assert.equal(normalizeSettings({ behaviourMode, targetLanguage: "fr" }).behaviourMode, behaviourMode);
+  }
 });
 
 test("normalizes rules, targets and glossary entries", () => {
