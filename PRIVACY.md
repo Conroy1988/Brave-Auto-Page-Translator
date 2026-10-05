@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: 9 August 2026
+Last updated: 5 October 2026
 
 Private Auto Page Translator is an independent browser extension. It is not developed, sponsored or endorsed by Brave Software or Google.
 
@@ -9,8 +9,9 @@ Private Auto Page Translator is an independent browser extension. It is not deve
 ## Plain-language summary
 
 - Translation is blocked until you accept the in-extension privacy disclosure.
-- Manual mode is the default and uses temporary access to the page you choose.
-- Automatic modes request access only to approved websites or, if you explicitly choose it, all HTTP and HTTPS websites.
+- All websites is preselected for new installations. It requires explicit privacy consent and the browser's optional all-site permission before automatic translation can run. Declining that permission saves Manual mode instead.
+- Manual mode remains available and uses temporary access to the page you choose. Existing saved mode choices are preserved on update.
+- Automatic modes request access only to approved websites or, if you accept All websites mode, all HTTP and HTTPS websites.
 - An external translation provider receives readable page text only when translation runs.
 - Smart Compose reads editable text only after the user explicitly clicks **Translate writing**, uses its context-menu command or presses `Alt+Enter`; login, password, passcode, PIN, one-time-code, security-code and payment fields are excluded.
 - The Privacy Firewall masks common emails, phone numbers, URLs, IP addresses, references, dates and financial values before an external provider receives surrounding text. A damaged protection token makes the request fail closed.

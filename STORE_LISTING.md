@@ -41,7 +41,7 @@ Key features:
 - Per-site provider, target, reading mode and automation profiles
 - On-device language-pack preparation where the browser supports it
 - Live pages, open Shadow DOM and accessible-frame support
-- Manual access by default; optional automation only where you allow it
+- All websites selected for new setup; automatic translation requires your consent and website-access permission
 - On-device, Google Cloud, DeepL API and LibreTranslate choices
 - Explicit provider consent and session-only credentials by default
 - Core setup and navigation labels localized across 20 languages

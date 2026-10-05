@@ -2,6 +2,7 @@
 
 ## 1.3.0 — Red and black interface and workspace reliability
 
+- All websites is the default for new setup, with explicit permission and consent; existing saved modes are retained and declined all-site access falls back to Manual.
 - Consistent matte-black surfaces, red accents and an equal-sized two-bar icon across the extension; product name unchanged.
 - More readable controls, collapsible workspace tools, local favourite languages and a structured glossary editor.
 - Workspace follows tab activation and navigation, rejects stale results, prevents private-window site rule writes, and recovers controls after failures.

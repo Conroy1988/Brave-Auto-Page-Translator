@@ -20,12 +20,12 @@ async function inExtension(operation, argument) {
 async function seed(overrides = {}) {
   await inExtension(async (overrides) => {
     const { DEFAULT_SETTINGS, CONSENT_VERSION, SETTINGS_SCHEMA_VERSION, saveSettings, saveLocalState } = await import(chrome.runtime.getURL("src/settings.js"));
-    await saveSettings({ ...DEFAULT_SETTINGS, excludedHosts: [], ...overrides });
+    await saveSettings({ ...DEFAULT_SETTINGS, behaviourMode: "manual", excludedHosts: [], ...overrides });
     await saveLocalState({ privacyConsentVersion: CONSENT_VERSION, privacyConsentAt: new Date().toISOString(), settingsSchemaVersion: SETTINGS_SCHEMA_VERSION });
     await chrome.runtime.sendMessage({ type: "refresh-settings" });
   }, overrides);
 }
-async function grantHost(host) {
+async function approveHost(host) {
   // Grant optional host access through the browser's extension-management API in this disposable profile.
   // This tests real browser permission state, not a manifest with mandatory blanket permissions.
   const management = await context.newPage(); await management.goto("chrome://extensions");
@@ -33,6 +33,9 @@ async function grantHost(host) {
     chrome.developerPrivate.addHostPermission(extensionId, host, () => chrome.runtime.lastError ? reject(new Error(chrome.runtime.lastError.message)) : resolve());
   }), { extensionId, host });
   await management.close();
+}
+async function grantHost(host) {
+  await approveHost(host);
   // Runtime approval alone does not activate optional permissions. Request the already-approved
   // origin from the real extension, then assert its effective permission state.
   expect(await inExtension((host) => chrome.permissions.request({ origins: [host] }), host)).toBe(true);
@@ -79,6 +82,9 @@ test("fresh production installation has no blanket host access and completes on-
   const page = await extensionPage("onboarding/onboarding.html");
   await page.locator("#deviceAvailability").waitFor({ state: "visible" });
   await expect(page.locator("#deviceAvailability")).not.toBeEmpty();
+  await expect(page.locator('input[name="behaviourMode"][value="all-sites"]')).toBeChecked();
+  await expect(page.locator("#consent")).not.toBeChecked();
+  await page.locator('input[name="behaviourMode"][value="manual"]').check();
   await page.locator("#providerMode").selectOption("on-device");
   await page.locator("#allowGoogleWebFallback").uncheck();
   await page.locator("#consent").check();
@@ -86,6 +92,46 @@ test("fresh production installation has no blanket host access and completes on-
   await expect(page.locator("#status")).toContainText("Setup complete");
   expect((await worker.evaluate(() => chrome.permissions.getAll())).origins || []).toEqual([]);
   expect(requests).toBe(0);
+  await page.reload();
+  await expect(page.locator('input[name="behaviourMode"][value="manual"]')).toBeChecked();
+});
+
+test("all-websites setup requests real optional access and enables automatic scripts after consent", async () => {
+  await seed({ behaviourMode: "all-sites", providerMode: "on-device" });
+  await inExtension(async () => {
+    await chrome.storage.local.set({ privacyConsentVersion: 0, privacyConsentAt: "" });
+    await chrome.runtime.sendMessage({ type: "refresh-settings" });
+  });
+  const origins = ["http://*/*", "https://*/*"];
+  // Approve the disposable profile's browser prompt; the setup form still makes the real request.
+  for (const origin of origins) await approveHost(origin);
+  expect(await worker.evaluate((origins) => chrome.permissions.contains({ origins }), origins)).toBe(false);
+  expect(await worker.evaluate(() => chrome.scripting.getRegisteredContentScripts())).toEqual([]);
+  const page = await extensionPage("onboarding/onboarding.html");
+  await expect(page.locator("#providerMode")).toHaveValue("on-device");
+  await expect(page.locator('input[name="behaviourMode"][value="all-sites"]')).toBeChecked();
+  await expect(page.locator("#consent")).not.toBeChecked();
+  await page.locator("#consent").check();
+  await page.getByRole("button", { name: "Accept and finish setup" }).click();
+  await expect(page.locator("#status")).toContainText("Setup complete");
+  expect(await worker.evaluate((origins) => chrome.permissions.contains({ origins }), origins)).toBe(true);
+  expect(await page.evaluate(async () => (await import(chrome.runtime.getURL("src/settings.js"))).loadSettings())).toMatchObject({ behaviourMode: "all-sites" });
+  await expect.poll(() => worker.evaluate(async () => (await chrome.scripting.getRegisteredContentScripts()).flatMap((script) => script.matches).sort())).toEqual(origins);
+  await worker.evaluate((origins) => chrome.permissions.remove({ origins }), origins);
+});
+
+test("declining all-websites access saves Manual mode without granting host permissions", async () => {
+  await seed({ behaviourMode: "all-sites", providerMode: "on-device" });
+  const page = await extensionPage("onboarding/onboarding.html");
+  await expect(page.locator("#providerMode")).toHaveValue("on-device");
+  // Simulate only the browser's declined answer; no manifest changes or permission grants.
+  await page.evaluate(() => { chrome.permissions.request = async (request) => { window.requestedOrigins = request.origins; return false; }; });
+  await page.locator("#consent").check();
+  await page.getByRole("button", { name: "Accept and finish setup" }).click();
+  await expect(page.locator("#status")).toContainText("All-site access was declined");
+  expect(await page.evaluate(() => window.requestedOrigins)).toEqual(["http://*/*", "https://*/*"]);
+  expect(await page.evaluate(async () => (await import(chrome.runtime.getURL("src/settings.js"))).loadSettings())).toMatchObject({ behaviourMode: "manual" });
+  expect((await worker.evaluate(() => chrome.permissions.getAll())).origins || []).toEqual([]);
 });
 
 test("workspace follows tab activation and navigation without saving rules to the wrong website", async () => {
@@ -134,7 +180,7 @@ test("production permissions and approved provider support translation and origi
 });
 
 test("favourites and glossary editing preserve existing preferences", async () => {
-  await seed({ targetLanguage: "fr", siteProfiles: { "example.com": { targetLanguage: "ja" } }, glossary: [{ source: "Keep", replacement: "Preserve" }] });
+  await seed({ behaviourMode: "approved-sites", targetLanguage: "fr", siteProfiles: { "example.com": { targetLanguage: "ja" } }, glossary: [{ source: "Keep", replacement: "Preserve" }] });
   const options = await extensionPage("options/options.html");
   await expect(options.locator('[data-field="source"]')).toHaveValue("Keep");
   await options.locator('[data-field="replacement"]').fill("Retain");
@@ -158,6 +204,8 @@ test("favourites and glossary editing preserve existing preferences", async () =
   expect(new URL(worker.url()).host).toBe(extensionId);
   const afterRestart = await inExtension(async () => (await import(chrome.runtime.getURL("src/settings.js"))).loadSettings());
   expect(afterRestart).toEqual({ ...saved, favouriteLanguages: ["fr"] });
+  const setup = await extensionPage("onboarding/onboarding.html");
+  await expect(setup.locator('input[name="behaviourMode"][value="approved-sites"]')).toBeChecked();
 });
 
 test("visual surfaces fit at narrow widths and expose translated controls", async () => {
