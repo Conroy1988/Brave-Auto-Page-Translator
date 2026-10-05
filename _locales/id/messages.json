@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"Penerjemah halaman otomatis privat"},"extensionShortName":{"message":"Penerjemah otomatis"},"extensionDescription":{"message":"Terjemahan web sadar konteks dengan pembacaan dwibahasa, bantuan menulis, aturan situs, dan firewall privasi."},
-  "independentExtension":{"message":"EKSTENSI INDEPENDEN"},"privateWindowNotice":{"message":"Jendela pribadi: hanya terjemahan manual. Aturan situs dan bahasa tidak disimpan di sini."},"translatePagesInto":{"message":"Terjemahkan halaman ke"},"translateThisPage":{"message":"Terjemahkan halaman ini"},"automaticSite":{"message":"Terjemahkan situs ini secara otomatis"},"neverSite":{"message":"Jangan pernah terjemahkan situs ini"},"neverLanguage":{"message":"Jangan pernah terjemahkan bahasa ini"},"settingsPrivacy":{"message":"Pengaturan & privasi"},
-  "onboardingTitle":{"message":"Terjemahan sesuai pilihan Anda."},"onboardingIntro":{"message":"Pilih apa yang dapat diakses ekstensi dan tempat teks diproses sebelum diterjemahkan."},"yourLanguage":{"message":"Bahasa Anda"},"whenTranslationRuns":{"message":"Kapan terjemahan dapat berjalan"},"translationProvider":{"message":"Penyedia terjemahan"},"privacyCheckpoint":{"message":"Pemeriksaan privasi"},"acceptFinish":{"message":"Setujui dan selesaikan penyiapan"},
-  "controlCentre":{"message":"Pusat kontrol terjemahan"},"controlIntro":{"message":"Kelola akses situs, privasi penyedia, halaman dinamis, dan aturan otomatis."},"accessBehaviour":{"message":"Akses dan perilaku otomatis"},"pageSafeguards":{"message":"Perilaku dan perlindungan halaman"},"rulesTargets":{"message":"Pengecualian dan target situs"},"terminology":{"message":"Terminologi"},"privacyDashboard":{"message":"Dasbor privasi"},"settingsBackup":{"message":"Cadangan pengaturan"},"localDiagnostics":{"message":"Diagnostik lokal"},"saveSettings":{"message":"Simpan pengaturan"}
+  "extensionName": {
+    "message": "Penerjemah halaman otomatis privat"
+  },
+  "extensionShortName": {
+    "message": "Penerjemah otomatis"
+  },
+  "extensionDescription": {
+    "message": "Terjemahan web sadar konteks dengan pembacaan dwibahasa, bantuan menulis, aturan situs, dan firewall privasi."
+  },
+  "independentExtension": {
+    "message": "EKSTENSI INDEPENDEN"
+  },
+  "privateWindowNotice": {
+    "message": "Jendela pribadi: hanya terjemahan manual. Aturan situs dan bahasa tidak disimpan di sini."
+  },
+  "translatePagesInto": {
+    "message": "Terjemahkan halaman ke"
+  },
+  "translateThisPage": {
+    "message": "Terjemahkan halaman ini"
+  },
+  "automaticSite": {
+    "message": "Terjemahkan situs ini secara otomatis"
+  },
+  "neverSite": {
+    "message": "Jangan pernah terjemahkan situs ini"
+  },
+  "neverLanguage": {
+    "message": "Jangan pernah terjemahkan bahasa ini"
+  },
+  "settingsPrivacy": {
+    "message": "Pengaturan & privasi"
+  },
+  "onboardingTitle": {
+    "message": "Terjemahan sesuai pilihan Anda."
+  },
+  "onboardingIntro": {
+    "message": "Pilih apa yang dapat diakses ekstensi dan tempat teks diproses sebelum diterjemahkan."
+  },
+  "yourLanguage": {
+    "message": "Bahasa Anda"
+  },
+  "whenTranslationRuns": {
+    "message": "Kapan terjemahan dapat berjalan"
+  },
+  "translationProvider": {
+    "message": "Penyedia terjemahan"
+  },
+  "privacyCheckpoint": {
+    "message": "Pemeriksaan privasi"
+  },
+  "acceptFinish": {
+    "message": "Setujui dan selesaikan penyiapan"
+  },
+  "controlCentre": {
+    "message": "Pusat kontrol terjemahan"
+  },
+  "controlIntro": {
+    "message": "Kelola akses situs, privasi penyedia, halaman dinamis, dan aturan otomatis."
+  },
+  "accessBehaviour": {
+    "message": "Akses dan perilaku otomatis"
+  },
+  "pageSafeguards": {
+    "message": "Perilaku dan perlindungan halaman"
+  },
+  "rulesTargets": {
+    "message": "Pengecualian dan target situs"
+  },
+  "terminology": {
+    "message": "Terminologi"
+  },
+  "privacyDashboard": {
+    "message": "Dasbor privasi"
+  },
+  "settingsBackup": {
+    "message": "Cadangan pengaturan"
+  },
+  "localDiagnostics": {
+    "message": "Diagnostik lokal"
+  },
+  "saveSettings": {
+    "message": "Simpan pengaturan"
+  },
+  "readingMode": {
+    "message": "Mode baca"
+  },
+  "translatedMode": {
+    "message": "Terjemahan"
+  },
+  "bilingualMode": {
+    "message": "Dua bahasa"
+  },
+  "hoverMode": {
+    "message": "Asli saat disorot"
+  },
+  "workspaceTitle": {
+    "message": "Ruang kerja terjemahan"
+  },
+  "showOriginal": {
+    "message": "Tampilkan asli"
+  },
+  "quickTranslate": {
+    "message": "Terjemahan cepat"
+  },
+  "textWorkspace": {
+    "message": "Ruang teks"
+  },
+  "translateText": {
+    "message": "Terjemahkan teks"
+  },
+  "copyResult": {
+    "message": "Salin hasil"
+  },
+  "websiteSettings": {
+    "message": "Pengaturan situs"
+  },
+  "localOnly": {
+    "message": "Hanya lokal"
+  },
+  "provider": {
+    "message": "Penyedia"
+  },
+  "automatic": {
+    "message": "Otomatis"
+  },
+  "onDevice": {
+    "message": "Di perangkat"
+  },
+  "targetLanguage": {
+    "message": "Bahasa tujuan"
+  },
+  "allowSensitive": {
+    "message": "Izinkan terjemahan otomatis formulir sensitif di sini"
+  },
+  "saveProfile": {
+    "message": "Simpan profil situs"
+  },
+  "globalDefaults": {
+    "message": "Gunakan setelan global"
+  },
+  "languagePacks": {
+    "message": "Paket bahasa di perangkat"
+  },
+  "preparePair": {
+    "message": "Siapkan pasangan bahasa"
+  },
+  "fromLanguage": {
+    "message": "Dari"
+  },
+  "toLanguage": {
+    "message": "Ke"
+  },
+  "checkPrepare": {
+    "message": "Periksa dan siapkan"
+  },
+  "recentTranslations": {
+    "message": "Terjemahan terbaru"
+  },
+  "thisSession": {
+    "message": "Sesi ini"
+  },
+  "refresh": {
+    "message": "Muat ulang"
+  },
+  "addFavourite": {
+    "message": "Tambahkan bahasa favorit"
+  },
+  "removeFavourite": {
+    "message": "Hapus bahasa favorit"
+  },
+  "glossaryHelp": {
+    "message": "Terjemahan pilihan, hingga 200 entri"
+  },
+  "addTerm": {
+    "message": "Tambah istilah"
+  },
+  "sourceTerm": {
+    "message": "Istilah sumber"
+  },
+  "preferredTranslation": {
+    "message": "Terjemahan pilihan"
+  },
+  "removeTerm": {
+    "message": "Hapus"
+  },
+  "grantProviderAccess": {
+    "message": "Izinkan akses penyedia"
+  },
+  "completeSetup": {
+    "message": "Selesaikan penyiapan"
+  },
+  "cancelTranslation": {
+    "message": "Batalkan terjemahan"
+  },
+  "textToTranslate": {
+    "message": "Teks untuk diterjemahkan"
+  },
+  "supportKofi": {
+    "message": "Dukung di Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Memeriksa halaman…"
+  },
+  "connectionError": {
+    "message": "Tidak dapat terhubung. Coba lagi."
+  },
+  "setupRequired": {
+    "message": "Penyiapan privasi diperlukan"
+  },
+  "providerPermissionRequired": {
+    "message": "Izinkan akses ke penyedia terjemahan yang disetujui."
+  },
+  "providerSetupRequired": {
+    "message": "Pilih dan setujui penyedia di Pengaturan dan privasi."
+  },
+  "needsAttention": {
+    "message": "Terjemahan perlu perhatian"
+  },
+  "onDeviceRoute": {
+    "message": "Di perangkat: tidak ada teks dikirim keluar"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ karakter dikirim; $v3$ nilai disamarkan",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Tidak ada rute terjemahan aktif"
+  },
+  "pageTranslated": {
+    "message": "Halaman diterjemahkan"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ bagian diterjemahkan",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Terjemahan berlangsung"
+  },
+  "retryTranslation": {
+    "message": "Coba terjemahkan lagi."
+  },
+  "protectedPage": {
+    "message": "Akses halaman tidak tersedia"
+  },
+  "openWebsite": {
+    "message": "Buka tombol ekstensi di situs biasa untuk memberikan akses."
+  },
+  "siteExcluded": {
+    "message": "Situs dikecualikan"
+  },
+  "languageExcluded": {
+    "message": "Bahasa dikecualikan"
+  },
+  "privateSafeguard": {
+    "message": "Perlindungan halaman pribadi"
+  },
+  "manualAvailable": {
+    "message": "Terjemahan manual tersedia."
+  },
+  "alreadyTarget": {
+    "message": "Sudah dalam bahasa Anda"
+  },
+  "readyToTranslate": {
+    "message": "Siap menerjemahkan"
+  },
+  "noRecentTranslations": {
+    "message": "Belum ada terjemahan terbaru."
+  },
+  "resultPlaceholder": {
+    "message": "Terjemahan Anda akan muncul di sini."
+  },
+  "thisWebsite": {
+    "message": "Situs ini"
+  },
+  "enterText": {
+    "message": "Masukkan teks untuk diterjemahkan."
+  },
+  "translating": {
+    "message": "Menerjemahkan…"
+  },
+  "profileSaved": {
+    "message": "Profil situs disimpan"
+  },
+  "checkingSupport": {
+    "message": "Memeriksa dukungan browser…"
+  },
+  "pairUnavailable": {
+    "message": "Browser atau pasangan bahasa ini tidak tersedia."
+  },
+  "preparingPair": {
+    "message": "Menyiapkan pasangan bahasa…"
+  },
+  "pairReady": {
+    "message": "Pasangan bahasa siap."
+  },
+  "glossaryInvalid": {
+    "message": "Isi kedua kolom dan hapus istilah sumber yang duplikat."
+  }
 }

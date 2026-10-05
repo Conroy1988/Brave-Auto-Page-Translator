@@ -42,7 +42,7 @@ jobs:
       - name: Install Chromium for packaged-extension tests
         run: npx playwright install --with-deps chromium
 
-      - name: Test the exact packaged extension
+      - name: Test fixtures and unmodified production package
         run: BAPT_E2E_PACKAGE="$(find dist -name '*.zip' -print -quit)" xvfb-run -a npm run test:e2e
 
       - name: Upload verified extension package
@@ -64,9 +64,49 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  browser-compatibility:
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, brave]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run package
+      - name: Install Chrome stable
+        if: matrix.browser == 'chrome'
+        run: npx playwright install --with-deps chrome
+      - name: Install Brave stable
+        if: matrix.browser == 'brave'
+        run: |
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt-get update
+          sudo apt-get install -y brave-browser xvfb
+      - name: Test production package and translation fixtures
+        env:
+          BAPT_BROWSER_EXECUTABLE: ${{ matrix.browser == 'chrome' && '/usr/bin/google-chrome' || '/usr/bin/brave-browser' }}
+          BAPT_LOAD_WITH_CDP: ${{ matrix.browser == 'chrome' && '1' || '0' }}
+        run: BAPT_E2E_PACKAGE="$(find dist -name '*.zip' -print -quit)" xvfb-run -a npm run test:e2e
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browser-evidence-${{ matrix.browser }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+
   required-context-compatibility:
     name: Validate extension / validate
-    needs: validate
+    needs: [validate, browser-compatibility]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -74,4 +114,5 @@ jobs:
       - name: Confirm the validation suite passed
         env:
           VALIDATE_RESULT: ${{ needs.validate.result }}
-        run: test "$VALIDATE_RESULT" = "success"
+          BROWSER_RESULT: ${{ needs.browser-compatibility.result }}
+        run: test "$VALIDATE_RESULT" = "success" && test "$BROWSER_RESULT" = "success"

@@ -66,6 +66,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   siteTargetLanguages: {},
   siteProfiles: {},
   glossary: [],
+  favouriteLanguages: [],
   neverTranslateTerms: [],
   privacyFirewallTerms: [],
   translateDynamicContent: true,
@@ -120,6 +121,7 @@ export const LOCAL_SETTING_KEYS = Object.freeze([
   "siteTargetLanguages",
   "siteProfiles",
   "glossary",
+  "favouriteLanguages",
   "neverTranslateTerms",
   "privacyFirewallTerms"
 ]);
@@ -220,6 +222,7 @@ export function normalizeSettings(value = {}) {
     siteTargetLanguages: cleanSiteTargets(value.siteTargetLanguages),
     siteProfiles: cleanSiteProfiles(value.siteProfiles),
     glossary: cleanGlossary(value.glossary),
+    favouriteLanguages: cleanList(value.favouriteLanguages).filter((code) => VALID_TARGETS.has(code)).slice(0, 12),
     neverTranslateTerms: cleanList(value.neverTranslateTerms).slice(0, 200),
     privacyFirewallTerms: cleanList(value.privacyFirewallTerms).slice(0, 200),
     translateDynamicContent: value.translateDynamicContent !== false,

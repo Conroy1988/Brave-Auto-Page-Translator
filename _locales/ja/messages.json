@@ -1,30 +1,315 @@
 {
-  "extensionName": { "message": "プライベート自動ページ翻訳" },
-  "extensionShortName": { "message": "ページ自動翻訳" },
-  "extensionDescription": { "message": "文脈対応翻訳、バイリンガル表示、文章翻訳、サイト別ルール、プライバシーファイアウォールを搭載。" },
-  "independentExtension": { "message": "独立した拡張機能" },
-  "privateWindowNotice": { "message": "プライベートウィンドウでは手動翻訳のみです。サイトと言語のルールは保存されません。" },
-  "translatePagesInto": { "message": "ページの翻訳先" },
-  "translateThisPage": { "message": "このページを翻訳" },
-  "automaticSite": { "message": "このサイトを自動翻訳" },
-  "neverSite": { "message": "このサイトを翻訳しない" },
-  "neverLanguage": { "message": "この言語を翻訳しない" },
-  "settingsPrivacy": { "message": "設定とプライバシー" },
-  "onboardingTitle": { "message": "自分で選べる翻訳。" },
-  "onboardingIntro": { "message": "翻訳前に、拡張機能がアクセスできる範囲とテキストの処理場所を選択します。" },
-  "yourLanguage": { "message": "使用言語" },
-  "whenTranslationRuns": { "message": "翻訳を実行する条件" },
-  "translationProvider": { "message": "翻訳プロバイダー" },
-  "privacyCheckpoint": { "message": "プライバシー確認" },
-  "acceptFinish": { "message": "同意して設定を完了" },
-  "controlCentre": { "message": "翻訳コントロールセンター" },
-  "controlIntro": { "message": "サイトへのアクセス、プロバイダーのプライバシー、動的ページ、自動翻訳ルールを管理します。" },
-  "accessBehaviour": { "message": "アクセスと自動動作" },
-  "pageSafeguards": { "message": "ページ動作と保護" },
-  "rulesTargets": { "message": "除外設定とサイト別の翻訳先" },
-  "terminology": { "message": "用語" },
-  "privacyDashboard": { "message": "プライバシーダッシュボード" },
-  "settingsBackup": { "message": "設定のバックアップ" },
-  "localDiagnostics": { "message": "ローカル診断" },
-  "saveSettings": { "message": "設定を保存" }
+  "extensionName": {
+    "message": "プライベート自動ページ翻訳"
+  },
+  "extensionShortName": {
+    "message": "ページ自動翻訳"
+  },
+  "extensionDescription": {
+    "message": "文脈対応翻訳、バイリンガル表示、文章翻訳、サイト別ルール、プライバシーファイアウォールを搭載。"
+  },
+  "independentExtension": {
+    "message": "独立した拡張機能"
+  },
+  "privateWindowNotice": {
+    "message": "プライベートウィンドウでは手動翻訳のみです。サイトと言語のルールは保存されません。"
+  },
+  "translatePagesInto": {
+    "message": "ページの翻訳先"
+  },
+  "translateThisPage": {
+    "message": "このページを翻訳"
+  },
+  "automaticSite": {
+    "message": "このサイトを自動翻訳"
+  },
+  "neverSite": {
+    "message": "このサイトを翻訳しない"
+  },
+  "neverLanguage": {
+    "message": "この言語を翻訳しない"
+  },
+  "settingsPrivacy": {
+    "message": "設定とプライバシー"
+  },
+  "onboardingTitle": {
+    "message": "自分で選べる翻訳。"
+  },
+  "onboardingIntro": {
+    "message": "翻訳前に、拡張機能がアクセスできる範囲とテキストの処理場所を選択します。"
+  },
+  "yourLanguage": {
+    "message": "使用言語"
+  },
+  "whenTranslationRuns": {
+    "message": "翻訳を実行する条件"
+  },
+  "translationProvider": {
+    "message": "翻訳プロバイダー"
+  },
+  "privacyCheckpoint": {
+    "message": "プライバシー確認"
+  },
+  "acceptFinish": {
+    "message": "同意して設定を完了"
+  },
+  "controlCentre": {
+    "message": "翻訳コントロールセンター"
+  },
+  "controlIntro": {
+    "message": "サイトへのアクセス、プロバイダーのプライバシー、動的ページ、自動翻訳ルールを管理します。"
+  },
+  "accessBehaviour": {
+    "message": "アクセスと自動動作"
+  },
+  "pageSafeguards": {
+    "message": "ページ動作と保護"
+  },
+  "rulesTargets": {
+    "message": "除外設定とサイト別の翻訳先"
+  },
+  "terminology": {
+    "message": "用語"
+  },
+  "privacyDashboard": {
+    "message": "プライバシーダッシュボード"
+  },
+  "settingsBackup": {
+    "message": "設定のバックアップ"
+  },
+  "localDiagnostics": {
+    "message": "ローカル診断"
+  },
+  "saveSettings": {
+    "message": "設定を保存"
+  },
+  "readingMode": {
+    "message": "表示モード"
+  },
+  "translatedMode": {
+    "message": "翻訳のみ"
+  },
+  "bilingualMode": {
+    "message": "二言語"
+  },
+  "hoverMode": {
+    "message": "ホバーで原文表示"
+  },
+  "workspaceTitle": {
+    "message": "翻訳ワークスペース"
+  },
+  "showOriginal": {
+    "message": "原文を表示"
+  },
+  "quickTranslate": {
+    "message": "クイック翻訳"
+  },
+  "textWorkspace": {
+    "message": "テキストエリア"
+  },
+  "translateText": {
+    "message": "テキストを翻訳"
+  },
+  "copyResult": {
+    "message": "結果をコピー"
+  },
+  "websiteSettings": {
+    "message": "サイト設定"
+  },
+  "localOnly": {
+    "message": "ローカルのみ"
+  },
+  "provider": {
+    "message": "プロバイダー"
+  },
+  "automatic": {
+    "message": "自動"
+  },
+  "onDevice": {
+    "message": "デバイス上"
+  },
+  "targetLanguage": {
+    "message": "翻訳先の言語"
+  },
+  "allowSensitive": {
+    "message": "このサイトの機密フォームの自動翻訳を許可"
+  },
+  "saveProfile": {
+    "message": "サイト設定を保存"
+  },
+  "globalDefaults": {
+    "message": "全体の既定値を使用"
+  },
+  "languagePacks": {
+    "message": "デバイス内の言語パック"
+  },
+  "preparePair": {
+    "message": "言語ペアを準備"
+  },
+  "fromLanguage": {
+    "message": "翻訳元"
+  },
+  "toLanguage": {
+    "message": "翻訳先"
+  },
+  "checkPrepare": {
+    "message": "確認して準備"
+  },
+  "recentTranslations": {
+    "message": "最近の翻訳"
+  },
+  "thisSession": {
+    "message": "このセッション"
+  },
+  "refresh": {
+    "message": "更新"
+  },
+  "addFavourite": {
+    "message": "お気に入り言語に追加"
+  },
+  "removeFavourite": {
+    "message": "お気に入り言語から削除"
+  },
+  "glossaryHelp": {
+    "message": "優先する翻訳（最大200件）"
+  },
+  "addTerm": {
+    "message": "用語を追加"
+  },
+  "sourceTerm": {
+    "message": "元の用語"
+  },
+  "preferredTranslation": {
+    "message": "優先する翻訳"
+  },
+  "removeTerm": {
+    "message": "削除"
+  },
+  "grantProviderAccess": {
+    "message": "プロバイダーへのアクセスを許可"
+  },
+  "completeSetup": {
+    "message": "設定を完了"
+  },
+  "cancelTranslation": {
+    "message": "翻訳をキャンセル"
+  },
+  "textToTranslate": {
+    "message": "翻訳するテキスト"
+  },
+  "supportKofi": {
+    "message": "Ko-fiで支援"
+  },
+  "checkingPage": {
+    "message": "ページを確認中…"
+  },
+  "connectionError": {
+    "message": "接続できませんでした。もう一度お試しください。"
+  },
+  "setupRequired": {
+    "message": "プライバシー設定が必要です"
+  },
+  "providerPermissionRequired": {
+    "message": "承認済み翻訳プロバイダーへのアクセスを許可してください。"
+  },
+  "providerSetupRequired": {
+    "message": "設定とプライバシーで翻訳プロバイダーを選択して承認してください。"
+  },
+  "needsAttention": {
+    "message": "翻訳の確認が必要です"
+  },
+  "onDeviceRoute": {
+    "message": "デバイス上：外部へのテキスト送信なし"
+  },
+  "externalRoute": {
+    "message": "$v1$：$v2$文字を送信、$v3$件をマスク",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "翻訳経路は未使用"
+  },
+  "pageTranslated": {
+    "message": "ページ翻訳完了"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$セクションを翻訳",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "翻訳中"
+  },
+  "retryTranslation": {
+    "message": "もう一度翻訳してください。"
+  },
+  "protectedPage": {
+    "message": "ページへのアクセス不可"
+  },
+  "openWebsite": {
+    "message": "通常のサイトで拡張機能のボタンを開き、アクセスを許可してください。"
+  },
+  "siteExcluded": {
+    "message": "除外されたサイト"
+  },
+  "languageExcluded": {
+    "message": "除外された言語"
+  },
+  "privateSafeguard": {
+    "message": "プライベートページの保護"
+  },
+  "manualAvailable": {
+    "message": "手動翻訳を利用できます。"
+  },
+  "alreadyTarget": {
+    "message": "すでに指定言語です"
+  },
+  "readyToTranslate": {
+    "message": "翻訳の準備完了"
+  },
+  "noRecentTranslations": {
+    "message": "最近の翻訳はありません。"
+  },
+  "resultPlaceholder": {
+    "message": "ここに翻訳が表示されます。"
+  },
+  "thisWebsite": {
+    "message": "このサイト"
+  },
+  "enterText": {
+    "message": "翻訳するテキストを入力してください。"
+  },
+  "translating": {
+    "message": "翻訳中…"
+  },
+  "profileSaved": {
+    "message": "サイト設定を保存しました"
+  },
+  "checkingSupport": {
+    "message": "ブラウザーの対応状況を確認中…"
+  },
+  "pairUnavailable": {
+    "message": "このブラウザーまたは言語ペアは利用できません。"
+  },
+  "preparingPair": {
+    "message": "言語ペアを準備中…"
+  },
+  "pairReady": {
+    "message": "言語ペアの準備完了"
+  },
+  "glossaryInvalid": {
+    "message": "両方の欄を入力し、元の用語の重複を削除してください。"
+  }
 }

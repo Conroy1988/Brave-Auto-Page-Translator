@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"隱私自動網頁翻譯器"},"extensionShortName":{"message":"自動翻譯器"},"extensionDescription":{"message":"支援情境翻譯、雙語閱讀、寫作翻譯、網站規則和隱私防火牆的網頁翻譯工具。"},
-  "independentExtension":{"message":"獨立擴充功能"},"privateWindowNotice":{"message":"無痕視窗：僅可手動翻譯。此處不會儲存網站和語言規則。"},"translatePagesInto":{"message":"將網頁翻譯為"},"translateThisPage":{"message":"翻譯此網頁"},"automaticSite":{"message":"自動翻譯此網站"},"neverSite":{"message":"永不翻譯此網站"},"neverLanguage":{"message":"永不翻譯此語言"},"settingsPrivacy":{"message":"設定與隱私"},
-  "onboardingTitle":{"message":"由你掌控翻譯。"},"onboardingIntro":{"message":"選擇擴充功能可存取的內容，以及翻譯前文字的處理位置。"},"yourLanguage":{"message":"你的語言"},"whenTranslationRuns":{"message":"何時可以執行翻譯"},"translationProvider":{"message":"翻譯服務供應商"},"privacyCheckpoint":{"message":"隱私確認"},"acceptFinish":{"message":"接受並完成設定"},
-  "controlCentre":{"message":"翻譯控制中心"},"controlIntro":{"message":"管理網站存取、供應商隱私、動態網頁和自動翻譯規則。"},"accessBehaviour":{"message":"存取權限與自動行為"},"pageSafeguards":{"message":"網頁行為與保護措施"},"rulesTargets":{"message":"排除項目與網站目標語言"},"terminology":{"message":"術語"},"privacyDashboard":{"message":"隱私面板"},"settingsBackup":{"message":"設定備份"},"localDiagnostics":{"message":"本機診斷"},"saveSettings":{"message":"儲存設定"}
+  "extensionName": {
+    "message": "隱私自動網頁翻譯器"
+  },
+  "extensionShortName": {
+    "message": "自動翻譯器"
+  },
+  "extensionDescription": {
+    "message": "支援情境翻譯、雙語閱讀、寫作翻譯、網站規則和隱私防火牆的網頁翻譯工具。"
+  },
+  "independentExtension": {
+    "message": "獨立擴充功能"
+  },
+  "privateWindowNotice": {
+    "message": "無痕視窗：僅可手動翻譯。此處不會儲存網站和語言規則。"
+  },
+  "translatePagesInto": {
+    "message": "將網頁翻譯為"
+  },
+  "translateThisPage": {
+    "message": "翻譯此網頁"
+  },
+  "automaticSite": {
+    "message": "自動翻譯此網站"
+  },
+  "neverSite": {
+    "message": "永不翻譯此網站"
+  },
+  "neverLanguage": {
+    "message": "永不翻譯此語言"
+  },
+  "settingsPrivacy": {
+    "message": "設定與隱私"
+  },
+  "onboardingTitle": {
+    "message": "由你掌控翻譯。"
+  },
+  "onboardingIntro": {
+    "message": "選擇擴充功能可存取的內容，以及翻譯前文字的處理位置。"
+  },
+  "yourLanguage": {
+    "message": "你的語言"
+  },
+  "whenTranslationRuns": {
+    "message": "何時可以執行翻譯"
+  },
+  "translationProvider": {
+    "message": "翻譯服務供應商"
+  },
+  "privacyCheckpoint": {
+    "message": "隱私確認"
+  },
+  "acceptFinish": {
+    "message": "接受並完成設定"
+  },
+  "controlCentre": {
+    "message": "翻譯控制中心"
+  },
+  "controlIntro": {
+    "message": "管理網站存取、供應商隱私、動態網頁和自動翻譯規則。"
+  },
+  "accessBehaviour": {
+    "message": "存取權限與自動行為"
+  },
+  "pageSafeguards": {
+    "message": "網頁行為與保護措施"
+  },
+  "rulesTargets": {
+    "message": "排除項目與網站目標語言"
+  },
+  "terminology": {
+    "message": "術語"
+  },
+  "privacyDashboard": {
+    "message": "隱私面板"
+  },
+  "settingsBackup": {
+    "message": "設定備份"
+  },
+  "localDiagnostics": {
+    "message": "本機診斷"
+  },
+  "saveSettings": {
+    "message": "儲存設定"
+  },
+  "readingMode": {
+    "message": "閱讀模式"
+  },
+  "translatedMode": {
+    "message": "譯文"
+  },
+  "bilingualMode": {
+    "message": "雙語"
+  },
+  "hoverMode": {
+    "message": "滑鼠停留時顯示原文"
+  },
+  "workspaceTitle": {
+    "message": "翻譯工作區"
+  },
+  "showOriginal": {
+    "message": "顯示原文"
+  },
+  "quickTranslate": {
+    "message": "快速翻譯"
+  },
+  "textWorkspace": {
+    "message": "文字工作區"
+  },
+  "translateText": {
+    "message": "翻譯文字"
+  },
+  "copyResult": {
+    "message": "複製結果"
+  },
+  "websiteSettings": {
+    "message": "網站設定"
+  },
+  "localOnly": {
+    "message": "僅限本機"
+  },
+  "provider": {
+    "message": "服務商"
+  },
+  "automatic": {
+    "message": "自動"
+  },
+  "onDevice": {
+    "message": "裝置端"
+  },
+  "targetLanguage": {
+    "message": "目標語言"
+  },
+  "allowSensitive": {
+    "message": "允許在此網站自動翻譯敏感表單"
+  },
+  "saveProfile": {
+    "message": "儲存網站設定"
+  },
+  "globalDefaults": {
+    "message": "使用全域預設值"
+  },
+  "languagePacks": {
+    "message": "裝置端語言套件"
+  },
+  "preparePair": {
+    "message": "準備語言組合"
+  },
+  "fromLanguage": {
+    "message": "來源語言"
+  },
+  "toLanguage": {
+    "message": "目標語言"
+  },
+  "checkPrepare": {
+    "message": "檢查並準備"
+  },
+  "recentTranslations": {
+    "message": "最近的翻譯"
+  },
+  "thisSession": {
+    "message": "目前工作階段"
+  },
+  "refresh": {
+    "message": "重新整理"
+  },
+  "addFavourite": {
+    "message": "加入常用語言"
+  },
+  "removeFavourite": {
+    "message": "移除常用語言"
+  },
+  "glossaryHelp": {
+    "message": "偏好譯法，最多200筆"
+  },
+  "addTerm": {
+    "message": "新增術語"
+  },
+  "sourceTerm": {
+    "message": "原始術語"
+  },
+  "preferredTranslation": {
+    "message": "偏好譯法"
+  },
+  "removeTerm": {
+    "message": "移除"
+  },
+  "grantProviderAccess": {
+    "message": "允許存取服務商"
+  },
+  "completeSetup": {
+    "message": "完成設定"
+  },
+  "cancelTranslation": {
+    "message": "取消翻譯"
+  },
+  "textToTranslate": {
+    "message": "待翻譯文字"
+  },
+  "supportKofi": {
+    "message": "在Ko-fi上支持"
+  },
+  "checkingPage": {
+    "message": "正在檢查頁面…"
+  },
+  "connectionError": {
+    "message": "無法連線，請重試。"
+  },
+  "setupRequired": {
+    "message": "需要完成隱私設定"
+  },
+  "providerPermissionRequired": {
+    "message": "請允許存取已核准的翻譯服務商。"
+  },
+  "providerSetupRequired": {
+    "message": "請在設定與隱私中選擇並核准翻譯服務商。"
+  },
+  "needsAttention": {
+    "message": "翻譯需要處理"
+  },
+  "onDeviceRoute": {
+    "message": "裝置端：未向外部傳送文字"
+  },
+  "externalRoute": {
+    "message": "$v1$：已傳送$v2$個字元，已隱藏$v3$個值",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "暫無翻譯路徑"
+  },
+  "pageTranslated": {
+    "message": "頁面已翻譯"
+  },
+  "sectionsTranslated": {
+    "message": "已翻譯$v1$個段落",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "正在翻譯"
+  },
+  "retryTranslation": {
+    "message": "請重試翻譯。"
+  },
+  "protectedPage": {
+    "message": "無法存取頁面"
+  },
+  "openWebsite": {
+    "message": "請在一般網站上開啟擴充功能按鈕以允許存取頁面。"
+  },
+  "siteExcluded": {
+    "message": "網站已排除"
+  },
+  "languageExcluded": {
+    "message": "語言已排除"
+  },
+  "privateSafeguard": {
+    "message": "隱私頁面保護"
+  },
+  "manualAvailable": {
+    "message": "可以使用手動翻譯。"
+  },
+  "alreadyTarget": {
+    "message": "已經是您的語言"
+  },
+  "readyToTranslate": {
+    "message": "可以開始翻譯"
+  },
+  "noRecentTranslations": {
+    "message": "暫無最近的翻譯。"
+  },
+  "resultPlaceholder": {
+    "message": "譯文將顯示於此處。"
+  },
+  "thisWebsite": {
+    "message": "此網站"
+  },
+  "enterText": {
+    "message": "請輸入要翻譯的文字。"
+  },
+  "translating": {
+    "message": "翻譯中…"
+  },
+  "profileSaved": {
+    "message": "網站設定已儲存"
+  },
+  "checkingSupport": {
+    "message": "正在檢查瀏覽器支援…"
+  },
+  "pairUnavailable": {
+    "message": "此瀏覽器或語言組合無法使用。"
+  },
+  "preparingPair": {
+    "message": "正在準備語言組合…"
+  },
+  "pairReady": {
+    "message": "語言組合已就緒。"
+  },
+  "glossaryInvalid": {
+    "message": "請填寫兩個欄位並刪除重複的原始術語。"
+  }
 }

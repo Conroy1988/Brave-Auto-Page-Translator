@@ -1,3 +1,4 @@
+import { mountGlossary } from "../src/glossary-ui.js";
 import {
   CONSENT_VERSION,
   DEFAULT_LOCAL_STATE,
@@ -16,11 +17,11 @@ import {
   saveLocalState,
   saveSettings
 } from "../src/settings.js";
-import { applyTranslations } from "../src/i18n.js";
+import { applyTranslations, message } from "../src/i18n.js";
 import { providerPermissionPatterns } from "../src/translation.js";
 
 const ids = [
-  "settingsForm", "enabled", "behaviourMode", "targetLanguage", "approvedHosts", "providerMode",
+  "glossaryRows", "addGlossary", "glossaryStatus", "settingsForm", "enabled", "behaviourMode", "targetLanguage", "approvedHosts", "providerMode",
   "allowGoogleWebFallback", "googleCloudApiKey", "libreTranslateEndpoint", "libreTranslateApiKey",
   "deepLApiKey", "deepLApiPlan", "rememberProviderCredentials", "providerDisclosure",
   "providerDisclosureTitle", "providerDisclosureText", "providerConsent", "providerConsentLabel",
@@ -46,6 +47,7 @@ let settings = { ...DEFAULT_SETTINGS };
 let localState = { ...DEFAULT_LOCAL_STATE };
 let diagnostics = null;
 let statusTimer;
+const glossaryEditor = mountGlossary(fields.glossaryRows, fields.addGlossary, fields.glossaryStatus);
 
 function showStatus(message, error = false) {
   clearTimeout(statusTimer);
@@ -115,7 +117,7 @@ function collectSettings() {
     excludedLanguages: fields.excludedLanguages.value.split(","),
     excludedHosts: lines(fields.excludedHosts.value),
     siteTargetLanguages: parseSiteTargets(fields.siteTargetLanguages.value),
-    glossary: parseGlossary(fields.glossary.value),
+    glossary: glossaryEditor.entries(),
     neverTranslateTerms: lines(fields.neverTranslateTerms.value),
     privacyFirewallTerms: lines(fields.privacyFirewallTerms.value)
   };
@@ -211,6 +213,7 @@ function render() {
   fields.excludedLanguages.value = settings.excludedLanguages.join(", ");
   fields.excludedHosts.value = settings.excludedHosts.join("\n");
   fields.siteTargetLanguages.value = Object.entries(settings.siteTargetLanguages).map(([host, language]) => `${host} = ${language}`).join("\n");
+  glossaryEditor.render(settings.glossary);
   fields.glossary.value = settings.glossary.map(({ source, replacement }) => `${source} => ${replacement}`).join("\n");
   fields.neverTranslateTerms.value = settings.neverTranslateTerms.join("\n");
   fields.privacyFirewallTerms.value = settings.privacyFirewallTerms.join("\n");
@@ -236,7 +239,7 @@ function providerOriginsForConfiguration(nextSettings, nextLocal) {
 }
 
 async function saveAll() {
-  const nextSettings = collectSettings();
+  const nextSettings = { ...collectSettings(), favouriteLanguages: (await loadSettings()).favouriteLanguages };
   let nextLocal = collectLocalState();
   const externalProviders = externalProvidersForConfiguration(nextSettings, nextLocal);
   const missingConsents = externalProviders.filter((provider) => !hasProviderConsent(nextLocal, provider));
@@ -379,6 +382,8 @@ fields.preparePack.addEventListener("click", async () => {
     fields.packStatus.textContent = availability.availability === "available" ? "Language pair ready." : "Downloading browser language pack…";
     const prepared = await chrome.runtime.sendMessage({ type: "download-on-device-language-pack", sourceLanguage: fields.packSource.value, targetLanguage: fields.packTarget.value });
     fields.packStatus.textContent = prepared.status === "ok" ? "Language pair ready for on-device translation." : prepared.message || "Language pack could not be prepared.";
+  } catch (error) {
+    fields.packStatus.textContent = error.message;
   } finally {
     fields.preparePack.disabled = false;
   }

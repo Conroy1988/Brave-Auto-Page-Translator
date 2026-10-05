@@ -9,29 +9,308 @@
   "extensionDescription": {
     "message": "Context-aware webpage translation with bilingual reading, Smart Compose, site rules and a built-in privacy firewall."
   },
-  "independentExtension": { "message": "INDEPENDENT EXTENSION" },
-  "privateWindowNotice": { "message": "Private window: manual translation only. Site and language rules are not saved here." },
-  "translatePagesInto": { "message": "Translate pages into" },
-  "translateThisPage": { "message": "Translate this page" },
-  "automaticSite": { "message": "Automatically translate this site" },
-  "neverSite": { "message": "Never translate this site" },
-  "neverLanguage": { "message": "Never translate this language" },
-  "settingsPrivacy": { "message": "Settings & privacy" },
-  "onboardingTitle": { "message": "Translation on your terms." },
-  "onboardingIntro": { "message": "Choose what the extension may access and where webpage text is processed before anything is translated." },
-  "yourLanguage": { "message": "Your language" },
-  "whenTranslationRuns": { "message": "When translation may run" },
-  "translationProvider": { "message": "Translation provider" },
-  "privacyCheckpoint": { "message": "Privacy checkpoint" },
-  "acceptFinish": { "message": "Accept and finish setup" },
-  "controlCentre": { "message": "Translation control centre" },
-  "controlIntro": { "message": "Control website access, provider privacy, live-page behaviour and every automatic translation rule." },
-  "accessBehaviour": { "message": "Access and automatic behaviour" },
-  "pageSafeguards": { "message": "Page behaviour and safeguards" },
-  "rulesTargets": { "message": "Exclusions and per-site targets" },
-  "terminology": { "message": "Terminology" },
-  "privacyDashboard": { "message": "Privacy dashboard" },
-  "settingsBackup": { "message": "Settings backup" },
-  "localDiagnostics": { "message": "Local diagnostics" },
-  "saveSettings": { "message": "Save settings" }
+  "independentExtension": {
+    "message": "INDEPENDENT EXTENSION"
+  },
+  "privateWindowNotice": {
+    "message": "Private window: manual translation only. Site and language rules are not saved here."
+  },
+  "translatePagesInto": {
+    "message": "Translate pages into"
+  },
+  "translateThisPage": {
+    "message": "Translate this page"
+  },
+  "automaticSite": {
+    "message": "Automatically translate this site"
+  },
+  "neverSite": {
+    "message": "Never translate this site"
+  },
+  "neverLanguage": {
+    "message": "Never translate this language"
+  },
+  "settingsPrivacy": {
+    "message": "Settings & privacy"
+  },
+  "onboardingTitle": {
+    "message": "Translation on your terms."
+  },
+  "onboardingIntro": {
+    "message": "Choose what the extension may access and where webpage text is processed before anything is translated."
+  },
+  "yourLanguage": {
+    "message": "Your language"
+  },
+  "whenTranslationRuns": {
+    "message": "When translation may run"
+  },
+  "translationProvider": {
+    "message": "Translation provider"
+  },
+  "privacyCheckpoint": {
+    "message": "Privacy checkpoint"
+  },
+  "acceptFinish": {
+    "message": "Accept and finish setup"
+  },
+  "controlCentre": {
+    "message": "Translation control centre"
+  },
+  "controlIntro": {
+    "message": "Control website access, provider privacy, live-page behaviour and every automatic translation rule."
+  },
+  "accessBehaviour": {
+    "message": "Access and automatic behaviour"
+  },
+  "pageSafeguards": {
+    "message": "Page behaviour and safeguards"
+  },
+  "rulesTargets": {
+    "message": "Exclusions and per-site targets"
+  },
+  "terminology": {
+    "message": "Terminology"
+  },
+  "privacyDashboard": {
+    "message": "Privacy dashboard"
+  },
+  "settingsBackup": {
+    "message": "Settings backup"
+  },
+  "localDiagnostics": {
+    "message": "Local diagnostics"
+  },
+  "saveSettings": {
+    "message": "Save settings"
+  },
+  "readingMode": {
+    "message": "Reading mode"
+  },
+  "translatedMode": {
+    "message": "Translated"
+  },
+  "bilingualMode": {
+    "message": "Bilingual"
+  },
+  "hoverMode": {
+    "message": "Original on hover"
+  },
+  "workspaceTitle": {
+    "message": "Translation workspace"
+  },
+  "showOriginal": {
+    "message": "Show original"
+  },
+  "quickTranslate": {
+    "message": "Quick translate"
+  },
+  "textWorkspace": {
+    "message": "Text workspace"
+  },
+  "translateText": {
+    "message": "Translate text"
+  },
+  "copyResult": {
+    "message": "Copy result"
+  },
+  "websiteSettings": {
+    "message": "Website settings"
+  },
+  "localOnly": {
+    "message": "Local only"
+  },
+  "provider": {
+    "message": "Provider"
+  },
+  "automatic": {
+    "message": "Automatic"
+  },
+  "onDevice": {
+    "message": "On-device"
+  },
+  "targetLanguage": {
+    "message": "Target language"
+  },
+  "allowSensitive": {
+    "message": "Allow automatic translation on sensitive forms here"
+  },
+  "saveProfile": {
+    "message": "Save website profile"
+  },
+  "globalDefaults": {
+    "message": "Use global defaults"
+  },
+  "languagePacks": {
+    "message": "On-device language packs"
+  },
+  "preparePair": {
+    "message": "Prepare a language pair"
+  },
+  "fromLanguage": {
+    "message": "From"
+  },
+  "toLanguage": {
+    "message": "To"
+  },
+  "checkPrepare": {
+    "message": "Check and prepare"
+  },
+  "recentTranslations": {
+    "message": "Recent translations"
+  },
+  "thisSession": {
+    "message": "This session"
+  },
+  "refresh": {
+    "message": "Refresh"
+  },
+  "addFavourite": {
+    "message": "Add favourite language"
+  },
+  "removeFavourite": {
+    "message": "Remove favourite language"
+  },
+  "glossaryHelp": {
+    "message": "Preferred translations, up to 200 entries"
+  },
+  "addTerm": {
+    "message": "Add term"
+  },
+  "sourceTerm": {
+    "message": "Source term"
+  },
+  "preferredTranslation": {
+    "message": "Preferred translation"
+  },
+  "removeTerm": {
+    "message": "Remove"
+  },
+  "grantProviderAccess": {
+    "message": "Grant provider access"
+  },
+  "completeSetup": {
+    "message": "Complete setup"
+  },
+  "cancelTranslation": {
+    "message": "Cancel translation"
+  },
+  "textToTranslate": {
+    "message": "Text to translate"
+  },
+  "supportKofi": {
+    "message": "Support on Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Checking this page…"
+  },
+  "connectionError": {
+    "message": "Could not connect. Please try again."
+  },
+  "setupRequired": {
+    "message": "Privacy setup required"
+  },
+  "providerPermissionRequired": {
+    "message": "Allow access to your approved translation provider."
+  },
+  "providerSetupRequired": {
+    "message": "Choose and approve a translation provider in Settings & privacy."
+  },
+  "needsAttention": {
+    "message": "Translation needs attention"
+  },
+  "onDeviceRoute": {
+    "message": "On-device: no text sent externally"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ characters sent; $v3$ values masked",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "No translation route active"
+  },
+  "pageTranslated": {
+    "message": "Page translated"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ sections translated",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Translation in progress"
+  },
+  "retryTranslation": {
+    "message": "Please try the translation again."
+  },
+  "protectedPage": {
+    "message": "Page access unavailable"
+  },
+  "openWebsite": {
+    "message": "Open the extension button on a normal website to grant page access."
+  },
+  "siteExcluded": {
+    "message": "Website excluded"
+  },
+  "languageExcluded": {
+    "message": "Language excluded"
+  },
+  "privateSafeguard": {
+    "message": "Private-page safeguard"
+  },
+  "manualAvailable": {
+    "message": "Manual translation is available."
+  },
+  "alreadyTarget": {
+    "message": "Already in your language"
+  },
+  "readyToTranslate": {
+    "message": "Ready to translate"
+  },
+  "noRecentTranslations": {
+    "message": "No recent translations."
+  },
+  "resultPlaceholder": {
+    "message": "Your translation will appear here."
+  },
+  "thisWebsite": {
+    "message": "This website"
+  },
+  "enterText": {
+    "message": "Enter text to translate."
+  },
+  "translating": {
+    "message": "Translating…"
+  },
+  "profileSaved": {
+    "message": "Website profile saved"
+  },
+  "checkingSupport": {
+    "message": "Checking browser support…"
+  },
+  "pairUnavailable": {
+    "message": "This browser or language pair is unavailable."
+  },
+  "preparingPair": {
+    "message": "Preparing the language pair…"
+  },
+  "pairReady": {
+    "message": "Language pair ready."
+  },
+  "glossaryInvalid": {
+    "message": "Complete both fields and remove duplicate source terms."
+  }
 }

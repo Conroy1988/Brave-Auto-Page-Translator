@@ -1,30 +1,315 @@
 {
-  "extensionName": { "message": "Tradutor privado automático de páginas" },
-  "extensionShortName": { "message": "Tradutor automático" },
-  "extensionDescription": { "message": "Tradução contextual com leitura bilíngue, ajuda de escrita, regras por site e firewall de privacidade." },
-  "independentExtension": { "message": "EXTENSÃO INDEPENDENTE" },
-  "privateWindowNotice": { "message": "Janela privada: somente tradução manual. Regras de sites e idiomas não são salvas aqui." },
-  "translatePagesInto": { "message": "Traduzir páginas para" },
-  "translateThisPage": { "message": "Traduzir esta página" },
-  "automaticSite": { "message": "Traduzir este site automaticamente" },
-  "neverSite": { "message": "Nunca traduzir este site" },
-  "neverLanguage": { "message": "Nunca traduzir este idioma" },
-  "settingsPrivacy": { "message": "Configurações e privacidade" },
-  "onboardingTitle": { "message": "Tradução do seu jeito." },
-  "onboardingIntro": { "message": "Escolha o que a extensão pode acessar e onde o texto é processado antes de qualquer tradução." },
-  "yourLanguage": { "message": "Seu idioma" },
-  "whenTranslationRuns": { "message": "Quando a tradução pode ser executada" },
-  "translationProvider": { "message": "Provedor de tradução" },
-  "privacyCheckpoint": { "message": "Verificação de privacidade" },
-  "acceptFinish": { "message": "Aceitar e concluir" },
-  "controlCentre": { "message": "Central de controle de tradução" },
-  "controlIntro": { "message": "Controle o acesso a sites, a privacidade do provedor, páginas dinâmicas e regras automáticas." },
-  "accessBehaviour": { "message": "Acesso e comportamento automático" },
-  "pageSafeguards": { "message": "Comportamento e proteções da página" },
-  "rulesTargets": { "message": "Exclusões e idiomas por site" },
-  "terminology": { "message": "Terminologia" },
-  "privacyDashboard": { "message": "Painel de privacidade" },
-  "settingsBackup": { "message": "Backup de configurações" },
-  "localDiagnostics": { "message": "Diagnóstico local" },
-  "saveSettings": { "message": "Salvar configurações" }
+  "extensionName": {
+    "message": "Tradutor privado automático de páginas"
+  },
+  "extensionShortName": {
+    "message": "Tradutor automático"
+  },
+  "extensionDescription": {
+    "message": "Tradução contextual com leitura bilíngue, ajuda de escrita, regras por site e firewall de privacidade."
+  },
+  "independentExtension": {
+    "message": "EXTENSÃO INDEPENDENTE"
+  },
+  "privateWindowNotice": {
+    "message": "Janela privada: somente tradução manual. Regras de sites e idiomas não são salvas aqui."
+  },
+  "translatePagesInto": {
+    "message": "Traduzir páginas para"
+  },
+  "translateThisPage": {
+    "message": "Traduzir esta página"
+  },
+  "automaticSite": {
+    "message": "Traduzir este site automaticamente"
+  },
+  "neverSite": {
+    "message": "Nunca traduzir este site"
+  },
+  "neverLanguage": {
+    "message": "Nunca traduzir este idioma"
+  },
+  "settingsPrivacy": {
+    "message": "Configurações e privacidade"
+  },
+  "onboardingTitle": {
+    "message": "Tradução do seu jeito."
+  },
+  "onboardingIntro": {
+    "message": "Escolha o que a extensão pode acessar e onde o texto é processado antes de qualquer tradução."
+  },
+  "yourLanguage": {
+    "message": "Seu idioma"
+  },
+  "whenTranslationRuns": {
+    "message": "Quando a tradução pode ser executada"
+  },
+  "translationProvider": {
+    "message": "Provedor de tradução"
+  },
+  "privacyCheckpoint": {
+    "message": "Verificação de privacidade"
+  },
+  "acceptFinish": {
+    "message": "Aceitar e concluir"
+  },
+  "controlCentre": {
+    "message": "Central de controle de tradução"
+  },
+  "controlIntro": {
+    "message": "Controle o acesso a sites, a privacidade do provedor, páginas dinâmicas e regras automáticas."
+  },
+  "accessBehaviour": {
+    "message": "Acesso e comportamento automático"
+  },
+  "pageSafeguards": {
+    "message": "Comportamento e proteções da página"
+  },
+  "rulesTargets": {
+    "message": "Exclusões e idiomas por site"
+  },
+  "terminology": {
+    "message": "Terminologia"
+  },
+  "privacyDashboard": {
+    "message": "Painel de privacidade"
+  },
+  "settingsBackup": {
+    "message": "Backup de configurações"
+  },
+  "localDiagnostics": {
+    "message": "Diagnóstico local"
+  },
+  "saveSettings": {
+    "message": "Salvar configurações"
+  },
+  "readingMode": {
+    "message": "Modo de leitura"
+  },
+  "translatedMode": {
+    "message": "Traduzido"
+  },
+  "bilingualMode": {
+    "message": "Bilíngue"
+  },
+  "hoverMode": {
+    "message": "Original ao passar o mouse"
+  },
+  "workspaceTitle": {
+    "message": "Área de tradução"
+  },
+  "showOriginal": {
+    "message": "Mostrar original"
+  },
+  "quickTranslate": {
+    "message": "Tradução rápida"
+  },
+  "textWorkspace": {
+    "message": "Área de texto"
+  },
+  "translateText": {
+    "message": "Traduzir texto"
+  },
+  "copyResult": {
+    "message": "Copiar resultado"
+  },
+  "websiteSettings": {
+    "message": "Configurações do site"
+  },
+  "localOnly": {
+    "message": "Somente local"
+  },
+  "provider": {
+    "message": "Provedor"
+  },
+  "automatic": {
+    "message": "Automático"
+  },
+  "onDevice": {
+    "message": "No dispositivo"
+  },
+  "targetLanguage": {
+    "message": "Idioma de destino"
+  },
+  "allowSensitive": {
+    "message": "Permitir tradução automática de formulários sensíveis aqui"
+  },
+  "saveProfile": {
+    "message": "Salvar perfil do site"
+  },
+  "globalDefaults": {
+    "message": "Usar padrões globais"
+  },
+  "languagePacks": {
+    "message": "Pacotes de idiomas locais"
+  },
+  "preparePair": {
+    "message": "Preparar um par de idiomas"
+  },
+  "fromLanguage": {
+    "message": "De"
+  },
+  "toLanguage": {
+    "message": "Para"
+  },
+  "checkPrepare": {
+    "message": "Verificar e preparar"
+  },
+  "recentTranslations": {
+    "message": "Traduções recentes"
+  },
+  "thisSession": {
+    "message": "Esta sessão"
+  },
+  "refresh": {
+    "message": "Atualizar"
+  },
+  "addFavourite": {
+    "message": "Adicionar idioma favorito"
+  },
+  "removeFavourite": {
+    "message": "Remover idioma favorito"
+  },
+  "glossaryHelp": {
+    "message": "Traduções preferidas, até 200 entradas"
+  },
+  "addTerm": {
+    "message": "Adicionar termo"
+  },
+  "sourceTerm": {
+    "message": "Termo original"
+  },
+  "preferredTranslation": {
+    "message": "Tradução preferida"
+  },
+  "removeTerm": {
+    "message": "Remover"
+  },
+  "grantProviderAccess": {
+    "message": "Permitir acesso ao provedor"
+  },
+  "completeSetup": {
+    "message": "Concluir configuração"
+  },
+  "cancelTranslation": {
+    "message": "Cancelar tradução"
+  },
+  "textToTranslate": {
+    "message": "Texto para traduzir"
+  },
+  "supportKofi": {
+    "message": "Apoiar no Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Verificando esta página…"
+  },
+  "connectionError": {
+    "message": "Não foi possível conectar. Tente novamente."
+  },
+  "setupRequired": {
+    "message": "Configuração de privacidade necessária"
+  },
+  "providerPermissionRequired": {
+    "message": "Permita acesso ao provedor de tradução aprovado."
+  },
+  "providerSetupRequired": {
+    "message": "Escolha e aprove um provedor em Configurações e privacidade."
+  },
+  "needsAttention": {
+    "message": "A tradução precisa de atenção"
+  },
+  "onDeviceRoute": {
+    "message": "No dispositivo: nenhum texto enviado externamente"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ caracteres enviados; $v3$ valores ocultados",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Nenhuma rota de tradução ativa"
+  },
+  "pageTranslated": {
+    "message": "Página traduzida"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ seções traduzidas",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Tradução em andamento"
+  },
+  "retryTranslation": {
+    "message": "Tente traduzir novamente."
+  },
+  "protectedPage": {
+    "message": "Acesso à página indisponível"
+  },
+  "openWebsite": {
+    "message": "Abra o botão da extensão em um site normal para permitir acesso."
+  },
+  "siteExcluded": {
+    "message": "Site excluído"
+  },
+  "languageExcluded": {
+    "message": "Idioma excluído"
+  },
+  "privateSafeguard": {
+    "message": "Proteção de páginas privadas"
+  },
+  "manualAvailable": {
+    "message": "Tradução manual disponível."
+  },
+  "alreadyTarget": {
+    "message": "Já está no seu idioma"
+  },
+  "readyToTranslate": {
+    "message": "Pronto para traduzir"
+  },
+  "noRecentTranslations": {
+    "message": "Nenhuma tradução recente."
+  },
+  "resultPlaceholder": {
+    "message": "Sua tradução aparecerá aqui."
+  },
+  "thisWebsite": {
+    "message": "Este site"
+  },
+  "enterText": {
+    "message": "Insira texto para traduzir."
+  },
+  "translating": {
+    "message": "Traduzindo…"
+  },
+  "profileSaved": {
+    "message": "Perfil do site salvo"
+  },
+  "checkingSupport": {
+    "message": "Verificando o navegador…"
+  },
+  "pairUnavailable": {
+    "message": "Navegador ou par de idiomas indisponível."
+  },
+  "preparingPair": {
+    "message": "Preparando o par de idiomas…"
+  },
+  "pairReady": {
+    "message": "Par de idiomas pronto."
+  },
+  "glossaryInvalid": {
+    "message": "Preencha os dois campos e remova os termos originais duplicados."
+  }
 }

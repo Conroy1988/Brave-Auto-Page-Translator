@@ -1,170 +1,222 @@
-import { DEFAULT_SETTINGS, SUPPORTED_LANGUAGES, hasProviderConsent, loadLocalState, loadSettings, saveSettings } from "../src/settings.js";
-import { hostPermissionPatterns, hostnameFromUrl, providerPermissionPatterns, readingModeForHost, siteProfileForHost, targetLanguageForHost } from "../src/translation.js";
+import { DEFAULT_SETTINGS, hasProviderConsent, loadLocalState, loadSettings, saveSettings } from "../src/settings.js";
+import { hostPermissionPatterns, hostnameFromUrl, readingModeForHost, siteProfileForHost, targetLanguageForHost } from "../src/translation.js";
+import { applyTranslations, message } from "../src/i18n.js";
+import { attachFavourite, ensureProviderAccess, fillLanguages, providerReadiness, providerRoutes, requireResponse, runControl } from "../src/ui.js";
 
-const ids = ["pulse","statusTitle","statusDetail","targetLanguage","readingMode","translatePage","restorePage","privacyRoute","workspaceText","translateText","copyResult","workspaceResult","siteTitle","siteProvider","siteTarget","siteReading","siteAutomatic","siteSensitive","saveSite","resetSite","packSource","packTarget","preparePack","packStatus","history","refreshHistory","openSettings","version"];
-const fields = Object.fromEntries(ids.map((id) => [id, document.querySelector(`#${id}`)]));
-let settings = { ...DEFAULT_SETTINGS };
-let localState = null;
-let tab = null;
-let hostname = "";
-let inspection = null;
-
-function fillLanguages(select, { auto = false } = {}) {
-  if (auto) select.append(new Option("Detect automatically", "auto"));
-  for (const [code, label] of SUPPORTED_LANGUAGES) select.append(new Option(label, code));
-}
+const fields = Object.fromEntries([...document.querySelectorAll("[id]")].map((element) => [element.id, element]));
+let settings = { ...DEFAULT_SETTINGS }, localState, tab, hostname = "", inspection;
+let contextVersion = 0, queryVersion = 0, pollTimer, refreshTimer, windowId, siteDirty = false, readiness;
+let resultText = "";
+applyTranslations();
 
 function setStatus(title, detail, tone = "") {
   fields.statusTitle.textContent = title;
   fields.statusDetail.textContent = detail;
   fields.pulse.className = `pulse ${tone}`.trim();
 }
-
+function report(error) { setStatus(message("needsAttention"), error.message, "error"); }
+function sameContext(version) { return contextVersion === version; }
+async function send(value) { return requireResponse(await chrome.runtime.sendMessage(value)); }
 function renderRoute(state = {}) {
   const privacy = state.privacy || {};
-  fields.privacyRoute.textContent = privacy.route === "on-device"
-    ? "On-device — nothing left this browser"
-    : privacy.route === "external"
-      ? `${state.engine || "External provider"} — ${privacy.charactersProcessed || 0} characters sent with ${privacy.maskedValues || 0} protected values masked`
-      : "Translation route not active";
+  fields.privacyRoute.textContent = privacy.route === "on-device" ? message("onDeviceRoute")
+    : privacy.route === "external" ? message("externalRoute", [state.engine || "", String(privacy.charactersProcessed || 0), String(privacy.maskedValues || 0)])
+      : message("routeInactive");
 }
-
-async function inspect() {
-  if (!tab?.id) return;
-  inspection = await chrome.runtime.sendMessage({ type: "inspect-tab", tabId: tab.id });
-  const state = inspection.pageState || {};
-  const labels = {
-    translated: ["Page translated", `${state.translatedSections || 0} contextual sections`, "ready"],
-    translating: ["Translation in progress", `${state.translatedSections || 0} of ${state.totalSections || "…"} sections`, ""],
-    "translation-error": ["Translation needs attention", state.error || "Try again.", "error"],
-    unsupported: ["This page is protected", "Open a normal website to translate.", ""],
-    ready: ["Ready to translate", `${inspection.language || "Auto-detect"} → ${inspection.targetLanguage}`, "ready"]
-  };
-  const [title, detail, tone] = labels[inspection.status] || ["Translation ready", inspection.status?.replaceAll("-", " ") || "", ""];
-  setStatus(title, detail, tone);
-  fields.targetLanguage.value = inspection.targetLanguage || settings.targetLanguage;
-  fields.readingMode.value = state.readingMode || inspection.readingMode || readingModeForHost(hostname, settings);
-  fields.restorePage.disabled = inspection.status !== "translated";
-  renderRoute(state);
+function updateButtons() {
+  const busy = inspection?.status === "translating";
+  fields.cancelPage.hidden = !busy;
+  fields.translatePage.textContent = message(inspection?.status === "consent-required" ? "completeSetup" : busy ? "cancelTranslation" : "translateThisPage");
+  if (!fields.translatePage.hasAttribute("aria-busy")) fields.translatePage.disabled = !tab?.id || ["unsupported", "already-target"].includes(inspection?.status);
+  if (!fields.restorePage.hasAttribute("aria-busy")) fields.restorePage.disabled = !tab?.id || !inspection?.pageState?.translatedSections;
+  fields.copyResult.disabled = !resultText;
+  for (const id of ["saveSite", "resetSite", "siteAutomatic", "siteSensitive", "siteProvider", "siteTarget", "siteReading"]) {
+    if (!fields[id].hasAttribute("aria-busy")) fields[id].disabled = !hostname || Boolean(tab?.incognito);
+  }
+  fields.privateNotice.hidden = !tab?.incognito;
 }
-
 function renderSiteProfile() {
   const profile = siteProfileForHost(hostname, settings) || {};
-  fields.siteTitle.textContent = hostname || "This website";
+  fields.siteTitle.textContent = hostname || message("thisWebsite");
   fields.siteProvider.value = profile.providerMode || "auto";
   fields.siteTarget.value = profile.targetLanguage || targetLanguageForHost(hostname, settings);
   fields.siteReading.value = profile.readingMode || settings.readingMode;
   fields.siteAutomatic.checked = profile.automatic === true;
   fields.siteSensitive.checked = profile.sensitivePageMode === "allow";
+  siteDirty = false;
 }
-
-function customEndpointOrigin(value) {
-  try {
-    const url = new URL(value);
-    return `${url.protocol}//${url.host}/*`;
-  } catch {
-    return "";
-  }
+async function renderReadiness(version) {
+  if (!inspection || ["unsupported", "translating", "translated"].includes(inspection.status)) { fields.readiness.hidden = true; return; }
+  const next = await providerReadiness(settings, localState, hostname, inspection.language, inspection.targetLanguage || settings.targetLanguage);
+  if (!sameContext(version)) return;
+  readiness = next;
+  fields.readiness.hidden = !next.action;
+  fields.readinessText.textContent = next.text;
+  fields.readinessAction.textContent = message(next.action === "permission" ? "grantProviderAccess" : next.action === "setup" ? "completeSetup" : "settingsPrivacy");
 }
-
-async function loadHistory() {
-  const response = await chrome.runtime.sendMessage({ type: "get-recent-translations", tabId: tab?.id });
-  const items = response.translations || [];
+async function inspect(version = contextVersion) {
+  clearTimeout(pollTimer);
+  if (!tab?.id) { updateButtons(); return; }
+  const next = await send({ type: "inspect-tab", tabId: tab.id });
+  if (!sameContext(version)) return;
+  inspection = next;
+  // The background has the authoritative URL when activeTab permits inspection.
+  if (next.hostname && next.hostname !== hostname) { hostname = next.hostname; renderSiteProfile(); }
+  const state = next.pageState || {};
+  const labels = {
+    translated: [message("pageTranslated"), message("sectionsTranslated", [String(state.translatedSections || 0)]), "ready"],
+    translating: [message("translationProgress"), `${state.translatedSections || 0} / ${state.totalSections || "…"}`, ""],
+    "translation-error": [message("needsAttention"), state.error || message("retryTranslation"), "error"],
+    unsupported: [message("protectedPage"), message("openWebsite"), "paused"],
+    "consent-required": [message("setupRequired"), message("completeSetup"), "paused"],
+    "excluded-site": [message("siteExcluded"), hostname, "paused"],
+    "excluded-language": [message("languageExcluded"), next.language || "", "paused"],
+    "sensitive-page": [message("privateSafeguard"), message("manualAvailable"), "paused"],
+    "already-target": [message("alreadyTarget"), next.targetLanguage || "", "ready"]
+  };
+  setStatus(...(labels[next.status] || [message("readyToTranslate"), `${next.language || "Auto"} → ${next.targetLanguage || settings.targetLanguage}`, "ready"]));
+  fields.targetLanguage.value = next.targetLanguage || settings.targetLanguage;
+  fields.readingMode.value = state.readingMode || next.readingMode || readingModeForHost(hostname, settings);
+  updateButtons(); renderRoute(state);
+  await refreshFavourite();
+  if (!sameContext(version)) return;
+  if (next.status === "translating") pollTimer = setTimeout(() => inspect(version).catch(report), 900);
+  else await renderReadiness(version);
+}
+async function loadHistory(version = contextVersion) {
+  if (!tab?.id) return;
+  const response = await send({ type: "get-recent-translations", tabId: tab.id });
+  if (!sameContext(version)) return;
   fields.history.replaceChildren();
-  if (!items.length) {
-    const empty = document.createElement("p"); empty.className = "muted"; empty.textContent = "No recent translations."; fields.history.append(empty); return;
-  }
+  const items = response.translations || [];
+  if (!items.length) { const p = document.createElement("p"); p.className = "muted"; p.textContent = message("noRecentTranslations"); fields.history.append(p); }
   for (const item of items) {
-    const article = document.createElement("article");
-    const meta = document.createElement("small"); meta.textContent = `${item.kind || "text"} · ${item.engine || "provider"}`;
-    const value = document.createElement("p"); value.dir = "auto"; value.textContent = item.translated;
+    const article = document.createElement("article"), meta = document.createElement("small"), value = document.createElement("p");
+    meta.textContent = `${item.kind || "text"} · ${item.engine || ""}`;
+    value.dir = "auto"; value.textContent = item.translated;
     article.append(meta, value); fields.history.append(article);
   }
 }
-
-fields.translatePage.addEventListener("click", async () => { fields.translatePage.disabled = true; await chrome.runtime.sendMessage({ type: "translate-now", tabId: tab.id }); fields.translatePage.disabled = false; await inspect(); });
-fields.restorePage.addEventListener("click", async () => { await chrome.runtime.sendMessage({ type: "restore-page", tabId: tab.id }); await inspect(); });
-fields.readingMode.addEventListener("change", async () => { settings = await saveSettings({ ...settings, readingMode: fields.readingMode.value }); await chrome.runtime.sendMessage({ type: "set-reading-mode", tabId: tab.id, readingMode: fields.readingMode.value }); await inspect(); });
-fields.targetLanguage.addEventListener("change", async () => { settings = await saveSettings({ ...settings, targetLanguage: fields.targetLanguage.value }); await chrome.runtime.sendMessage({ type: "refresh-settings" }); await inspect(); });
-fields.translateText.addEventListener("click", async () => {
-  fields.translateText.disabled = true; fields.workspaceResult.textContent = "Translating…";
-  const response = await chrome.runtime.sendMessage({ type: "translate-panel-text", tabId: tab.id, text: fields.workspaceText.value, targetLanguage: fields.targetLanguage.value });
-  fields.workspaceResult.textContent = response.status === "ok" ? response.translated : response.message || "Translation failed.";
-  if (response.status === "ok") renderRoute({ engine: response.engine, privacy: response.privacy });
-  fields.translateText.disabled = false; await loadHistory();
-});
-fields.copyResult.addEventListener("click", () => navigator.clipboard.writeText(fields.workspaceResult.textContent || ""));
-fields.saveSite.addEventListener("click", async () => {
-  if (!hostname) return;
-  const chosenProvider = fields.siteProvider.value;
-  if (["google-cloud", "libretranslate", "deepl", "google-web"].includes(chosenProvider) && !hasProviderConsent(localState, chosenProvider)) {
-    setStatus("Provider approval required", "Approve this provider's text route in Settings & privacy first.", "error");
-    return;
+async function refreshContext() {
+  const request = ++queryVersion;
+  const [next] = await chrome.tabs.query({ active: true, windowId });
+  if (request !== queryVersion) return;
+  const changed = next?.id !== tab?.id || next?.url !== tab?.url;
+  if (changed) {
+    contextVersion++; clearTimeout(pollTimer); tab = next; hostname = hostnameFromUrl(next?.url || ""); inspection = undefined;
+    readiness = undefined; fields.readiness.hidden = true; resultText = "";
+    fields.workspaceResult.textContent = message("resultPlaceholder"); renderRoute();
   }
-  const missingConfiguration = (chosenProvider === "google-cloud" && !localState.googleCloudApiKey)
-    || (chosenProvider === "libretranslate" && !localState.libreTranslateEndpoint)
-    || (chosenProvider === "deepl" && !localState.deepLApiKey);
-  if (missingConfiguration) {
-    setStatus("Provider setup required", "Configure this provider in Settings & privacy before assigning it to a website.", "error");
-    return;
-  }
-  const providerOrigins = providerPermissionPatterns(chosenProvider, {
-    googleCloudApiKey: hasProviderConsent(localState, "google-cloud") ? localState.googleCloudApiKey : "",
-    deepLApiKey: hasProviderConsent(localState, "deepl") ? localState.deepLApiKey : "",
-    deepLApiPlan: settings.deepLApiPlan
+  const version = contextVersion;
+  const loaded = await Promise.all([loadSettings(), loadLocalState()]);
+  if (!sameContext(version)) return;
+  [settings, localState] = loaded;
+  if (changed || !siteDirty) renderSiteProfile();
+  updateButtons();
+  if (!tab?.id) { setStatus(message("protectedPage"), message("openWebsite")); return; }
+  await Promise.all([inspect(version), loadHistory(version)]);
+}
+function scheduleRefresh() { clearTimeout(refreshTimer); refreshTimer = setTimeout(() => refreshContext().catch(report), 80); }
+function control(id, operation) {
+  fields[id].addEventListener("click", () => {
+    const version = contextVersion;
+    runControl(fields[id], () => operation(version), (error) => { if (sameContext(version)) report(error); }, updateButtons);
   });
-  if (["auto", "libretranslate"].includes(chosenProvider) && hasProviderConsent(localState, "libretranslate") && localState.libreTranslateEndpoint) {
-    const endpoint = customEndpointOrigin(localState.libreTranslateEndpoint);
-    if (endpoint) providerOrigins.push(endpoint);
+}
+async function patchSettings(update) {
+  settings = await saveSettings({ ...await loadSettings(), ...update });
+  await send({ type: "refresh-settings" });
+}
+control("translatePage", async (version) => {
+  const target = tab?.id;
+  if (!target) return;
+  if (inspection?.status === "consent-required") { await send({ type: "open-onboarding" }); return; }
+  const cancelling = inspection?.status === "translating";
+  if (!cancelling && !await ensureProviderAccess(settings, localState, hostname)) throw new Error(message("providerPermissionRequired"));
+  if (!sameContext(version)) return;
+  if (!cancelling) {
+    inspection = { ...inspection, status: "translating" }; updateButtons();
+    setStatus(message("translationProgress"), message("translating"));
+    pollTimer = setTimeout(() => inspect(version).catch(report), 900);
   }
-  if (fields.siteAutomatic.checked) providerOrigins.push(...hostPermissionPatterns(hostname));
-  const requestedOrigins = [...new Set(providerOrigins)];
-  if (requestedOrigins.length && !await chrome.permissions.request({ origins: requestedOrigins })) {
-    setStatus("Website access declined", "The website profile was not changed.", "error");
-    return;
-  }
-  settings = await saveSettings({
-    ...settings,
-    siteProfiles: {
-      ...settings.siteProfiles,
-      [hostname]: {
-        targetLanguage: fields.siteTarget.value,
-        providerMode: fields.siteProvider.value,
-        readingMode: fields.siteReading.value,
-        automatic: fields.siteAutomatic.checked,
-        sensitivePageMode: fields.siteSensitive.checked ? "allow" : "inherit"
-      }
-    }
-  });
-  await chrome.runtime.sendMessage({ type: "refresh-settings" });
-  setStatus("Website profile saved", "Future visits will use these choices.", "ready");
+  const response = await send({ type: cancelling ? "cancel-tab-translation" : "translate-now", tabId: target });
+  if (!sameContext(version)) return;
+  await inspect(version);
+  if (response.message && !["translated", "cancelled"].includes(response.status)) setStatus(message("needsAttention"), response.message, "error");
 });
-fields.resetSite.addEventListener("click", async () => {
-  if (!hostname) return;
-  const siteProfiles = { ...settings.siteProfiles };
-  delete siteProfiles[hostname];
-  settings = await saveSettings({ ...settings, siteProfiles });
-  await chrome.runtime.sendMessage({ type: "refresh-settings" });
-  renderSiteProfile();
-  await inspect();
-  setStatus("Using global defaults", "The local website profile was removed.", "ready");
+control("cancelPage", async (version) => { await send({ type: "cancel-tab-translation", tabId: tab.id }); if (sameContext(version)) await inspect(version); });
+control("restorePage", async (version) => { await send({ type: "restore-page", tabId: tab.id }); if (sameContext(version)) await inspect(version); });
+for (const [id, setting] of [["readingMode", "readingMode"], ["targetLanguage", "targetLanguage"]]) fields[id].addEventListener("change", async () => {
+  const version = contextVersion, target = tab?.id, value = fields[id].value;
+  try {
+    await patchSettings({ [setting]: value });
+    if (setting === "readingMode" && target) await send({ type: "set-reading-mode", tabId: target, readingMode: value });
+    if (sameContext(version)) await inspect(version);
+  } catch (error) { if (sameContext(version)) report(error); }
 });
-fields.preparePack.addEventListener("click", async () => {
-  fields.preparePack.disabled = true; fields.packStatus.textContent = "Checking browser support…";
-  const availability = await chrome.runtime.sendMessage({ type: "get-on-device-availability", sourceLanguage: fields.packSource.value, targetLanguage: fields.packTarget.value });
-  if (availability.availability === "unavailable" || availability.availability === "unsupported") fields.packStatus.textContent = "This browser or language pair is unavailable.";
-  else {
-    fields.packStatus.textContent = availability.availability === "available" ? "Language pair ready." : "Downloading the on-device language pack…";
-    const prepared = await chrome.runtime.sendMessage({ type: "download-on-device-language-pack", sourceLanguage: fields.packSource.value, targetLanguage: fields.packTarget.value });
-    fields.packStatus.textContent = prepared.status === "ok" ? "Language pair ready for private on-device translation." : prepared.message || "Language pack could not be prepared.";
-  }
-  fields.preparePack.disabled = false;
+control("translateText", async (version) => {
+  const target = tab?.id, text = fields.workspaceText.value;
+  if (!target || !text.trim()) throw new Error(message("enterText"));
+  if (!await ensureProviderAccess(settings, localState, hostname)) throw new Error(message("providerPermissionRequired"));
+  if (!sameContext(version)) return;
+  resultText = ""; updateButtons(); fields.workspaceResult.textContent = message("translating");
+  try {
+    const response = await send({ type: "translate-panel-text", tabId: target, text, targetLanguage: fields.targetLanguage.value });
+    if (!sameContext(version)) return;
+    if (response.status !== "ok") throw new Error(response.message || message("needsAttention"));
+    resultText = response.translated; fields.workspaceResult.textContent = resultText; renderRoute(response); await loadHistory(version);
+  } catch (error) { if (sameContext(version)) fields.workspaceResult.textContent = error.message; throw error; }
 });
-fields.refreshHistory.addEventListener("click", loadHistory);
-fields.openSettings.addEventListener("click", () => chrome.runtime.openOptionsPage());
-
-fillLanguages(fields.targetLanguage); fillLanguages(fields.siteTarget); fillLanguages(fields.packSource); fillLanguages(fields.packTarget);
-[settings, localState, [tab]] = await Promise.all([loadSettings(), loadLocalState(), chrome.tabs.query({ active: true, currentWindow: true })]);
-hostname = hostnameFromUrl(tab?.url || "");
-fields.packSource.value = "es"; fields.packTarget.value = settings.targetLanguage; fields.version.textContent = `v${chrome.runtime.getManifest().version}`;
-renderSiteProfile(); await inspect(); await loadHistory();
+control("copyResult", async () => { if (resultText) await navigator.clipboard.writeText(resultText); });
+for (const id of ["siteProvider", "siteTarget", "siteReading", "siteAutomatic", "siteSensitive"]) fields[id].addEventListener("change", () => { siteDirty = true; });
+control("saveSite", async (version) => {
+  if (!hostname || tab?.incognito) return;
+  const host = hostname, chosenProvider = fields.siteProvider.value;
+  const profile = { targetLanguage: fields.siteTarget.value, providerMode: chosenProvider, readingMode: fields.siteReading.value, automatic: fields.siteAutomatic.checked, sensitivePageMode: fields.siteSensitive.checked ? "allow" : "inherit" };
+  const routes = providerRoutes({ ...settings, siteProfiles: { ...settings.siteProfiles, [host]: profile } }, localState, host);
+  const selected = routes.find((route) => route.provider === chosenProvider);
+  if (selected && (!selected.consented || !selected.configured)) throw new Error(message("providerSetupRequired"));
+  const origins = [...new Set(routes.filter((route) => route.consented && route.configured).flatMap((route) => route.origins).concat(profile.automatic ? hostPermissionPatterns(host) : []))];
+  if (origins.length && !await chrome.permissions.contains({ origins }) && !await chrome.permissions.request({ origins })) throw new Error(message("providerPermissionRequired"));
+  if (!sameContext(version)) return;
+  const current = await loadSettings();
+  await patchSettings({ siteProfiles: { ...current.siteProfiles, [host]: profile } });
+  if (sameContext(version)) { siteDirty = false; setStatus(message("profileSaved"), host, "ready"); }
+});
+control("resetSite", async (version) => {
+  if (!hostname || tab?.incognito) return;
+  const host = hostname, current = await loadSettings(), siteProfiles = { ...current.siteProfiles };
+  delete siteProfiles[host]; await patchSettings({ siteProfiles });
+  if (sameContext(version)) { renderSiteProfile(); await inspect(version); }
+});
+control("preparePack", async () => {
+  const pair = { sourceLanguage: fields.packSource.value, targetLanguage: fields.packTarget.value };
+  fields.packStatus.textContent = message("checkingSupport");
+  try {
+    const availability = await send({ type: "get-on-device-availability", ...pair });
+    if (["unsupported", "unavailable"].includes(availability.availability)) { fields.packStatus.textContent = message("pairUnavailable"); return; }
+    fields.packStatus.textContent = message("preparingPair");
+    const response = await send({ type: "download-on-device-language-pack", ...pair });
+    fields.packStatus.textContent = response.status === "ok" ? message("pairReady") : response.message || message("pairUnavailable");
+  } catch (error) { fields.packStatus.textContent = error.message; throw error; }
+});
+control("refreshHistory", loadHistory);
+control("readinessAction", async (version) => {
+  if (readiness?.action === "setup") await send({ type: "open-onboarding" });
+  else if (readiness?.action === "permission") { await ensureProviderAccess(settings, localState, hostname); if (sameContext(version)) await inspect(version); }
+  else await chrome.runtime.openOptionsPage();
+});
+control("openSettings", () => chrome.runtime.openOptionsPage());
+const refreshFavourite = attachFavourite(fields.targetLanguage, fields.favouriteLanguage);
+for (const field of [fields.targetLanguage, fields.siteTarget, fields.packSource, fields.packTarget]) fillLanguages(field);
+fields.packSource.value = "es";
+fields.version.textContent = `v${chrome.runtime.getManifest().version}`;
+chrome.tabs.onActivated.addListener((info) => { if (info.windowId === windowId) scheduleRefresh(); });
+chrome.tabs.onUpdated.addListener((id, change) => { if (id === tab?.id && (change.url || change.status === "complete")) scheduleRefresh(); });
+chrome.tabs.onRemoved.addListener((id) => { if (id === tab?.id) scheduleRefresh(); });
+chrome.storage.onChanged.addListener(scheduleRefresh);
+chrome.permissions.onAdded.addListener(scheduleRefresh);
+chrome.permissions.onRemoved.addListener(scheduleRefresh);
+window.addEventListener("unload", () => { clearTimeout(pollTimer); clearTimeout(refreshTimer); });
+try { windowId = (await chrome.windows.getCurrent()).id; await refreshContext(); fields.packTarget.value = settings.targetLanguage; }
+catch (error) { report(error); updateButtons(); }

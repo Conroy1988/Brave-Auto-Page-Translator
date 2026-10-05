@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"Приватный автопереводчик страниц"},"extensionShortName":{"message":"Автопереводчик"},"extensionDescription":{"message":"Контекстный перевод страниц с двуязычным чтением, переводом текста, правилами сайтов и защитой конфиденциальности."},
-  "independentExtension":{"message":"НЕЗАВИСИМОЕ РАСШИРЕНИЕ"},"privateWindowNotice":{"message":"Приватное окно: только ручной перевод. Правила сайтов и языков здесь не сохраняются."},"translatePagesInto":{"message":"Переводить страницы на"},"translateThisPage":{"message":"Перевести эту страницу"},"automaticSite":{"message":"Автоматически переводить этот сайт"},"neverSite":{"message":"Никогда не переводить этот сайт"},"neverLanguage":{"message":"Никогда не переводить этот язык"},"settingsPrivacy":{"message":"Настройки и конфиденциальность"},
-  "onboardingTitle":{"message":"Перевод на ваших условиях."},"onboardingIntro":{"message":"Выберите доступ расширения и место обработки текста перед переводом."},"yourLanguage":{"message":"Ваш язык"},"whenTranslationRuns":{"message":"Когда можно запускать перевод"},"translationProvider":{"message":"Сервис перевода"},"privacyCheckpoint":{"message":"Проверка конфиденциальности"},"acceptFinish":{"message":"Принять и завершить настройку"},
-  "controlCentre":{"message":"Центр управления переводом"},"controlIntro":{"message":"Управляйте доступом к сайтам, конфиденциальностью сервиса, динамическими страницами и автоматическими правилами."},"accessBehaviour":{"message":"Доступ и автоматическая работа"},"pageSafeguards":{"message":"Поведение страницы и защита"},"rulesTargets":{"message":"Исключения и цели для сайтов"},"terminology":{"message":"Терминология"},"privacyDashboard":{"message":"Панель конфиденциальности"},"settingsBackup":{"message":"Резервная копия настроек"},"localDiagnostics":{"message":"Локальная диагностика"},"saveSettings":{"message":"Сохранить настройки"}
+  "extensionName": {
+    "message": "Приватный автопереводчик страниц"
+  },
+  "extensionShortName": {
+    "message": "Автопереводчик"
+  },
+  "extensionDescription": {
+    "message": "Контекстный перевод страниц с двуязычным чтением, переводом текста, правилами сайтов и защитой конфиденциальности."
+  },
+  "independentExtension": {
+    "message": "НЕЗАВИСИМОЕ РАСШИРЕНИЕ"
+  },
+  "privateWindowNotice": {
+    "message": "Приватное окно: только ручной перевод. Правила сайтов и языков здесь не сохраняются."
+  },
+  "translatePagesInto": {
+    "message": "Переводить страницы на"
+  },
+  "translateThisPage": {
+    "message": "Перевести эту страницу"
+  },
+  "automaticSite": {
+    "message": "Автоматически переводить этот сайт"
+  },
+  "neverSite": {
+    "message": "Никогда не переводить этот сайт"
+  },
+  "neverLanguage": {
+    "message": "Никогда не переводить этот язык"
+  },
+  "settingsPrivacy": {
+    "message": "Настройки и конфиденциальность"
+  },
+  "onboardingTitle": {
+    "message": "Перевод на ваших условиях."
+  },
+  "onboardingIntro": {
+    "message": "Выберите доступ расширения и место обработки текста перед переводом."
+  },
+  "yourLanguage": {
+    "message": "Ваш язык"
+  },
+  "whenTranslationRuns": {
+    "message": "Когда можно запускать перевод"
+  },
+  "translationProvider": {
+    "message": "Сервис перевода"
+  },
+  "privacyCheckpoint": {
+    "message": "Проверка конфиденциальности"
+  },
+  "acceptFinish": {
+    "message": "Принять и завершить настройку"
+  },
+  "controlCentre": {
+    "message": "Центр управления переводом"
+  },
+  "controlIntro": {
+    "message": "Управляйте доступом к сайтам, конфиденциальностью сервиса, динамическими страницами и автоматическими правилами."
+  },
+  "accessBehaviour": {
+    "message": "Доступ и автоматическая работа"
+  },
+  "pageSafeguards": {
+    "message": "Поведение страницы и защита"
+  },
+  "rulesTargets": {
+    "message": "Исключения и цели для сайтов"
+  },
+  "terminology": {
+    "message": "Терминология"
+  },
+  "privacyDashboard": {
+    "message": "Панель конфиденциальности"
+  },
+  "settingsBackup": {
+    "message": "Резервная копия настроек"
+  },
+  "localDiagnostics": {
+    "message": "Локальная диагностика"
+  },
+  "saveSettings": {
+    "message": "Сохранить настройки"
+  },
+  "readingMode": {
+    "message": "Режим чтения"
+  },
+  "translatedMode": {
+    "message": "Перевод"
+  },
+  "bilingualMode": {
+    "message": "Два языка"
+  },
+  "hoverMode": {
+    "message": "Оригинал при наведении"
+  },
+  "workspaceTitle": {
+    "message": "Рабочая область перевода"
+  },
+  "showOriginal": {
+    "message": "Показать оригинал"
+  },
+  "quickTranslate": {
+    "message": "Быстрый перевод"
+  },
+  "textWorkspace": {
+    "message": "Текстовая область"
+  },
+  "translateText": {
+    "message": "Перевести текст"
+  },
+  "copyResult": {
+    "message": "Копировать результат"
+  },
+  "websiteSettings": {
+    "message": "Настройки сайта"
+  },
+  "localOnly": {
+    "message": "Только локально"
+  },
+  "provider": {
+    "message": "Провайдер"
+  },
+  "automatic": {
+    "message": "Автоматически"
+  },
+  "onDevice": {
+    "message": "На устройстве"
+  },
+  "targetLanguage": {
+    "message": "Язык перевода"
+  },
+  "allowSensitive": {
+    "message": "Разрешить здесь автоматический перевод конфиденциальных форм"
+  },
+  "saveProfile": {
+    "message": "Сохранить профиль сайта"
+  },
+  "globalDefaults": {
+    "message": "Использовать общие настройки"
+  },
+  "languagePacks": {
+    "message": "Локальные языковые пакеты"
+  },
+  "preparePair": {
+    "message": "Подготовить языковую пару"
+  },
+  "fromLanguage": {
+    "message": "С"
+  },
+  "toLanguage": {
+    "message": "На"
+  },
+  "checkPrepare": {
+    "message": "Проверить и подготовить"
+  },
+  "recentTranslations": {
+    "message": "Недавние переводы"
+  },
+  "thisSession": {
+    "message": "Этот сеанс"
+  },
+  "refresh": {
+    "message": "Обновить"
+  },
+  "addFavourite": {
+    "message": "Добавить избранный язык"
+  },
+  "removeFavourite": {
+    "message": "Удалить избранный язык"
+  },
+  "glossaryHelp": {
+    "message": "Предпочтительные переводы, до 200 записей"
+  },
+  "addTerm": {
+    "message": "Добавить термин"
+  },
+  "sourceTerm": {
+    "message": "Исходный термин"
+  },
+  "preferredTranslation": {
+    "message": "Предпочтительный перевод"
+  },
+  "removeTerm": {
+    "message": "Удалить"
+  },
+  "grantProviderAccess": {
+    "message": "Разрешить доступ к провайдеру"
+  },
+  "completeSetup": {
+    "message": "Завершить настройку"
+  },
+  "cancelTranslation": {
+    "message": "Отменить перевод"
+  },
+  "textToTranslate": {
+    "message": "Текст для перевода"
+  },
+  "supportKofi": {
+    "message": "Поддержать на Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Проверка страницы…"
+  },
+  "connectionError": {
+    "message": "Не удалось подключиться. Повторите попытку."
+  },
+  "setupRequired": {
+    "message": "Требуется настройка конфиденциальности"
+  },
+  "providerPermissionRequired": {
+    "message": "Разрешите доступ к одобренному провайдеру перевода."
+  },
+  "providerSetupRequired": {
+    "message": "Выберите и одобрите провайдера в настройках конфиденциальности."
+  },
+  "needsAttention": {
+    "message": "Перевод требует внимания"
+  },
+  "onDeviceRoute": {
+    "message": "На устройстве: текст не отправлялся наружу"
+  },
+  "externalRoute": {
+    "message": "$v1$: отправлено $v2$ символов; скрыто $v3$ значений",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Нет активного маршрута перевода"
+  },
+  "pageTranslated": {
+    "message": "Страница переведена"
+  },
+  "sectionsTranslated": {
+    "message": "Переведено разделов: $v1$",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Выполняется перевод"
+  },
+  "retryTranslation": {
+    "message": "Повторите перевод."
+  },
+  "protectedPage": {
+    "message": "Нет доступа к странице"
+  },
+  "openWebsite": {
+    "message": "Откройте кнопку расширения на обычном сайте, чтобы разрешить доступ."
+  },
+  "siteExcluded": {
+    "message": "Сайт исключён"
+  },
+  "languageExcluded": {
+    "message": "Язык исключён"
+  },
+  "privateSafeguard": {
+    "message": "Защита приватных страниц"
+  },
+  "manualAvailable": {
+    "message": "Доступен ручной перевод."
+  },
+  "alreadyTarget": {
+    "message": "Уже на вашем языке"
+  },
+  "readyToTranslate": {
+    "message": "Готово к переводу"
+  },
+  "noRecentTranslations": {
+    "message": "Нет недавних переводов."
+  },
+  "resultPlaceholder": {
+    "message": "Здесь появится перевод."
+  },
+  "thisWebsite": {
+    "message": "Этот сайт"
+  },
+  "enterText": {
+    "message": "Введите текст для перевода."
+  },
+  "translating": {
+    "message": "Перевод…"
+  },
+  "profileSaved": {
+    "message": "Профиль сайта сохранён"
+  },
+  "checkingSupport": {
+    "message": "Проверка поддержки браузера…"
+  },
+  "pairUnavailable": {
+    "message": "Браузер или языковая пара недоступны."
+  },
+  "preparingPair": {
+    "message": "Подготовка языковой пары…"
+  },
+  "pairReady": {
+    "message": "Языковая пара готова."
+  },
+  "glossaryInvalid": {
+    "message": "Заполните оба поля и удалите повторяющиеся исходные термины."
+  }
 }

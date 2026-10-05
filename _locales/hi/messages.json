@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"निजी स्वचालित पेज अनुवादक"},"extensionShortName":{"message":"स्वचालित अनुवादक"},"extensionDescription":{"message":"संदर्भ-संवेदी वेब अनुवाद, द्विभाषी पठन, लेखन अनुवाद, साइट नियम और गोपनीयता फ़ायरवॉल।"},
-  "independentExtension":{"message":"स्वतंत्र एक्सटेंशन"},"privateWindowNotice":{"message":"निजी विंडो: केवल मैनुअल अनुवाद। साइट और भाषा नियम यहाँ सहेजे नहीं जाते।"},"translatePagesInto":{"message":"पेजों का अनुवाद करें"},"translateThisPage":{"message":"इस पेज का अनुवाद करें"},"automaticSite":{"message":"इस साइट का अपने आप अनुवाद करें"},"neverSite":{"message":"इस साइट का कभी अनुवाद न करें"},"neverLanguage":{"message":"इस भाषा का कभी अनुवाद न करें"},"settingsPrivacy":{"message":"सेटिंग और गोपनीयता"},
-  "onboardingTitle":{"message":"अनुवाद आपकी शर्तों पर।"},"onboardingIntro":{"message":"चुनें कि एक्सटेंशन क्या एक्सेस कर सकता है और अनुवाद से पहले टेक्स्ट कहाँ संसाधित होता है।"},"yourLanguage":{"message":"आपकी भाषा"},"whenTranslationRuns":{"message":"अनुवाद कब चल सकता है"},"translationProvider":{"message":"अनुवाद प्रदाता"},"privacyCheckpoint":{"message":"गोपनीयता जाँच"},"acceptFinish":{"message":"स्वीकार करें और सेटअप पूरा करें"},
-  "controlCentre":{"message":"अनुवाद नियंत्रण केंद्र"},"controlIntro":{"message":"साइट एक्सेस, प्रदाता गोपनीयता, बदलते पेज और स्वचालित नियम नियंत्रित करें।"},"accessBehaviour":{"message":"एक्सेस और स्वचालित व्यवहार"},"pageSafeguards":{"message":"पेज व्यवहार और सुरक्षा"},"rulesTargets":{"message":"बहिष्करण और साइट लक्ष्य"},"terminology":{"message":"शब्दावली"},"privacyDashboard":{"message":"गोपनीयता डैशबोर्ड"},"settingsBackup":{"message":"सेटिंग बैकअप"},"localDiagnostics":{"message":"स्थानीय निदान"},"saveSettings":{"message":"सेटिंग सहेजें"}
+  "extensionName": {
+    "message": "निजी स्वचालित पेज अनुवादक"
+  },
+  "extensionShortName": {
+    "message": "स्वचालित अनुवादक"
+  },
+  "extensionDescription": {
+    "message": "संदर्भ-संवेदी वेब अनुवाद, द्विभाषी पठन, लेखन अनुवाद, साइट नियम और गोपनीयता फ़ायरवॉल।"
+  },
+  "independentExtension": {
+    "message": "स्वतंत्र एक्सटेंशन"
+  },
+  "privateWindowNotice": {
+    "message": "निजी विंडो: केवल मैनुअल अनुवाद। साइट और भाषा नियम यहाँ सहेजे नहीं जाते।"
+  },
+  "translatePagesInto": {
+    "message": "पेजों का अनुवाद करें"
+  },
+  "translateThisPage": {
+    "message": "इस पेज का अनुवाद करें"
+  },
+  "automaticSite": {
+    "message": "इस साइट का अपने आप अनुवाद करें"
+  },
+  "neverSite": {
+    "message": "इस साइट का कभी अनुवाद न करें"
+  },
+  "neverLanguage": {
+    "message": "इस भाषा का कभी अनुवाद न करें"
+  },
+  "settingsPrivacy": {
+    "message": "सेटिंग और गोपनीयता"
+  },
+  "onboardingTitle": {
+    "message": "अनुवाद आपकी शर्तों पर।"
+  },
+  "onboardingIntro": {
+    "message": "चुनें कि एक्सटेंशन क्या एक्सेस कर सकता है और अनुवाद से पहले टेक्स्ट कहाँ संसाधित होता है।"
+  },
+  "yourLanguage": {
+    "message": "आपकी भाषा"
+  },
+  "whenTranslationRuns": {
+    "message": "अनुवाद कब चल सकता है"
+  },
+  "translationProvider": {
+    "message": "अनुवाद प्रदाता"
+  },
+  "privacyCheckpoint": {
+    "message": "गोपनीयता जाँच"
+  },
+  "acceptFinish": {
+    "message": "स्वीकार करें और सेटअप पूरा करें"
+  },
+  "controlCentre": {
+    "message": "अनुवाद नियंत्रण केंद्र"
+  },
+  "controlIntro": {
+    "message": "साइट एक्सेस, प्रदाता गोपनीयता, बदलते पेज और स्वचालित नियम नियंत्रित करें।"
+  },
+  "accessBehaviour": {
+    "message": "एक्सेस और स्वचालित व्यवहार"
+  },
+  "pageSafeguards": {
+    "message": "पेज व्यवहार और सुरक्षा"
+  },
+  "rulesTargets": {
+    "message": "बहिष्करण और साइट लक्ष्य"
+  },
+  "terminology": {
+    "message": "शब्दावली"
+  },
+  "privacyDashboard": {
+    "message": "गोपनीयता डैशबोर्ड"
+  },
+  "settingsBackup": {
+    "message": "सेटिंग बैकअप"
+  },
+  "localDiagnostics": {
+    "message": "स्थानीय निदान"
+  },
+  "saveSettings": {
+    "message": "सेटिंग सहेजें"
+  },
+  "readingMode": {
+    "message": "पठन मोड"
+  },
+  "translatedMode": {
+    "message": "अनुवादित"
+  },
+  "bilingualMode": {
+    "message": "द्विभाषी"
+  },
+  "hoverMode": {
+    "message": "माउस रखने पर मूल पाठ"
+  },
+  "workspaceTitle": {
+    "message": "अनुवाद कार्यक्षेत्र"
+  },
+  "showOriginal": {
+    "message": "मूल पाठ दिखाएँ"
+  },
+  "quickTranslate": {
+    "message": "त्वरित अनुवाद"
+  },
+  "textWorkspace": {
+    "message": "पाठ कार्यक्षेत्र"
+  },
+  "translateText": {
+    "message": "पाठ का अनुवाद करें"
+  },
+  "copyResult": {
+    "message": "परिणाम कॉपी करें"
+  },
+  "websiteSettings": {
+    "message": "वेबसाइट सेटिंग"
+  },
+  "localOnly": {
+    "message": "केवल स्थानीय"
+  },
+  "provider": {
+    "message": "प्रदाता"
+  },
+  "automatic": {
+    "message": "स्वचालित"
+  },
+  "onDevice": {
+    "message": "डिवाइस पर"
+  },
+  "targetLanguage": {
+    "message": "लक्ष्य भाषा"
+  },
+  "allowSensitive": {
+    "message": "यहाँ संवेदनशील फ़ॉर्म के स्वचालित अनुवाद की अनुमति दें"
+  },
+  "saveProfile": {
+    "message": "वेबसाइट प्रोफ़ाइल सहेजें"
+  },
+  "globalDefaults": {
+    "message": "वैश्विक डिफ़ॉल्ट उपयोग करें"
+  },
+  "languagePacks": {
+    "message": "डिवाइस पर भाषा पैक"
+  },
+  "preparePair": {
+    "message": "भाषा जोड़ी तैयार करें"
+  },
+  "fromLanguage": {
+    "message": "से"
+  },
+  "toLanguage": {
+    "message": "में"
+  },
+  "checkPrepare": {
+    "message": "जाँचें और तैयार करें"
+  },
+  "recentTranslations": {
+    "message": "हाल के अनुवाद"
+  },
+  "thisSession": {
+    "message": "यह सत्र"
+  },
+  "refresh": {
+    "message": "रीफ़्रेश करें"
+  },
+  "addFavourite": {
+    "message": "पसंदीदा भाषा जोड़ें"
+  },
+  "removeFavourite": {
+    "message": "पसंदीदा भाषा हटाएँ"
+  },
+  "glossaryHelp": {
+    "message": "पसंदीदा अनुवाद, अधिकतम 200 प्रविष्टियाँ"
+  },
+  "addTerm": {
+    "message": "शब्द जोड़ें"
+  },
+  "sourceTerm": {
+    "message": "मूल शब्द"
+  },
+  "preferredTranslation": {
+    "message": "पसंदीदा अनुवाद"
+  },
+  "removeTerm": {
+    "message": "हटाएँ"
+  },
+  "grantProviderAccess": {
+    "message": "प्रदाता तक पहुँच की अनुमति दें"
+  },
+  "completeSetup": {
+    "message": "सेटअप पूरा करें"
+  },
+  "cancelTranslation": {
+    "message": "अनुवाद रद्द करें"
+  },
+  "textToTranslate": {
+    "message": "अनुवाद के लिए पाठ"
+  },
+  "supportKofi": {
+    "message": "Ko-fi पर सहयोग करें"
+  },
+  "checkingPage": {
+    "message": "पृष्ठ की जाँच हो रही है…"
+  },
+  "connectionError": {
+    "message": "कनेक्ट नहीं हो सका। फिर कोशिश करें।"
+  },
+  "setupRequired": {
+    "message": "गोपनीयता सेटअप आवश्यक है"
+  },
+  "providerPermissionRequired": {
+    "message": "स्वीकृत अनुवाद प्रदाता तक पहुँच की अनुमति दें।"
+  },
+  "providerSetupRequired": {
+    "message": "सेटिंग और गोपनीयता में अनुवाद प्रदाता चुनें और स्वीकृत करें।"
+  },
+  "needsAttention": {
+    "message": "अनुवाद पर ध्यान देने की आवश्यकता है"
+  },
+  "onDeviceRoute": {
+    "message": "डिवाइस पर: कोई पाठ बाहर नहीं भेजा गया"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ अक्षर भेजे गए; $v3$ मान छिपाए गए",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "कोई अनुवाद मार्ग सक्रिय नहीं है"
+  },
+  "pageTranslated": {
+    "message": "पृष्ठ अनुवादित"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ खंड अनुवादित",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "अनुवाद जारी है"
+  },
+  "retryTranslation": {
+    "message": "कृपया अनुवाद फिर करें।"
+  },
+  "protectedPage": {
+    "message": "पृष्ठ तक पहुँच उपलब्ध नहीं है"
+  },
+  "openWebsite": {
+    "message": "पृष्ठ तक पहुँच देने के लिए सामान्य वेबसाइट पर एक्सटेंशन बटन खोलें।"
+  },
+  "siteExcluded": {
+    "message": "वेबसाइट बाहर रखी गई"
+  },
+  "languageExcluded": {
+    "message": "भाषा बाहर रखी गई"
+  },
+  "privateSafeguard": {
+    "message": "निजी पृष्ठ सुरक्षा"
+  },
+  "manualAvailable": {
+    "message": "मैन्युअल अनुवाद उपलब्ध है।"
+  },
+  "alreadyTarget": {
+    "message": "पहले से आपकी भाषा में"
+  },
+  "readyToTranslate": {
+    "message": "अनुवाद के लिए तैयार"
+  },
+  "noRecentTranslations": {
+    "message": "हाल का कोई अनुवाद नहीं।"
+  },
+  "resultPlaceholder": {
+    "message": "आपका अनुवाद यहाँ दिखेगा।"
+  },
+  "thisWebsite": {
+    "message": "यह वेबसाइट"
+  },
+  "enterText": {
+    "message": "अनुवाद के लिए पाठ दर्ज करें।"
+  },
+  "translating": {
+    "message": "अनुवाद हो रहा है…"
+  },
+  "profileSaved": {
+    "message": "वेबसाइट प्रोफ़ाइल सहेजी गई"
+  },
+  "checkingSupport": {
+    "message": "ब्राउज़र समर्थन की जाँच…"
+  },
+  "pairUnavailable": {
+    "message": "यह ब्राउज़र या भाषा जोड़ी उपलब्ध नहीं है।"
+  },
+  "preparingPair": {
+    "message": "भाषा जोड़ी तैयार हो रही है…"
+  },
+  "pairReady": {
+    "message": "भाषा जोड़ी तैयार है।"
+  },
+  "glossaryInvalid": {
+    "message": "दोनों फ़ील्ड भरें और दोहराए गए मूल शब्द हटाएँ।"
+  }
 }

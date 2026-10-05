@@ -16,6 +16,12 @@ Every public release must pass:
 
 The nightly GitHub Actions matrix runs the packaged extension suite against current Chromium, Google Chrome stable and Brave stable. A nightly failure blocks the next release until triaged, but does not automatically publish or roll back a store version.
 
+## Production-package checks
+
+The fixture suite has deliberately pre-granted access and a simulated provider. It checks deterministic translation behaviour, not real permission dialogs. A separate `production-package.spec.mjs` suite loads the ZIP with its manifest unchanged, starts without host access, completes on-device-only consent through the UI, and approves test-site access through the browser's extension-management API in a disposable profile, then activates and verifies that permission using the production extension's permissions API. It checks workspace navigation, failure recovery, editing, preference preservation across a browser restart, narrow layouts and Arabic direction. External-service uptime and interactive permission prompts require separate smoke checks.
+
+Every PR must pass Chromium, Chrome stable and Brave stable jobs before its validation compatibility gate succeeds. Chrome stable uses the browser's supported CDP extension-installation path because its old command-line sideload switches are unavailable.
+
 ## Page fixture coverage
 
 - Static text and whitespace preservation

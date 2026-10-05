@@ -1,3 +1,4 @@
+import { attachFavourite, providerReadiness, runControl } from "../src/ui.js";
 import {
   DEFAULT_LOCAL_STATE,
   DEFAULT_SETTINGS,
@@ -8,11 +9,11 @@ import {
   loadSettings,
   saveSettings
 } from "../src/settings.js";
-import { applyTranslations } from "../src/i18n.js";
+import { applyTranslations, message } from "../src/i18n.js";
 import { baseLanguage, hostMatchesRule, hostPermissionPatterns, hostnameFromUrl, providerPermissionPatterns } from "../src/translation.js";
 
 const elements = Object.fromEntries([
-  "enabled", "targetLanguage", "readingMode", "statusPulse", "statusTitle", "statusDetail", "providerDetail",
+  "readiness", "readinessText", "readinessAction", "favouriteLanguage", "enabled", "targetLanguage", "readingMode", "statusPulse", "statusTitle", "statusDetail", "providerDetail",
   "translateNow", "openSidePanel", "automaticSite", "siteRule", "languageRule", "privateNotice", "openOptions", "version"
 ].map((id) => [id, document.querySelector(`#${id}`)]));
 applyTranslations();
@@ -29,6 +30,8 @@ let localState = { ...DEFAULT_LOCAL_STATE };
 let activeTab = null;
 let hostname = "";
 let inspection = null;
+let readiness;
+const refreshFavourite = attachFavourite(elements.targetLanguage, elements.favouriteLanguage);
 
 function languageName(code) {
   return SUPPORTED_LANGUAGES.find(([value]) => value.toLowerCase() === code?.toLowerCase())?.[1] || code || "Unknown";
@@ -100,7 +103,7 @@ async function inspect() {
 }
 
 async function persist(update) {
-  settings = await saveSettings({ ...settings, ...update });
+  settings = await saveSettings({ ...await loadSettings(), ...update });
   await chrome.runtime.sendMessage({ type: "refresh-settings" });
 }
 
@@ -151,6 +154,13 @@ async function init() {
   elements.readingMode.value = inspection?.pageState?.readingMode || settings.readingMode;
   elements.version.textContent = `v${chrome.runtime.getManifest().version}`;
   await inspect();
+  await refreshFavourite();
+  if (!["unsupported", "translated", "translating"].includes(inspection?.status)) {
+    readiness = await providerReadiness(settings, localState, hostname, inspection?.language, inspection?.targetLanguage || settings.targetLanguage);
+    elements.readiness.hidden = !readiness.action;
+    elements.readinessText.textContent = readiness.text;
+    elements.readinessAction.textContent = message(readiness.action === "permission" ? "grantProviderAccess" : readiness.action === "setup" ? "completeSetup" : "settingsPrivacy");
+  }
 }
 
 elements.enabled.addEventListener("change", async () => {
@@ -186,7 +196,7 @@ elements.openSidePanel.addEventListener("click", async () => {
   window.close();
 });
 
-elements.translateNow.addEventListener("click", async () => {
+elements.translateNow.addEventListener("click", () => runControl(elements.translateNow, async () => {
   if (inspection?.status === "consent-required") {
     await chrome.runtime.sendMessage({ type: "open-onboarding" });
     window.close();
@@ -215,7 +225,7 @@ elements.translateNow.addEventListener("click", async () => {
     elements.translateNow.disabled = false;
     setStatus("Translation was not completed", result.message || "Review the page rules and provider settings.", "error");
   }
-});
+}, (error) => setStatus(message("needsAttention"), error.message, "error")));
 
 elements.siteRule.addEventListener("click", async () => {
   if (!hostname || activeTab?.incognito) return;
@@ -260,5 +270,15 @@ elements.languageRule.addEventListener("click", async () => {
   await inspect();
 });
 
+elements.readinessAction.addEventListener("click", () => runControl(elements.readinessAction, async () => {
+  if (readiness?.action === "setup") await chrome.runtime.sendMessage({ type: "open-onboarding" });
+  else if (readiness?.action === "permission") { await ensureProviderAccess(); await initReadiness(); }
+  else await chrome.runtime.openOptionsPage();
+}, (error) => setStatus(message("needsAttention"), error.message, "error")));
+async function initReadiness() {
+  readiness = await providerReadiness(settings, localState, hostname, inspection?.language, inspection?.targetLanguage || settings.targetLanguage);
+  elements.readiness.hidden = !readiness.action;
+  elements.readinessText.textContent = readiness.text;
+}
 elements.openOptions.addEventListener("click", () => chrome.runtime.openOptionsPage());
 init().catch((error) => setStatus("Extension error", error.message, "error"));

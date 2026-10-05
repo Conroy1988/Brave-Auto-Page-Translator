@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"隐私自动网页翻译器"},"extensionShortName":{"message":"自动翻译器"},"extensionDescription":{"message":"支持上下文翻译、双语阅读、写作翻译、网站规则和隐私防火墙的网页翻译工具。"},
-  "independentExtension":{"message":"独立扩展程序"},"privateWindowNotice":{"message":"无痕窗口：仅可手动翻译。此处不会保存网站和语言规则。"},"translatePagesInto":{"message":"将网页翻译为"},"translateThisPage":{"message":"翻译此网页"},"automaticSite":{"message":"自动翻译此网站"},"neverSite":{"message":"永不翻译此网站"},"neverLanguage":{"message":"永不翻译此语言"},"settingsPrivacy":{"message":"设置和隐私"},
-  "onboardingTitle":{"message":"由你掌控翻译。"},"onboardingIntro":{"message":"选择扩展程序可访问的内容，以及翻译前文本的处理位置。"},"yourLanguage":{"message":"你的语言"},"whenTranslationRuns":{"message":"何时可以运行翻译"},"translationProvider":{"message":"翻译服务提供商"},"privacyCheckpoint":{"message":"隐私确认"},"acceptFinish":{"message":"接受并完成设置"},
-  "controlCentre":{"message":"翻译控制中心"},"controlIntro":{"message":"管理网站访问、提供商隐私、动态网页和自动翻译规则。"},"accessBehaviour":{"message":"访问权限和自动行为"},"pageSafeguards":{"message":"网页行为和保护措施"},"rulesTargets":{"message":"排除项和网站目标语言"},"terminology":{"message":"术语"},"privacyDashboard":{"message":"隐私面板"},"settingsBackup":{"message":"设置备份"},"localDiagnostics":{"message":"本地诊断"},"saveSettings":{"message":"保存设置"}
+  "extensionName": {
+    "message": "隐私自动网页翻译器"
+  },
+  "extensionShortName": {
+    "message": "自动翻译器"
+  },
+  "extensionDescription": {
+    "message": "支持上下文翻译、双语阅读、写作翻译、网站规则和隐私防火墙的网页翻译工具。"
+  },
+  "independentExtension": {
+    "message": "独立扩展程序"
+  },
+  "privateWindowNotice": {
+    "message": "无痕窗口：仅可手动翻译。此处不会保存网站和语言规则。"
+  },
+  "translatePagesInto": {
+    "message": "将网页翻译为"
+  },
+  "translateThisPage": {
+    "message": "翻译此网页"
+  },
+  "automaticSite": {
+    "message": "自动翻译此网站"
+  },
+  "neverSite": {
+    "message": "永不翻译此网站"
+  },
+  "neverLanguage": {
+    "message": "永不翻译此语言"
+  },
+  "settingsPrivacy": {
+    "message": "设置和隐私"
+  },
+  "onboardingTitle": {
+    "message": "由你掌控翻译。"
+  },
+  "onboardingIntro": {
+    "message": "选择扩展程序可访问的内容，以及翻译前文本的处理位置。"
+  },
+  "yourLanguage": {
+    "message": "你的语言"
+  },
+  "whenTranslationRuns": {
+    "message": "何时可以运行翻译"
+  },
+  "translationProvider": {
+    "message": "翻译服务提供商"
+  },
+  "privacyCheckpoint": {
+    "message": "隐私确认"
+  },
+  "acceptFinish": {
+    "message": "接受并完成设置"
+  },
+  "controlCentre": {
+    "message": "翻译控制中心"
+  },
+  "controlIntro": {
+    "message": "管理网站访问、提供商隐私、动态网页和自动翻译规则。"
+  },
+  "accessBehaviour": {
+    "message": "访问权限和自动行为"
+  },
+  "pageSafeguards": {
+    "message": "网页行为和保护措施"
+  },
+  "rulesTargets": {
+    "message": "排除项和网站目标语言"
+  },
+  "terminology": {
+    "message": "术语"
+  },
+  "privacyDashboard": {
+    "message": "隐私面板"
+  },
+  "settingsBackup": {
+    "message": "设置备份"
+  },
+  "localDiagnostics": {
+    "message": "本地诊断"
+  },
+  "saveSettings": {
+    "message": "保存设置"
+  },
+  "readingMode": {
+    "message": "阅读模式"
+  },
+  "translatedMode": {
+    "message": "译文"
+  },
+  "bilingualMode": {
+    "message": "双语"
+  },
+  "hoverMode": {
+    "message": "悬停显示原文"
+  },
+  "workspaceTitle": {
+    "message": "翻译工作区"
+  },
+  "showOriginal": {
+    "message": "显示原文"
+  },
+  "quickTranslate": {
+    "message": "快速翻译"
+  },
+  "textWorkspace": {
+    "message": "文本工作区"
+  },
+  "translateText": {
+    "message": "翻译文本"
+  },
+  "copyResult": {
+    "message": "复制结果"
+  },
+  "websiteSettings": {
+    "message": "网站设置"
+  },
+  "localOnly": {
+    "message": "仅限本地"
+  },
+  "provider": {
+    "message": "服务商"
+  },
+  "automatic": {
+    "message": "自动"
+  },
+  "onDevice": {
+    "message": "设备端"
+  },
+  "targetLanguage": {
+    "message": "目标语言"
+  },
+  "allowSensitive": {
+    "message": "允许在此网站自动翻译敏感表单"
+  },
+  "saveProfile": {
+    "message": "保存网站配置"
+  },
+  "globalDefaults": {
+    "message": "使用全局默认值"
+  },
+  "languagePacks": {
+    "message": "设备端语言包"
+  },
+  "preparePair": {
+    "message": "准备语言对"
+  },
+  "fromLanguage": {
+    "message": "源语言"
+  },
+  "toLanguage": {
+    "message": "目标语言"
+  },
+  "checkPrepare": {
+    "message": "检查并准备"
+  },
+  "recentTranslations": {
+    "message": "最近的翻译"
+  },
+  "thisSession": {
+    "message": "当前会话"
+  },
+  "refresh": {
+    "message": "刷新"
+  },
+  "addFavourite": {
+    "message": "添加常用语言"
+  },
+  "removeFavourite": {
+    "message": "移除常用语言"
+  },
+  "glossaryHelp": {
+    "message": "首选译法，最多200条"
+  },
+  "addTerm": {
+    "message": "添加术语"
+  },
+  "sourceTerm": {
+    "message": "原始术语"
+  },
+  "preferredTranslation": {
+    "message": "首选译法"
+  },
+  "removeTerm": {
+    "message": "移除"
+  },
+  "grantProviderAccess": {
+    "message": "允许访问服务商"
+  },
+  "completeSetup": {
+    "message": "完成设置"
+  },
+  "cancelTranslation": {
+    "message": "取消翻译"
+  },
+  "textToTranslate": {
+    "message": "待翻译文本"
+  },
+  "supportKofi": {
+    "message": "在Ko-fi上支持"
+  },
+  "checkingPage": {
+    "message": "正在检查页面…"
+  },
+  "connectionError": {
+    "message": "无法连接，请重试。"
+  },
+  "setupRequired": {
+    "message": "需要完成隐私设置"
+  },
+  "providerPermissionRequired": {
+    "message": "请允许访问已批准的翻译服务商。"
+  },
+  "providerSetupRequired": {
+    "message": "请在设置与隐私中选择并批准翻译服务商。"
+  },
+  "needsAttention": {
+    "message": "翻译需要处理"
+  },
+  "onDeviceRoute": {
+    "message": "设备端：未向外部发送文本"
+  },
+  "externalRoute": {
+    "message": "$v1$：已发送$v2$个字符，已隐藏$v3$个值",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "暂无翻译路径"
+  },
+  "pageTranslated": {
+    "message": "页面已翻译"
+  },
+  "sectionsTranslated": {
+    "message": "已翻译$v1$个段落",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "正在翻译"
+  },
+  "retryTranslation": {
+    "message": "请重试翻译。"
+  },
+  "protectedPage": {
+    "message": "无法访问页面"
+  },
+  "openWebsite": {
+    "message": "请在普通网站上打开扩展按钮以允许页面访问。"
+  },
+  "siteExcluded": {
+    "message": "网站已排除"
+  },
+  "languageExcluded": {
+    "message": "语言已排除"
+  },
+  "privateSafeguard": {
+    "message": "隐私页面保护"
+  },
+  "manualAvailable": {
+    "message": "可以使用手动翻译。"
+  },
+  "alreadyTarget": {
+    "message": "已经是您的语言"
+  },
+  "readyToTranslate": {
+    "message": "可以开始翻译"
+  },
+  "noRecentTranslations": {
+    "message": "暂无最近的翻译。"
+  },
+  "resultPlaceholder": {
+    "message": "译文将显示在此处。"
+  },
+  "thisWebsite": {
+    "message": "此网站"
+  },
+  "enterText": {
+    "message": "请输入要翻译的文本。"
+  },
+  "translating": {
+    "message": "翻译中…"
+  },
+  "profileSaved": {
+    "message": "网站配置已保存"
+  },
+  "checkingSupport": {
+    "message": "正在检查浏览器支持…"
+  },
+  "pairUnavailable": {
+    "message": "此浏览器或语言对不可用。"
+  },
+  "preparingPair": {
+    "message": "正在准备语言对…"
+  },
+  "pairReady": {
+    "message": "语言对已就绪。"
+  },
+  "glossaryInvalid": {
+    "message": "请填写两个字段并删除重复的原始术语。"
+  }
 }

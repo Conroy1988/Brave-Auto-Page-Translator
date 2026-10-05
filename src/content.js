@@ -248,7 +248,7 @@
           companion.dataset.baptBilingual = "true";
           companion.dir = "auto";
           companion.textContent = translations.join(" ");
-          companion.style.cssText = "margin:.4em 0 .8em;padding:.55em .75em;border-left:3px solid #6d5dfc;border-radius:.35em;background:color-mix(in srgb,#6d5dfc 9%,transparent);color:inherit;font:inherit;line-height:1.45;opacity:.92";
+          companion.style.cssText = "margin:.4em 0 .8em;padding:.55em .75em;border-left:3px solid #d9293d;border-radius:.35em;background:color-mix(in srgb,#d9293d 9%,transparent);color:inherit;font:inherit;line-height:1.45;opacity:.92";
           block.insertAdjacentElement("afterend", companion);
           bilingualElements.add(companion);
         }
@@ -478,13 +478,13 @@
     const shadow = host.attachShadow({ mode: "closed" });
     const style = document.createElement("style");
     style.textContent = `
-      .bar{display:flex;align-items:center;gap:9px;max-width:min(430px,calc(100vw - 36px));padding:9px 10px 9px 13px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#12111c;color:#f7f7fb;box-shadow:0 12px 38px rgba(0,0,0,.32);font:600 12px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif}
+      .bar{display:flex;align-items:center;gap:9px;max-width:min(430px,calc(100vw - 36px));padding:9px 10px 9px 13px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#141417;color:#f7f7fb;box-shadow:0 12px 38px rgba(0,0,0,.32);font:600 12px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif}
       .dot{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:#25c7aa;box-shadow:0 0 0 4px rgba(37,199,170,.15)}
-      .dot.busy{background:#a89fff;box-shadow:0 0 0 4px rgba(109,93,252,.18);animation:pulse 1s ease-in-out infinite alternate}
+      .dot.busy{background:#f4bd58;box-shadow:0 0 0 4px rgba(217,41,61,.18);animation:pulse 1s ease-in-out infinite alternate}
       .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-      button{border:0;border-radius:999px;padding:7px 10px;background:#6d5dfc;color:white;font:700 11px system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer}
+      button{border:0;border-radius:999px;padding:7px 10px;background:#d9293d;color:white;font:700 11px system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer}
       button.secondary{padding:5px 7px;background:transparent;color:#c8c5d1;font-size:15px;line-height:1}
-      button:hover{filter:brightness(1.12)} button:focus-visible{outline:3px solid #c7c1ff;outline-offset:2px}
+      button:hover{filter:brightness(1.12)} button:focus-visible{outline:3px solid #ffc1c7;outline-offset:2px}
       @keyframes pulse{to{opacity:.45}} @media(prefers-reduced-motion:reduce){.dot.busy{animation:none}}
     `;
     const bar = document.createElement("div");
@@ -762,7 +762,7 @@
     host.style.cssText = "all:initial;position:fixed;right:18px;bottom:18px;z-index:2147483647";
     const shadow = host.attachShadow({ mode: "closed" });
     const style = document.createElement("style");
-    style.textContent = `.card{width:min(360px,calc(100vw - 36px));padding:16px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#12111c;color:#f7f7fb;box-shadow:0 14px 42px rgba(0,0,0,.36);font:13px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}.top,.tools{display:flex;justify-content:space-between;gap:8px;align-items:center}.top{color:#aaa7b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.value{margin-top:9px;font-size:15px}.tools{justify-content:flex-start;margin-top:12px}button{border:0;border-radius:8px;padding:5px 7px;background:#242130;color:#cbc7df;font:700 11px system-ui;cursor:pointer}.close{background:transparent;font-size:18px}button:focus-visible{outline:3px solid #c7c1ff}`;
+    style.textContent = `.card{width:min(360px,calc(100vw - 36px));padding:16px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#141417;color:#f7f7fb;box-shadow:0 14px 42px rgba(0,0,0,.36);font:13px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}.top,.tools{display:flex;justify-content:space-between;gap:8px;align-items:center}.top{color:#aaa7b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.value{margin-top:9px;font-size:15px}.tools{justify-content:flex-start;margin-top:12px}button{border:0;border-radius:8px;padding:5px 7px;background:#222226;color:#cbc7df;font:700 11px system-ui;cursor:pointer}.close{background:transparent;font-size:18px}button:focus-visible{outline:3px solid #ffc1c7}`;
     const card = document.createElement("div");
     card.className = "card";
     card.setAttribute("role", "dialog");
@@ -857,7 +857,7 @@
     button.type = "button";
     button.textContent = "Translate writing";
     button.title = "Translate your writing before sending (Alt+Enter)";
-    button.style.cssText = "border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:9px 13px;background:#6d5dfc;color:white;box-shadow:0 10px 30px rgba(0,0,0,.3);font:700 12px system-ui;cursor:pointer";
+    button.style.cssText = "border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:9px 13px;background:#d9293d;color:white;box-shadow:0 10px 30px rgba(0,0,0,.3);font:700 12px system-ui;cursor:pointer";
     button.addEventListener("mousedown", (event) => event.preventDefault());
     button.addEventListener("click", () => openComposeFor(element));
     shadow.append(button);
@@ -878,7 +878,7 @@
     host.style.cssText = "all:initial;position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:rgba(5,5,12,.52);padding:18px";
     const shadow = host.attachShadow({ mode: "closed" });
     const style = document.createElement("style");
-    style.textContent = `.card{width:min(560px,calc(100vw - 36px));padding:20px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:#12111c;color:#f7f7fb;box-shadow:0 24px 70px rgba(0,0,0,.46);font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}.top,.actions,.route{display:flex;align-items:center;justify-content:space-between;gap:10px}.top h2{margin:0;font-size:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.pane{min-height:112px;padding:12px;border:1px solid #393548;border-radius:12px;background:#1b1926;white-space:pre-wrap;overflow-wrap:anywhere}.label{display:block;margin-bottom:6px;color:#aaa7b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}select,button{border:1px solid #464158;border-radius:10px;padding:9px 11px;background:#242130;color:#f7f7fb;font:700 12px system-ui;cursor:pointer}button.primary{border-color:#6d5dfc;background:#6d5dfc}.route{justify-content:flex-start;color:#aaa7b8;font-size:11px;margin:10px 0 16px}.error{color:#ff9898}.busy{opacity:.65}@media(max-width:560px){.grid{grid-template-columns:1fr}}`;
+    style.textContent = `.card{width:min(560px,calc(100vw - 36px));padding:20px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:#141417;color:#f7f7fb;box-shadow:0 24px 70px rgba(0,0,0,.46);font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}.top,.actions,.route{display:flex;align-items:center;justify-content:space-between;gap:10px}.top h2{margin:0;font-size:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.pane{min-height:112px;padding:12px;border:1px solid #3b3b43;border-radius:12px;background:#1b1b20;white-space:pre-wrap;overflow-wrap:anywhere}.label{display:block;margin-bottom:6px;color:#aaa7b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}select,button{border:1px solid #464158;border-radius:10px;padding:9px 11px;background:#222226;color:#f7f7fb;font:700 12px system-ui;cursor:pointer}button.primary{border-color:#d9293d;background:#d9293d}.route{justify-content:flex-start;color:#aaa7b8;font-size:11px;margin:10px 0 16px}.error{color:#ff9898}.busy{opacity:.65}@media(max-width:560px){.grid{grid-template-columns:1fr}}`;
     const card = document.createElement("div");
     card.className = "card";
     card.setAttribute("role", "dialog");
