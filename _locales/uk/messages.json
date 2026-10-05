@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"Приватний автоперекладач сторінок"},"extensionShortName":{"message":"Автоперекладач"},"extensionDescription":{"message":"Контекстний переклад сторінок із двомовним читанням, перекладом тексту, правилами сайтів і захистом приватності."},
-  "independentExtension":{"message":"НЕЗАЛЕЖНЕ РОЗШИРЕННЯ"},"privateWindowNotice":{"message":"Приватне вікно: лише ручний переклад. Правила сайтів і мов тут не зберігаються."},"translatePagesInto":{"message":"Перекладати сторінки на"},"translateThisPage":{"message":"Перекласти цю сторінку"},"automaticSite":{"message":"Автоматично перекладати цей сайт"},"neverSite":{"message":"Ніколи не перекладати цей сайт"},"neverLanguage":{"message":"Ніколи не перекладати цю мову"},"settingsPrivacy":{"message":"Налаштування й приватність"},
-  "onboardingTitle":{"message":"Переклад на ваших умовах."},"onboardingIntro":{"message":"Оберіть доступ розширення та місце обробки тексту перед перекладом."},"yourLanguage":{"message":"Ваша мова"},"whenTranslationRuns":{"message":"Коли можна запускати переклад"},"translationProvider":{"message":"Служба перекладу"},"privacyCheckpoint":{"message":"Перевірка приватності"},"acceptFinish":{"message":"Прийняти й завершити налаштування"},
-  "controlCentre":{"message":"Центр керування перекладом"},"controlIntro":{"message":"Керуйте доступом до сайтів, приватністю служби, динамічними сторінками й автоматичними правилами."},"accessBehaviour":{"message":"Доступ і автоматична робота"},"pageSafeguards":{"message":"Поведінка сторінки та захист"},"rulesTargets":{"message":"Винятки й цілі для сайтів"},"terminology":{"message":"Термінологія"},"privacyDashboard":{"message":"Панель приватності"},"settingsBackup":{"message":"Резервна копія налаштувань"},"localDiagnostics":{"message":"Локальна діагностика"},"saveSettings":{"message":"Зберегти налаштування"}
+  "extensionName": {
+    "message": "Приватний автоперекладач сторінок"
+  },
+  "extensionShortName": {
+    "message": "Автоперекладач"
+  },
+  "extensionDescription": {
+    "message": "Контекстний переклад сторінок із двомовним читанням, перекладом тексту, правилами сайтів і захистом приватності."
+  },
+  "independentExtension": {
+    "message": "НЕЗАЛЕЖНЕ РОЗШИРЕННЯ"
+  },
+  "privateWindowNotice": {
+    "message": "Приватне вікно: лише ручний переклад. Правила сайтів і мов тут не зберігаються."
+  },
+  "translatePagesInto": {
+    "message": "Перекладати сторінки на"
+  },
+  "translateThisPage": {
+    "message": "Перекласти цю сторінку"
+  },
+  "automaticSite": {
+    "message": "Автоматично перекладати цей сайт"
+  },
+  "neverSite": {
+    "message": "Ніколи не перекладати цей сайт"
+  },
+  "neverLanguage": {
+    "message": "Ніколи не перекладати цю мову"
+  },
+  "settingsPrivacy": {
+    "message": "Налаштування й приватність"
+  },
+  "onboardingTitle": {
+    "message": "Переклад на ваших умовах."
+  },
+  "onboardingIntro": {
+    "message": "Оберіть доступ розширення та місце обробки тексту перед перекладом."
+  },
+  "yourLanguage": {
+    "message": "Ваша мова"
+  },
+  "whenTranslationRuns": {
+    "message": "Коли можна запускати переклад"
+  },
+  "translationProvider": {
+    "message": "Служба перекладу"
+  },
+  "privacyCheckpoint": {
+    "message": "Перевірка приватності"
+  },
+  "acceptFinish": {
+    "message": "Прийняти й завершити налаштування"
+  },
+  "controlCentre": {
+    "message": "Центр керування перекладом"
+  },
+  "controlIntro": {
+    "message": "Керуйте доступом до сайтів, приватністю служби, динамічними сторінками й автоматичними правилами."
+  },
+  "accessBehaviour": {
+    "message": "Доступ і автоматична робота"
+  },
+  "pageSafeguards": {
+    "message": "Поведінка сторінки та захист"
+  },
+  "rulesTargets": {
+    "message": "Винятки й цілі для сайтів"
+  },
+  "terminology": {
+    "message": "Термінологія"
+  },
+  "privacyDashboard": {
+    "message": "Панель приватності"
+  },
+  "settingsBackup": {
+    "message": "Резервна копія налаштувань"
+  },
+  "localDiagnostics": {
+    "message": "Локальна діагностика"
+  },
+  "saveSettings": {
+    "message": "Зберегти налаштування"
+  },
+  "readingMode": {
+    "message": "Режим читання"
+  },
+  "translatedMode": {
+    "message": "Переклад"
+  },
+  "bilingualMode": {
+    "message": "Дві мови"
+  },
+  "hoverMode": {
+    "message": "Оригінал при наведенні"
+  },
+  "workspaceTitle": {
+    "message": "Робоча область перекладу"
+  },
+  "showOriginal": {
+    "message": "Показати оригінал"
+  },
+  "quickTranslate": {
+    "message": "Швидкий переклад"
+  },
+  "textWorkspace": {
+    "message": "Текстова область"
+  },
+  "translateText": {
+    "message": "Перекласти текст"
+  },
+  "copyResult": {
+    "message": "Копіювати результат"
+  },
+  "websiteSettings": {
+    "message": "Налаштування сайту"
+  },
+  "localOnly": {
+    "message": "Лише локально"
+  },
+  "provider": {
+    "message": "Постачальник"
+  },
+  "automatic": {
+    "message": "Автоматично"
+  },
+  "onDevice": {
+    "message": "На пристрої"
+  },
+  "targetLanguage": {
+    "message": "Мова перекладу"
+  },
+  "allowSensitive": {
+    "message": "Дозволити тут автоматичний переклад конфіденційних форм"
+  },
+  "saveProfile": {
+    "message": "Зберегти профіль сайту"
+  },
+  "globalDefaults": {
+    "message": "Використати загальні налаштування"
+  },
+  "languagePacks": {
+    "message": "Локальні мовні пакети"
+  },
+  "preparePair": {
+    "message": "Підготувати мовну пару"
+  },
+  "fromLanguage": {
+    "message": "З"
+  },
+  "toLanguage": {
+    "message": "На"
+  },
+  "checkPrepare": {
+    "message": "Перевірити й підготувати"
+  },
+  "recentTranslations": {
+    "message": "Нещодавні переклади"
+  },
+  "thisSession": {
+    "message": "Цей сеанс"
+  },
+  "refresh": {
+    "message": "Оновити"
+  },
+  "addFavourite": {
+    "message": "Додати улюблену мову"
+  },
+  "removeFavourite": {
+    "message": "Видалити улюблену мову"
+  },
+  "glossaryHelp": {
+    "message": "Бажані переклади, до 200 записів"
+  },
+  "addTerm": {
+    "message": "Додати термін"
+  },
+  "sourceTerm": {
+    "message": "Початковий термін"
+  },
+  "preferredTranslation": {
+    "message": "Бажаний переклад"
+  },
+  "removeTerm": {
+    "message": "Видалити"
+  },
+  "grantProviderAccess": {
+    "message": "Дозволити доступ до постачальника"
+  },
+  "completeSetup": {
+    "message": "Завершити налаштування"
+  },
+  "cancelTranslation": {
+    "message": "Скасувати переклад"
+  },
+  "textToTranslate": {
+    "message": "Текст для перекладу"
+  },
+  "supportKofi": {
+    "message": "Підтримати на Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Перевірка сторінки…"
+  },
+  "connectionError": {
+    "message": "Не вдалося підключитися. Спробуйте знову."
+  },
+  "setupRequired": {
+    "message": "Потрібне налаштування конфіденційності"
+  },
+  "providerPermissionRequired": {
+    "message": "Дозвольте доступ до схваленого постачальника перекладу."
+  },
+  "providerSetupRequired": {
+    "message": "Виберіть і схваліть постачальника в налаштуваннях конфіденційності."
+  },
+  "needsAttention": {
+    "message": "Переклад потребує уваги"
+  },
+  "onDeviceRoute": {
+    "message": "На пристрої: текст не надсилався назовні"
+  },
+  "externalRoute": {
+    "message": "$v1$: надіслано $v2$ символів; приховано $v3$ значень",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Немає активного шляху перекладу"
+  },
+  "pageTranslated": {
+    "message": "Сторінку перекладено"
+  },
+  "sectionsTranslated": {
+    "message": "Перекладено розділів: $v1$",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Триває переклад"
+  },
+  "retryTranslation": {
+    "message": "Спробуйте перекласти ще раз."
+  },
+  "protectedPage": {
+    "message": "Немає доступу до сторінки"
+  },
+  "openWebsite": {
+    "message": "Відкрийте кнопку розширення на звичайному сайті, щоб дозволити доступ."
+  },
+  "siteExcluded": {
+    "message": "Сайт виключено"
+  },
+  "languageExcluded": {
+    "message": "Мову виключено"
+  },
+  "privateSafeguard": {
+    "message": "Захист приватних сторінок"
+  },
+  "manualAvailable": {
+    "message": "Доступний ручний переклад."
+  },
+  "alreadyTarget": {
+    "message": "Уже вашою мовою"
+  },
+  "readyToTranslate": {
+    "message": "Готово до перекладу"
+  },
+  "noRecentTranslations": {
+    "message": "Немає нещодавніх перекладів."
+  },
+  "resultPlaceholder": {
+    "message": "Тут з’явиться переклад."
+  },
+  "thisWebsite": {
+    "message": "Цей сайт"
+  },
+  "enterText": {
+    "message": "Введіть текст для перекладу."
+  },
+  "translating": {
+    "message": "Переклад…"
+  },
+  "profileSaved": {
+    "message": "Профіль сайту збережено"
+  },
+  "checkingSupport": {
+    "message": "Перевірка підтримки браузера…"
+  },
+  "pairUnavailable": {
+    "message": "Браузер або мовна пара недоступні."
+  },
+  "preparingPair": {
+    "message": "Підготовка мовної пари…"
+  },
+  "pairReady": {
+    "message": "Мовна пара готова."
+  },
+  "glossaryInvalid": {
+    "message": "Заповніть обидва поля та видаліть повторювані початкові терміни."
+  }
 }

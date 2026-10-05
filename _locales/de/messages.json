@@ -1,30 +1,315 @@
 {
-  "extensionName": { "message": "Privater automatischer Seitenübersetzer" },
-  "extensionShortName": { "message": "Auto-Übersetzer" },
-  "extensionDescription": { "message": "Kontextbezogene Webseitenübersetzung mit zweisprachigem Lesen, Schreibhilfe, Website-Regeln und Datenschutz-Firewall." },
-  "independentExtension": { "message": "UNABHÄNGIGE ERWEITERUNG" },
-  "privateWindowNotice": { "message": "Privates Fenster: nur manuelle Übersetzung. Website- und Sprachregeln werden hier nicht gespeichert." },
-  "translatePagesInto": { "message": "Seiten übersetzen in" },
-  "translateThisPage": { "message": "Diese Seite übersetzen" },
-  "automaticSite": { "message": "Diese Website automatisch übersetzen" },
-  "neverSite": { "message": "Diese Website nie übersetzen" },
-  "neverLanguage": { "message": "Diese Sprache nie übersetzen" },
-  "settingsPrivacy": { "message": "Einstellungen & Datenschutz" },
-  "onboardingTitle": { "message": "Übersetzen nach Ihren Regeln." },
-  "onboardingIntro": { "message": "Legen Sie fest, worauf die Erweiterung zugreifen darf und wo Text vor der Übersetzung verarbeitet wird." },
-  "yourLanguage": { "message": "Ihre Sprache" },
-  "whenTranslationRuns": { "message": "Wann Übersetzungen ausgeführt werden dürfen" },
-  "translationProvider": { "message": "Übersetzungsanbieter" },
-  "privacyCheckpoint": { "message": "Datenschutzprüfung" },
-  "acceptFinish": { "message": "Akzeptieren und abschließen" },
-  "controlCentre": { "message": "Übersetzungszentrale" },
-  "controlIntro": { "message": "Steuern Sie Website-Zugriff, Anbieterdatenschutz, dynamische Seiten und automatische Regeln." },
-  "accessBehaviour": { "message": "Zugriff und automatisches Verhalten" },
-  "pageSafeguards": { "message": "Seitenverhalten und Schutzmaßnahmen" },
-  "rulesTargets": { "message": "Ausnahmen und Website-Zielsprachen" },
-  "terminology": { "message": "Terminologie" },
-  "privacyDashboard": { "message": "Datenschutzübersicht" },
-  "settingsBackup": { "message": "Einstellungssicherung" },
-  "localDiagnostics": { "message": "Lokale Diagnose" },
-  "saveSettings": { "message": "Einstellungen speichern" }
+  "extensionName": {
+    "message": "Privater automatischer Seitenübersetzer"
+  },
+  "extensionShortName": {
+    "message": "Auto-Übersetzer"
+  },
+  "extensionDescription": {
+    "message": "Kontextbezogene Webseitenübersetzung mit zweisprachigem Lesen, Schreibhilfe, Website-Regeln und Datenschutz-Firewall."
+  },
+  "independentExtension": {
+    "message": "UNABHÄNGIGE ERWEITERUNG"
+  },
+  "privateWindowNotice": {
+    "message": "Privates Fenster: nur manuelle Übersetzung. Website- und Sprachregeln werden hier nicht gespeichert."
+  },
+  "translatePagesInto": {
+    "message": "Seiten übersetzen in"
+  },
+  "translateThisPage": {
+    "message": "Diese Seite übersetzen"
+  },
+  "automaticSite": {
+    "message": "Diese Website automatisch übersetzen"
+  },
+  "neverSite": {
+    "message": "Diese Website nie übersetzen"
+  },
+  "neverLanguage": {
+    "message": "Diese Sprache nie übersetzen"
+  },
+  "settingsPrivacy": {
+    "message": "Einstellungen & Datenschutz"
+  },
+  "onboardingTitle": {
+    "message": "Übersetzen nach Ihren Regeln."
+  },
+  "onboardingIntro": {
+    "message": "Legen Sie fest, worauf die Erweiterung zugreifen darf und wo Text vor der Übersetzung verarbeitet wird."
+  },
+  "yourLanguage": {
+    "message": "Ihre Sprache"
+  },
+  "whenTranslationRuns": {
+    "message": "Wann Übersetzungen ausgeführt werden dürfen"
+  },
+  "translationProvider": {
+    "message": "Übersetzungsanbieter"
+  },
+  "privacyCheckpoint": {
+    "message": "Datenschutzprüfung"
+  },
+  "acceptFinish": {
+    "message": "Akzeptieren und abschließen"
+  },
+  "controlCentre": {
+    "message": "Übersetzungszentrale"
+  },
+  "controlIntro": {
+    "message": "Steuern Sie Website-Zugriff, Anbieterdatenschutz, dynamische Seiten und automatische Regeln."
+  },
+  "accessBehaviour": {
+    "message": "Zugriff und automatisches Verhalten"
+  },
+  "pageSafeguards": {
+    "message": "Seitenverhalten und Schutzmaßnahmen"
+  },
+  "rulesTargets": {
+    "message": "Ausnahmen und Website-Zielsprachen"
+  },
+  "terminology": {
+    "message": "Terminologie"
+  },
+  "privacyDashboard": {
+    "message": "Datenschutzübersicht"
+  },
+  "settingsBackup": {
+    "message": "Einstellungssicherung"
+  },
+  "localDiagnostics": {
+    "message": "Lokale Diagnose"
+  },
+  "saveSettings": {
+    "message": "Einstellungen speichern"
+  },
+  "readingMode": {
+    "message": "Lesemodus"
+  },
+  "translatedMode": {
+    "message": "Übersetzt"
+  },
+  "bilingualMode": {
+    "message": "Zweisprachig"
+  },
+  "hoverMode": {
+    "message": "Original beim Darüberfahren"
+  },
+  "workspaceTitle": {
+    "message": "Übersetzungsbereich"
+  },
+  "showOriginal": {
+    "message": "Original anzeigen"
+  },
+  "quickTranslate": {
+    "message": "Schnell übersetzen"
+  },
+  "textWorkspace": {
+    "message": "Textbereich"
+  },
+  "translateText": {
+    "message": "Text übersetzen"
+  },
+  "copyResult": {
+    "message": "Ergebnis kopieren"
+  },
+  "websiteSettings": {
+    "message": "Website-Einstellungen"
+  },
+  "localOnly": {
+    "message": "Nur lokal"
+  },
+  "provider": {
+    "message": "Anbieter"
+  },
+  "automatic": {
+    "message": "Automatisch"
+  },
+  "onDevice": {
+    "message": "Auf dem Gerät"
+  },
+  "targetLanguage": {
+    "message": "Zielsprache"
+  },
+  "allowSensitive": {
+    "message": "Automatische Übersetzung sensibler Formulare hier erlauben"
+  },
+  "saveProfile": {
+    "message": "Website-Profil speichern"
+  },
+  "globalDefaults": {
+    "message": "Globale Vorgaben verwenden"
+  },
+  "languagePacks": {
+    "message": "Sprachpakete auf dem Gerät"
+  },
+  "preparePair": {
+    "message": "Sprachpaar vorbereiten"
+  },
+  "fromLanguage": {
+    "message": "Von"
+  },
+  "toLanguage": {
+    "message": "Nach"
+  },
+  "checkPrepare": {
+    "message": "Prüfen und vorbereiten"
+  },
+  "recentTranslations": {
+    "message": "Letzte Übersetzungen"
+  },
+  "thisSession": {
+    "message": "Diese Sitzung"
+  },
+  "refresh": {
+    "message": "Aktualisieren"
+  },
+  "addFavourite": {
+    "message": "Sprache als Favorit hinzufügen"
+  },
+  "removeFavourite": {
+    "message": "Sprache aus Favoriten entfernen"
+  },
+  "glossaryHelp": {
+    "message": "Bevorzugte Übersetzungen, bis zu 200 Einträge"
+  },
+  "addTerm": {
+    "message": "Begriff hinzufügen"
+  },
+  "sourceTerm": {
+    "message": "Ausgangsbegriff"
+  },
+  "preferredTranslation": {
+    "message": "Bevorzugte Übersetzung"
+  },
+  "removeTerm": {
+    "message": "Entfernen"
+  },
+  "grantProviderAccess": {
+    "message": "Anbieterzugriff erlauben"
+  },
+  "completeSetup": {
+    "message": "Einrichtung abschließen"
+  },
+  "cancelTranslation": {
+    "message": "Übersetzung abbrechen"
+  },
+  "textToTranslate": {
+    "message": "Zu übersetzender Text"
+  },
+  "supportKofi": {
+    "message": "Auf Ko-fi unterstützen"
+  },
+  "checkingPage": {
+    "message": "Seite wird geprüft…"
+  },
+  "connectionError": {
+    "message": "Verbindung fehlgeschlagen. Bitte erneut versuchen."
+  },
+  "setupRequired": {
+    "message": "Datenschutzeinrichtung erforderlich"
+  },
+  "providerPermissionRequired": {
+    "message": "Zugriff auf den genehmigten Übersetzungsanbieter erlauben."
+  },
+  "providerSetupRequired": {
+    "message": "Übersetzungsanbieter unter Einstellungen & Datenschutz auswählen und genehmigen."
+  },
+  "needsAttention": {
+    "message": "Übersetzung benötigt Aufmerksamkeit"
+  },
+  "onDeviceRoute": {
+    "message": "Auf dem Gerät: kein Text extern gesendet"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ Zeichen gesendet; $v3$ Werte maskiert",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Kein Übersetzungsweg aktiv"
+  },
+  "pageTranslated": {
+    "message": "Seite übersetzt"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ Abschnitte übersetzt",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Übersetzung läuft"
+  },
+  "retryTranslation": {
+    "message": "Bitte Übersetzung erneut versuchen."
+  },
+  "protectedPage": {
+    "message": "Kein Seitenzugriff"
+  },
+  "openWebsite": {
+    "message": "Auf einer normalen Website die Erweiterung öffnen, um Zugriff zu erlauben."
+  },
+  "siteExcluded": {
+    "message": "Website ausgeschlossen"
+  },
+  "languageExcluded": {
+    "message": "Sprache ausgeschlossen"
+  },
+  "privateSafeguard": {
+    "message": "Schutz privater Seiten"
+  },
+  "manualAvailable": {
+    "message": "Manuelle Übersetzung verfügbar."
+  },
+  "alreadyTarget": {
+    "message": "Bereits in Ihrer Sprache"
+  },
+  "readyToTranslate": {
+    "message": "Bereit zum Übersetzen"
+  },
+  "noRecentTranslations": {
+    "message": "Keine letzten Übersetzungen."
+  },
+  "resultPlaceholder": {
+    "message": "Hier erscheint Ihre Übersetzung."
+  },
+  "thisWebsite": {
+    "message": "Diese Website"
+  },
+  "enterText": {
+    "message": "Zu übersetzenden Text eingeben."
+  },
+  "translating": {
+    "message": "Wird übersetzt…"
+  },
+  "profileSaved": {
+    "message": "Website-Profil gespeichert"
+  },
+  "checkingSupport": {
+    "message": "Browserunterstützung wird geprüft…"
+  },
+  "pairUnavailable": {
+    "message": "Browser oder Sprachpaar nicht verfügbar."
+  },
+  "preparingPair": {
+    "message": "Sprachpaar wird vorbereitet…"
+  },
+  "pairReady": {
+    "message": "Sprachpaar bereit."
+  },
+  "glossaryInvalid": {
+    "message": "Beide Felder ausfüllen und doppelte Ausgangsbegriffe entfernen."
+  }
 }

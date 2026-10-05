@@ -23,6 +23,8 @@ The Chrome Web Store is the official installation and automatic-update channel f
 
 ## What it does
 
+The red-and-black interface puts readable translation controls first. The workspace follows your active tab, keeps advanced tools collapsible, and supports favourite languages and a row-based glossary editor. Existing settings, site rules and provider approvals are retained when upgrading.
+
 The extension translates readable text directly inside the original webpage. The site remains on its real address, so logins, cookies, navigation and interactive features are not moved through a translated-page proxy.
 
 - **Context-aware translation:** keeps nearby inline text together so sentences split across links, emphasis and spans translate coherently.
@@ -70,7 +72,7 @@ npm run package:verify
 npm run test:e2e
 ```
 
-`npm run validate` checks the Manifest V3 package, JavaScript syntax, icons, minimum permissions, consent architecture, provider boundaries and unit regressions. Playwright loads the packaged extension into Chromium against local fixtures with mocked provider responses.
+`npm run validate` checks the Manifest V3 package, JavaScript syntax, icons, minimum permissions, consent architecture, provider boundaries and unit regressions. Playwright runs both local fixtures with simulated provider responses and a separate suite that loads the production package without changing its manifest. The production suite checks privacy setup, real optional host-permission state, workspace tab changes, error recovery, glossary editing, favourites and responsive layouts. Chrome and Brave jobs are required on pull requests. Simulated provider coverage does not imply availability of an external service.
 
 Tags matching `v*` trigger the release workflow. It audits dependencies, validates and tests the exact ZIP, verifies contents, creates checksums and a CycloneDX dependency inventory, records build provenance and attaches artifacts to a GitHub Release. A protected workflow submits an already verified release through the Chrome Web Store V2 API with review enabled and warnings treated as blockers.
 

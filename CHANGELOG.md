@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.0 — Red and black interface and workspace reliability
+
+- Consistent matte-black surfaces, red accents and an equal-sized two-bar icon across the extension; product name unchanged.
+- More readable controls, collapsible workspace tools, local favourite languages and a structured glossary editor.
+- Workspace follows tab activation and navigation, rejects stale results, prevents private-window site rule writes, and recovers controls after failures.
+- Provider readiness explains missing setup or optional permission without sending page text.
+- Expanded workspace and reading-mode labels in all 20 locale catalogs, including right-to-left layout.
+- Production-manifest browser tests complement provider fixtures. Chrome and Brave compatibility are now part of the required validation gate.
+
 ## 1.2.2 — 9 August 2026 — Ko-fi support
 
 - Added an optional Ko-fi support link to the popup, translation workspace and settings page.

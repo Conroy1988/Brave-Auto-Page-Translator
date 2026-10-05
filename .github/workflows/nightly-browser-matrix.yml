@@ -23,6 +23,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run package
       - name: Install Chromium
         if: matrix.browser == 'chromium'
         run: npx playwright install --with-deps chromium
@@ -39,4 +40,5 @@ jobs:
       - name: Run extension suite
         env:
           BAPT_BROWSER_EXECUTABLE: ${{ matrix.browser == 'chrome' && '/usr/bin/google-chrome' || matrix.browser == 'brave' && '/usr/bin/brave-browser' || '' }}
-        run: xvfb-run -a npm run test:e2e
+          BAPT_LOAD_WITH_CDP: ${{ matrix.browser == 'chrome' && '1' || '0' }}
+        run: BAPT_E2E_PACKAGE="$(find dist -name '*.zip' -print -quit)" xvfb-run -a npm run test:e2e

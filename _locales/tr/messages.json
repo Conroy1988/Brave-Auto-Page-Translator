@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"Özel otomatik sayfa çevirmeni"},"extensionShortName":{"message":"Otomatik çevirmen"},"extensionDescription":{"message":"Bağlama duyarlı web çevirisi; iki dilli okuma, yazma yardımı, site kuralları ve gizlilik duvarı sunar."},
-  "independentExtension":{"message":"BAĞIMSIZ UZANTI"},"privateWindowNotice":{"message":"Gizli pencere: yalnızca elle çeviri. Site ve dil kuralları burada kaydedilmez."},"translatePagesInto":{"message":"Sayfaları şu dile çevir"},"translateThisPage":{"message":"Bu sayfayı çevir"},"automaticSite":{"message":"Bu siteyi otomatik çevir"},"neverSite":{"message":"Bu siteyi asla çevirme"},"neverLanguage":{"message":"Bu dili asla çevirme"},"settingsPrivacy":{"message":"Ayarlar ve gizlilik"},
-  "onboardingTitle":{"message":"Çeviri sizin koşullarınızda."},"onboardingIntro":{"message":"Uzantının neye erişebileceğini ve metnin çeviriden önce nerede işleneceğini seçin."},"yourLanguage":{"message":"Diliniz"},"whenTranslationRuns":{"message":"Çeviri ne zaman çalışabilir"},"translationProvider":{"message":"Çeviri sağlayıcısı"},"privacyCheckpoint":{"message":"Gizlilik kontrolü"},"acceptFinish":{"message":"Kabul et ve kurulumu tamamla"},
-  "controlCentre":{"message":"Çeviri kontrol merkezi"},"controlIntro":{"message":"Site erişimini, sağlayıcı gizliliğini, canlı sayfaları ve otomatik kuralları yönetin."},"accessBehaviour":{"message":"Erişim ve otomatik davranış"},"pageSafeguards":{"message":"Sayfa davranışı ve korumalar"},"rulesTargets":{"message":"Hariç tutmalar ve site hedefleri"},"terminology":{"message":"Terminoloji"},"privacyDashboard":{"message":"Gizlilik panosu"},"settingsBackup":{"message":"Ayar yedeği"},"localDiagnostics":{"message":"Yerel tanılama"},"saveSettings":{"message":"Ayarları kaydet"}
+  "extensionName": {
+    "message": "Özel otomatik sayfa çevirmeni"
+  },
+  "extensionShortName": {
+    "message": "Otomatik çevirmen"
+  },
+  "extensionDescription": {
+    "message": "Bağlama duyarlı web çevirisi; iki dilli okuma, yazma yardımı, site kuralları ve gizlilik duvarı sunar."
+  },
+  "independentExtension": {
+    "message": "BAĞIMSIZ UZANTI"
+  },
+  "privateWindowNotice": {
+    "message": "Gizli pencere: yalnızca elle çeviri. Site ve dil kuralları burada kaydedilmez."
+  },
+  "translatePagesInto": {
+    "message": "Sayfaları şu dile çevir"
+  },
+  "translateThisPage": {
+    "message": "Bu sayfayı çevir"
+  },
+  "automaticSite": {
+    "message": "Bu siteyi otomatik çevir"
+  },
+  "neverSite": {
+    "message": "Bu siteyi asla çevirme"
+  },
+  "neverLanguage": {
+    "message": "Bu dili asla çevirme"
+  },
+  "settingsPrivacy": {
+    "message": "Ayarlar ve gizlilik"
+  },
+  "onboardingTitle": {
+    "message": "Çeviri sizin koşullarınızda."
+  },
+  "onboardingIntro": {
+    "message": "Uzantının neye erişebileceğini ve metnin çeviriden önce nerede işleneceğini seçin."
+  },
+  "yourLanguage": {
+    "message": "Diliniz"
+  },
+  "whenTranslationRuns": {
+    "message": "Çeviri ne zaman çalışabilir"
+  },
+  "translationProvider": {
+    "message": "Çeviri sağlayıcısı"
+  },
+  "privacyCheckpoint": {
+    "message": "Gizlilik kontrolü"
+  },
+  "acceptFinish": {
+    "message": "Kabul et ve kurulumu tamamla"
+  },
+  "controlCentre": {
+    "message": "Çeviri kontrol merkezi"
+  },
+  "controlIntro": {
+    "message": "Site erişimini, sağlayıcı gizliliğini, canlı sayfaları ve otomatik kuralları yönetin."
+  },
+  "accessBehaviour": {
+    "message": "Erişim ve otomatik davranış"
+  },
+  "pageSafeguards": {
+    "message": "Sayfa davranışı ve korumalar"
+  },
+  "rulesTargets": {
+    "message": "Hariç tutmalar ve site hedefleri"
+  },
+  "terminology": {
+    "message": "Terminoloji"
+  },
+  "privacyDashboard": {
+    "message": "Gizlilik panosu"
+  },
+  "settingsBackup": {
+    "message": "Ayar yedeği"
+  },
+  "localDiagnostics": {
+    "message": "Yerel tanılama"
+  },
+  "saveSettings": {
+    "message": "Ayarları kaydet"
+  },
+  "readingMode": {
+    "message": "Okuma modu"
+  },
+  "translatedMode": {
+    "message": "Çevrilmiş"
+  },
+  "bilingualMode": {
+    "message": "İki dilli"
+  },
+  "hoverMode": {
+    "message": "Üzerine gelince özgün metin"
+  },
+  "workspaceTitle": {
+    "message": "Çeviri alanı"
+  },
+  "showOriginal": {
+    "message": "Özgün metni göster"
+  },
+  "quickTranslate": {
+    "message": "Hızlı çeviri"
+  },
+  "textWorkspace": {
+    "message": "Metin alanı"
+  },
+  "translateText": {
+    "message": "Metni çevir"
+  },
+  "copyResult": {
+    "message": "Sonucu kopyala"
+  },
+  "websiteSettings": {
+    "message": "Site ayarları"
+  },
+  "localOnly": {
+    "message": "Yalnızca yerel"
+  },
+  "provider": {
+    "message": "Sağlayıcı"
+  },
+  "automatic": {
+    "message": "Otomatik"
+  },
+  "onDevice": {
+    "message": "Cihazda"
+  },
+  "targetLanguage": {
+    "message": "Hedef dil"
+  },
+  "allowSensitive": {
+    "message": "Burada hassas formların otomatik çevrilmesine izin ver"
+  },
+  "saveProfile": {
+    "message": "Site profilini kaydet"
+  },
+  "globalDefaults": {
+    "message": "Genel varsayılanları kullan"
+  },
+  "languagePacks": {
+    "message": "Yerel dil paketleri"
+  },
+  "preparePair": {
+    "message": "Dil çifti hazırla"
+  },
+  "fromLanguage": {
+    "message": "Kaynak"
+  },
+  "toLanguage": {
+    "message": "Hedef"
+  },
+  "checkPrepare": {
+    "message": "Kontrol et ve hazırla"
+  },
+  "recentTranslations": {
+    "message": "Son çeviriler"
+  },
+  "thisSession": {
+    "message": "Bu oturum"
+  },
+  "refresh": {
+    "message": "Yenile"
+  },
+  "addFavourite": {
+    "message": "Favori dil ekle"
+  },
+  "removeFavourite": {
+    "message": "Favori dili kaldır"
+  },
+  "glossaryHelp": {
+    "message": "Tercih edilen çeviriler, en fazla 200 kayıt"
+  },
+  "addTerm": {
+    "message": "Terim ekle"
+  },
+  "sourceTerm": {
+    "message": "Kaynak terim"
+  },
+  "preferredTranslation": {
+    "message": "Tercih edilen çeviri"
+  },
+  "removeTerm": {
+    "message": "Kaldır"
+  },
+  "grantProviderAccess": {
+    "message": "Sağlayıcı erişimine izin ver"
+  },
+  "completeSetup": {
+    "message": "Kurulumu tamamla"
+  },
+  "cancelTranslation": {
+    "message": "Çeviriyi iptal et"
+  },
+  "textToTranslate": {
+    "message": "Çevrilecek metin"
+  },
+  "supportKofi": {
+    "message": "Ko-fi üzerinden destekle"
+  },
+  "checkingPage": {
+    "message": "Sayfa kontrol ediliyor…"
+  },
+  "connectionError": {
+    "message": "Bağlantı kurulamadı. Tekrar deneyin."
+  },
+  "setupRequired": {
+    "message": "Gizlilik kurulumu gerekli"
+  },
+  "providerPermissionRequired": {
+    "message": "Onaylı çeviri sağlayıcısına erişime izin verin."
+  },
+  "providerSetupRequired": {
+    "message": "Ayarlar ve gizlilik bölümünde bir sağlayıcı seçip onaylayın."
+  },
+  "needsAttention": {
+    "message": "Çeviri dikkat gerektiriyor"
+  },
+  "onDeviceRoute": {
+    "message": "Cihazda: dışarıya metin gönderilmedi"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ karakter gönderildi; $v3$ değer maskelendi",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Etkin çeviri yolu yok"
+  },
+  "pageTranslated": {
+    "message": "Sayfa çevrildi"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ bölüm çevrildi",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Çeviri sürüyor"
+  },
+  "retryTranslation": {
+    "message": "Çeviriyi tekrar deneyin."
+  },
+  "protectedPage": {
+    "message": "Sayfaya erişim yok"
+  },
+  "openWebsite": {
+    "message": "Erişim izni vermek için normal bir sitede uzantı düğmesini açın."
+  },
+  "siteExcluded": {
+    "message": "Site hariç tutuldu"
+  },
+  "languageExcluded": {
+    "message": "Dil hariç tutuldu"
+  },
+  "privateSafeguard": {
+    "message": "Özel sayfa koruması"
+  },
+  "manualAvailable": {
+    "message": "Manuel çeviri kullanılabilir."
+  },
+  "alreadyTarget": {
+    "message": "Zaten dilinizde"
+  },
+  "readyToTranslate": {
+    "message": "Çeviriye hazır"
+  },
+  "noRecentTranslations": {
+    "message": "Son çeviri yok."
+  },
+  "resultPlaceholder": {
+    "message": "Çeviriniz burada görünecek."
+  },
+  "thisWebsite": {
+    "message": "Bu site"
+  },
+  "enterText": {
+    "message": "Çevrilecek metni girin."
+  },
+  "translating": {
+    "message": "Çevriliyor…"
+  },
+  "profileSaved": {
+    "message": "Site profili kaydedildi"
+  },
+  "checkingSupport": {
+    "message": "Tarayıcı desteği kontrol ediliyor…"
+  },
+  "pairUnavailable": {
+    "message": "Tarayıcı veya dil çifti kullanılamıyor."
+  },
+  "preparingPair": {
+    "message": "Dil çifti hazırlanıyor…"
+  },
+  "pairReady": {
+    "message": "Dil çifti hazır."
+  },
+  "glossaryInvalid": {
+    "message": "İki alanı da doldurun ve yinelenen kaynak terimleri kaldırın."
+  }
 }

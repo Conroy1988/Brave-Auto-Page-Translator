@@ -18,14 +18,15 @@
 
       <section class="status-card" aria-live="polite">
         <div class="pulse" id="statusPulse" aria-hidden="true"></div>
-        <div><p id="statusTitle">Checking this page…</p><span id="statusDetail">Detecting language and website rules</span><small id="providerDetail"></small></div>
+        <div><p id="statusTitle" data-i18n="checkingPage">Checking this page…</p><span id="statusDetail">Detecting language and website rules</span><small id="providerDetail"></small></div>
       </section>
 
       <p class="private-notice" id="privateNotice" data-i18n="privateWindowNotice" hidden>Private window: manual translation only. Site and language rules are not saved here.</p>
 
+      <section class="readiness" id="readiness" hidden><p id="readinessText"></p><button id="readinessAction" type="button" data-i18n="settingsPrivacy">Settings &amp; privacy</button></section>
       <div class="quick-settings">
-        <label class="field"><span data-i18n="translatePagesInto">Translate pages into</span><select id="targetLanguage"></select></label>
-        <label class="field"><span>Reading mode</span><select id="readingMode"><option value="translated">Translated</option><option value="bilingual">Bilingual</option><option value="hover">Original on hover</option></select></label>
+        <label class="field"><span data-i18n="translatePagesInto">Translate pages into</span><span class="favourite-row"><select id="targetLanguage"></select><button id="favouriteLanguage" type="button" aria-pressed="false" aria-label="Add favourite language">☆</button></span></label>
+        <label class="field"><span data-i18n="readingMode">Reading mode</span><select id="readingMode"><option value="translated" data-i18n="translatedMode">Translated</option><option value="bilingual" data-i18n="bilingualMode">Bilingual</option><option value="hover" data-i18n="hoverMode">Original on hover</option></select></label>
       </div>
 
       <div class="actions">
@@ -41,7 +42,7 @@
       <footer>
         <div class="footer-links">
           <button class="link-button" id="openOptions" type="button" data-i18n="settingsPrivacy">Settings & privacy</button>
-          <a class="kofi-link" href="https://ko-fi.com/D4P124RWI9" target="_blank" rel="noreferrer" aria-label="Support this project on Ko-fi (opens in a new tab)"><span aria-hidden="true">☕</span> Support on Ko-fi</a>
+          <a class="kofi-link" href="https://ko-fi.com/D4P124RWI9" target="_blank" rel="noreferrer" aria-label="Support this project on Ko-fi (opens in a new tab)"><span aria-hidden="true">☕</span> <span data-i18n="supportKofi">Support on Ko-fi</span></a>
         </div>
         <span id="version"></span>
       </footer>

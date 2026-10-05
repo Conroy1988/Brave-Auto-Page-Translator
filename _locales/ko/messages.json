@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"개인정보 보호 자동 페이지 번역기"},"extensionShortName":{"message":"자동 번역기"},"extensionDescription":{"message":"문맥 번역, 이중 언어 읽기, 글쓰기 번역, 사이트 규칙과 개인정보 보호 방화벽을 제공하는 웹 번역기입니다."},
-  "independentExtension":{"message":"독립 확장 프로그램"},"privateWindowNotice":{"message":"시크릿 창에서는 수동 번역만 가능합니다. 사이트 및 언어 규칙은 저장되지 않습니다."},"translatePagesInto":{"message":"페이지 번역 언어"},"translateThisPage":{"message":"이 페이지 번역"},"automaticSite":{"message":"이 사이트 자동 번역"},"neverSite":{"message":"이 사이트 번역 안 함"},"neverLanguage":{"message":"이 언어 번역 안 함"},"settingsPrivacy":{"message":"설정 및 개인정보 보호"},
-  "onboardingTitle":{"message":"원하는 방식으로 번역하세요."},"onboardingIntro":{"message":"확장 프로그램의 접근 범위와 번역 전 텍스트 처리 위치를 선택하세요."},"yourLanguage":{"message":"사용 언어"},"whenTranslationRuns":{"message":"번역 실행 시점"},"translationProvider":{"message":"번역 제공업체"},"privacyCheckpoint":{"message":"개인정보 보호 확인"},"acceptFinish":{"message":"동의하고 설정 완료"},
-  "controlCentre":{"message":"번역 제어 센터"},"controlIntro":{"message":"사이트 접근, 제공업체 개인정보 보호, 동적 페이지 및 자동 규칙을 관리합니다."},"accessBehaviour":{"message":"접근 및 자동 동작"},"pageSafeguards":{"message":"페이지 동작 및 보호"},"rulesTargets":{"message":"제외 및 사이트별 대상"},"terminology":{"message":"용어"},"privacyDashboard":{"message":"개인정보 보호 대시보드"},"settingsBackup":{"message":"설정 백업"},"localDiagnostics":{"message":"로컬 진단"},"saveSettings":{"message":"설정 저장"}
+  "extensionName": {
+    "message": "개인정보 보호 자동 페이지 번역기"
+  },
+  "extensionShortName": {
+    "message": "자동 번역기"
+  },
+  "extensionDescription": {
+    "message": "문맥 번역, 이중 언어 읽기, 글쓰기 번역, 사이트 규칙과 개인정보 보호 방화벽을 제공하는 웹 번역기입니다."
+  },
+  "independentExtension": {
+    "message": "독립 확장 프로그램"
+  },
+  "privateWindowNotice": {
+    "message": "시크릿 창에서는 수동 번역만 가능합니다. 사이트 및 언어 규칙은 저장되지 않습니다."
+  },
+  "translatePagesInto": {
+    "message": "페이지 번역 언어"
+  },
+  "translateThisPage": {
+    "message": "이 페이지 번역"
+  },
+  "automaticSite": {
+    "message": "이 사이트 자동 번역"
+  },
+  "neverSite": {
+    "message": "이 사이트 번역 안 함"
+  },
+  "neverLanguage": {
+    "message": "이 언어 번역 안 함"
+  },
+  "settingsPrivacy": {
+    "message": "설정 및 개인정보 보호"
+  },
+  "onboardingTitle": {
+    "message": "원하는 방식으로 번역하세요."
+  },
+  "onboardingIntro": {
+    "message": "확장 프로그램의 접근 범위와 번역 전 텍스트 처리 위치를 선택하세요."
+  },
+  "yourLanguage": {
+    "message": "사용 언어"
+  },
+  "whenTranslationRuns": {
+    "message": "번역 실행 시점"
+  },
+  "translationProvider": {
+    "message": "번역 제공업체"
+  },
+  "privacyCheckpoint": {
+    "message": "개인정보 보호 확인"
+  },
+  "acceptFinish": {
+    "message": "동의하고 설정 완료"
+  },
+  "controlCentre": {
+    "message": "번역 제어 센터"
+  },
+  "controlIntro": {
+    "message": "사이트 접근, 제공업체 개인정보 보호, 동적 페이지 및 자동 규칙을 관리합니다."
+  },
+  "accessBehaviour": {
+    "message": "접근 및 자동 동작"
+  },
+  "pageSafeguards": {
+    "message": "페이지 동작 및 보호"
+  },
+  "rulesTargets": {
+    "message": "제외 및 사이트별 대상"
+  },
+  "terminology": {
+    "message": "용어"
+  },
+  "privacyDashboard": {
+    "message": "개인정보 보호 대시보드"
+  },
+  "settingsBackup": {
+    "message": "설정 백업"
+  },
+  "localDiagnostics": {
+    "message": "로컬 진단"
+  },
+  "saveSettings": {
+    "message": "설정 저장"
+  },
+  "readingMode": {
+    "message": "읽기 모드"
+  },
+  "translatedMode": {
+    "message": "번역문"
+  },
+  "bilingualMode": {
+    "message": "이중 언어"
+  },
+  "hoverMode": {
+    "message": "마우스를 올리면 원문 표시"
+  },
+  "workspaceTitle": {
+    "message": "번역 작업 공간"
+  },
+  "showOriginal": {
+    "message": "원문 보기"
+  },
+  "quickTranslate": {
+    "message": "빠른 번역"
+  },
+  "textWorkspace": {
+    "message": "텍스트 공간"
+  },
+  "translateText": {
+    "message": "텍스트 번역"
+  },
+  "copyResult": {
+    "message": "결과 복사"
+  },
+  "websiteSettings": {
+    "message": "사이트 설정"
+  },
+  "localOnly": {
+    "message": "로컬 전용"
+  },
+  "provider": {
+    "message": "제공업체"
+  },
+  "automatic": {
+    "message": "자동"
+  },
+  "onDevice": {
+    "message": "기기 내"
+  },
+  "targetLanguage": {
+    "message": "대상 언어"
+  },
+  "allowSensitive": {
+    "message": "이 사이트의 민감한 양식 자동 번역 허용"
+  },
+  "saveProfile": {
+    "message": "사이트 프로필 저장"
+  },
+  "globalDefaults": {
+    "message": "전체 기본값 사용"
+  },
+  "languagePacks": {
+    "message": "기기 내 언어 팩"
+  },
+  "preparePair": {
+    "message": "언어 쌍 준비"
+  },
+  "fromLanguage": {
+    "message": "원본"
+  },
+  "toLanguage": {
+    "message": "대상"
+  },
+  "checkPrepare": {
+    "message": "확인 및 준비"
+  },
+  "recentTranslations": {
+    "message": "최근 번역"
+  },
+  "thisSession": {
+    "message": "현재 세션"
+  },
+  "refresh": {
+    "message": "새로고침"
+  },
+  "addFavourite": {
+    "message": "즐겨찾는 언어 추가"
+  },
+  "removeFavourite": {
+    "message": "즐겨찾는 언어 제거"
+  },
+  "glossaryHelp": {
+    "message": "선호 번역, 최대 200개"
+  },
+  "addTerm": {
+    "message": "용어 추가"
+  },
+  "sourceTerm": {
+    "message": "원본 용어"
+  },
+  "preferredTranslation": {
+    "message": "선호 번역"
+  },
+  "removeTerm": {
+    "message": "제거"
+  },
+  "grantProviderAccess": {
+    "message": "제공업체 접근 허용"
+  },
+  "completeSetup": {
+    "message": "설정 완료"
+  },
+  "cancelTranslation": {
+    "message": "번역 취소"
+  },
+  "textToTranslate": {
+    "message": "번역할 텍스트"
+  },
+  "supportKofi": {
+    "message": "Ko-fi에서 후원"
+  },
+  "checkingPage": {
+    "message": "페이지 확인 중…"
+  },
+  "connectionError": {
+    "message": "연결하지 못했습니다. 다시 시도하세요."
+  },
+  "setupRequired": {
+    "message": "개인정보 설정 필요"
+  },
+  "providerPermissionRequired": {
+    "message": "승인된 번역 제공업체 접근을 허용하세요."
+  },
+  "providerSetupRequired": {
+    "message": "설정 및 개인정보에서 번역 제공업체를 선택하고 승인하세요."
+  },
+  "needsAttention": {
+    "message": "번역 확인이 필요합니다"
+  },
+  "onDeviceRoute": {
+    "message": "기기 내: 외부로 텍스트를 보내지 않음"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$자 전송, $v3$개 값 마스킹",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "활성 번역 경로 없음"
+  },
+  "pageTranslated": {
+    "message": "페이지 번역 완료"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$개 구역 번역 완료",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "번역 진행 중"
+  },
+  "retryTranslation": {
+    "message": "번역을 다시 시도하세요."
+  },
+  "protectedPage": {
+    "message": "페이지 접근 불가"
+  },
+  "openWebsite": {
+    "message": "일반 웹사이트에서 확장 프로그램 버튼을 열어 접근을 허용하세요."
+  },
+  "siteExcluded": {
+    "message": "제외된 사이트"
+  },
+  "languageExcluded": {
+    "message": "제외된 언어"
+  },
+  "privateSafeguard": {
+    "message": "비공개 페이지 보호"
+  },
+  "manualAvailable": {
+    "message": "수동 번역을 사용할 수 있습니다."
+  },
+  "alreadyTarget": {
+    "message": "이미 선택한 언어입니다"
+  },
+  "readyToTranslate": {
+    "message": "번역 준비 완료"
+  },
+  "noRecentTranslations": {
+    "message": "최근 번역이 없습니다."
+  },
+  "resultPlaceholder": {
+    "message": "여기에 번역이 표시됩니다."
+  },
+  "thisWebsite": {
+    "message": "이 사이트"
+  },
+  "enterText": {
+    "message": "번역할 텍스트를 입력하세요."
+  },
+  "translating": {
+    "message": "번역 중…"
+  },
+  "profileSaved": {
+    "message": "사이트 프로필 저장됨"
+  },
+  "checkingSupport": {
+    "message": "브라우저 지원 확인 중…"
+  },
+  "pairUnavailable": {
+    "message": "이 브라우저 또는 언어 쌍은 사용할 수 없습니다."
+  },
+  "preparingPair": {
+    "message": "언어 쌍 준비 중…"
+  },
+  "pairReady": {
+    "message": "언어 쌍 준비 완료"
+  },
+  "glossaryInvalid": {
+    "message": "두 필드를 모두 채우고 중복된 원본 용어를 제거하세요."
+  }
 }

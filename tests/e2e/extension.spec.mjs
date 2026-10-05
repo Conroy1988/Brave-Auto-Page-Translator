@@ -1,4 +1,5 @@
-import { test, expect, chromium } from "@playwright/test";
+import { launchExtension } from "../browser.mjs";
+import { test, expect } from "@playwright/test";
 import { createServer } from "node:http";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -134,11 +135,7 @@ test.beforeAll(async () => {
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   baseUrl = `http://127.0.0.1:${server.address().port}`;
   profileDirectory = mkdtempSync(path.join(tmpdir(), "bapt-e2e-profile-"));
-  context = await chromium.launchPersistentContext(profileDirectory, {
-    headless: false,
-    executablePath: process.env.BAPT_BROWSER_EXECUTABLE || undefined,
-    args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`]
-  });
+  context = await launchExtension(profileDirectory, extensionPath);
   const worker = context.serviceWorkers()[0] || await context.waitForEvent("serviceworker");
   const extensionId = new URL(worker.url()).host;
   const initialPages = context.pages();

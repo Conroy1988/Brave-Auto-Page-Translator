@@ -86,3 +86,8 @@ https://github.com/Conroy1988/Brave-Auto-Page-Translator
 ## Privacy policy
 
 https://github.com/Conroy1988/Brave-Auto-Page-Translator/blob/main/PRIVACY.md
+
+
+## v1.3.0 update notes
+
+A clearer red-and-black interface with a new two-bar icon, readable controls, favourite languages and easier glossary editing. The translation workspace follows your active tab and recovers from errors. Existing preferences and provider approvals are retained. No new permissions.

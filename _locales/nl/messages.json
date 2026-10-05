@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"Privé automatische paginavertaler"},"extensionShortName":{"message":"Autovertaler"},"extensionDescription":{"message":"Contextbewuste webvertaling met tweetalig lezen, schrijfhulp, siteregels en een ingebouwde privacyfirewall."},
-  "independentExtension":{"message":"ONAFHANKELIJKE EXTENSIE"},"privateWindowNotice":{"message":"Privévenster: alleen handmatig vertalen. Site- en taalregels worden hier niet opgeslagen."},"translatePagesInto":{"message":"Pagina's vertalen naar"},"translateThisPage":{"message":"Deze pagina vertalen"},"automaticSite":{"message":"Deze site automatisch vertalen"},"neverSite":{"message":"Deze site nooit vertalen"},"neverLanguage":{"message":"Deze taal nooit vertalen"},"settingsPrivacy":{"message":"Instellingen en privacy"},
-  "onboardingTitle":{"message":"Vertalen op jouw voorwaarden."},"onboardingIntro":{"message":"Kies waartoe de extensie toegang heeft en waar tekst vóór vertaling wordt verwerkt."},"yourLanguage":{"message":"Jouw taal"},"whenTranslationRuns":{"message":"Wanneer vertaling mag worden uitgevoerd"},"translationProvider":{"message":"Vertaalprovider"},"privacyCheckpoint":{"message":"Privacycontrole"},"acceptFinish":{"message":"Accepteren en instellen"},
-  "controlCentre":{"message":"Vertaalcentrum"},"controlIntro":{"message":"Beheer sitetoegang, providerprivacy, livepagina's en automatische regels."},"accessBehaviour":{"message":"Toegang en automatisch gedrag"},"pageSafeguards":{"message":"Paginagedrag en beveiligingen"},"rulesTargets":{"message":"Uitsluitingen en doelen per site"},"terminology":{"message":"Terminologie"},"privacyDashboard":{"message":"Privacydashboard"},"settingsBackup":{"message":"Back-up van instellingen"},"localDiagnostics":{"message":"Lokale diagnose"},"saveSettings":{"message":"Instellingen opslaan"}
+  "extensionName": {
+    "message": "Privé automatische paginavertaler"
+  },
+  "extensionShortName": {
+    "message": "Autovertaler"
+  },
+  "extensionDescription": {
+    "message": "Contextbewuste webvertaling met tweetalig lezen, schrijfhulp, siteregels en een ingebouwde privacyfirewall."
+  },
+  "independentExtension": {
+    "message": "ONAFHANKELIJKE EXTENSIE"
+  },
+  "privateWindowNotice": {
+    "message": "Privévenster: alleen handmatig vertalen. Site- en taalregels worden hier niet opgeslagen."
+  },
+  "translatePagesInto": {
+    "message": "Pagina's vertalen naar"
+  },
+  "translateThisPage": {
+    "message": "Deze pagina vertalen"
+  },
+  "automaticSite": {
+    "message": "Deze site automatisch vertalen"
+  },
+  "neverSite": {
+    "message": "Deze site nooit vertalen"
+  },
+  "neverLanguage": {
+    "message": "Deze taal nooit vertalen"
+  },
+  "settingsPrivacy": {
+    "message": "Instellingen en privacy"
+  },
+  "onboardingTitle": {
+    "message": "Vertalen op jouw voorwaarden."
+  },
+  "onboardingIntro": {
+    "message": "Kies waartoe de extensie toegang heeft en waar tekst vóór vertaling wordt verwerkt."
+  },
+  "yourLanguage": {
+    "message": "Jouw taal"
+  },
+  "whenTranslationRuns": {
+    "message": "Wanneer vertaling mag worden uitgevoerd"
+  },
+  "translationProvider": {
+    "message": "Vertaalprovider"
+  },
+  "privacyCheckpoint": {
+    "message": "Privacycontrole"
+  },
+  "acceptFinish": {
+    "message": "Accepteren en instellen"
+  },
+  "controlCentre": {
+    "message": "Vertaalcentrum"
+  },
+  "controlIntro": {
+    "message": "Beheer sitetoegang, providerprivacy, livepagina's en automatische regels."
+  },
+  "accessBehaviour": {
+    "message": "Toegang en automatisch gedrag"
+  },
+  "pageSafeguards": {
+    "message": "Paginagedrag en beveiligingen"
+  },
+  "rulesTargets": {
+    "message": "Uitsluitingen en doelen per site"
+  },
+  "terminology": {
+    "message": "Terminologie"
+  },
+  "privacyDashboard": {
+    "message": "Privacydashboard"
+  },
+  "settingsBackup": {
+    "message": "Back-up van instellingen"
+  },
+  "localDiagnostics": {
+    "message": "Lokale diagnose"
+  },
+  "saveSettings": {
+    "message": "Instellingen opslaan"
+  },
+  "readingMode": {
+    "message": "Leesmodus"
+  },
+  "translatedMode": {
+    "message": "Vertaald"
+  },
+  "bilingualMode": {
+    "message": "Tweetalig"
+  },
+  "hoverMode": {
+    "message": "Origineel bij aanwijzen"
+  },
+  "workspaceTitle": {
+    "message": "Vertaalwerkruimte"
+  },
+  "showOriginal": {
+    "message": "Origineel tonen"
+  },
+  "quickTranslate": {
+    "message": "Snel vertalen"
+  },
+  "textWorkspace": {
+    "message": "Tekstwerkruimte"
+  },
+  "translateText": {
+    "message": "Tekst vertalen"
+  },
+  "copyResult": {
+    "message": "Resultaat kopiëren"
+  },
+  "websiteSettings": {
+    "message": "Website-instellingen"
+  },
+  "localOnly": {
+    "message": "Alleen lokaal"
+  },
+  "provider": {
+    "message": "Aanbieder"
+  },
+  "automatic": {
+    "message": "Automatisch"
+  },
+  "onDevice": {
+    "message": "Op het apparaat"
+  },
+  "targetLanguage": {
+    "message": "Doeltaal"
+  },
+  "allowSensitive": {
+    "message": "Automatische vertaling van gevoelige formulieren hier toestaan"
+  },
+  "saveProfile": {
+    "message": "Websiteprofiel opslaan"
+  },
+  "globalDefaults": {
+    "message": "Algemene instellingen gebruiken"
+  },
+  "languagePacks": {
+    "message": "Lokale taalpakketten"
+  },
+  "preparePair": {
+    "message": "Talenpaar voorbereiden"
+  },
+  "fromLanguage": {
+    "message": "Van"
+  },
+  "toLanguage": {
+    "message": "Naar"
+  },
+  "checkPrepare": {
+    "message": "Controleren en voorbereiden"
+  },
+  "recentTranslations": {
+    "message": "Recente vertalingen"
+  },
+  "thisSession": {
+    "message": "Deze sessie"
+  },
+  "refresh": {
+    "message": "Vernieuwen"
+  },
+  "addFavourite": {
+    "message": "Favoriete taal toevoegen"
+  },
+  "removeFavourite": {
+    "message": "Favoriete taal verwijderen"
+  },
+  "glossaryHelp": {
+    "message": "Voorkeursvertalingen, maximaal 200 items"
+  },
+  "addTerm": {
+    "message": "Term toevoegen"
+  },
+  "sourceTerm": {
+    "message": "Bronterm"
+  },
+  "preferredTranslation": {
+    "message": "Voorkeursvertaling"
+  },
+  "removeTerm": {
+    "message": "Verwijderen"
+  },
+  "grantProviderAccess": {
+    "message": "Toegang tot aanbieder toestaan"
+  },
+  "completeSetup": {
+    "message": "Instellen voltooien"
+  },
+  "cancelTranslation": {
+    "message": "Vertaling annuleren"
+  },
+  "textToTranslate": {
+    "message": "Te vertalen tekst"
+  },
+  "supportKofi": {
+    "message": "Steun op Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Pagina controleren…"
+  },
+  "connectionError": {
+    "message": "Verbinding mislukt. Probeer opnieuw."
+  },
+  "setupRequired": {
+    "message": "Privacy instellen vereist"
+  },
+  "providerPermissionRequired": {
+    "message": "Sta toegang tot de goedgekeurde vertaalaanbieder toe."
+  },
+  "providerSetupRequired": {
+    "message": "Kies en keur een aanbieder goed bij Instellingen en privacy."
+  },
+  "needsAttention": {
+    "message": "Vertaling vereist aandacht"
+  },
+  "onDeviceRoute": {
+    "message": "Op het apparaat: geen tekst extern verzonden"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ tekens verzonden; $v3$ waarden afgeschermd",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Geen vertaalroute actief"
+  },
+  "pageTranslated": {
+    "message": "Pagina vertaald"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ delen vertaald",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Vertaling bezig"
+  },
+  "retryTranslation": {
+    "message": "Probeer opnieuw te vertalen."
+  },
+  "protectedPage": {
+    "message": "Geen toegang tot de pagina"
+  },
+  "openWebsite": {
+    "message": "Open de extensieknop op een gewone website om toegang te verlenen."
+  },
+  "siteExcluded": {
+    "message": "Website uitgesloten"
+  },
+  "languageExcluded": {
+    "message": "Taal uitgesloten"
+  },
+  "privateSafeguard": {
+    "message": "Bescherming van privépagina’s"
+  },
+  "manualAvailable": {
+    "message": "Handmatig vertalen is beschikbaar."
+  },
+  "alreadyTarget": {
+    "message": "Al in uw taal"
+  },
+  "readyToTranslate": {
+    "message": "Klaar om te vertalen"
+  },
+  "noRecentTranslations": {
+    "message": "Geen recente vertalingen."
+  },
+  "resultPlaceholder": {
+    "message": "Uw vertaling verschijnt hier."
+  },
+  "thisWebsite": {
+    "message": "Deze website"
+  },
+  "enterText": {
+    "message": "Voer te vertalen tekst in."
+  },
+  "translating": {
+    "message": "Vertalen…"
+  },
+  "profileSaved": {
+    "message": "Websiteprofiel opgeslagen"
+  },
+  "checkingSupport": {
+    "message": "Browserondersteuning controleren…"
+  },
+  "pairUnavailable": {
+    "message": "Browser of talenpaar niet beschikbaar."
+  },
+  "preparingPair": {
+    "message": "Talenpaar voorbereiden…"
+  },
+  "pairReady": {
+    "message": "Talenpaar gereed."
+  },
+  "glossaryInvalid": {
+    "message": "Vul beide velden in en verwijder dubbele brontermen."
+  }
 }

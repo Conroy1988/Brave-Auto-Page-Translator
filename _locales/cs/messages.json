@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"Soukromý automatický překladač stránek"},"extensionShortName":{"message":"Automatický překladač"},"extensionDescription":{"message":"Kontextový překlad webu s dvojjazyčným čtením, pomocí při psaní, pravidly webů a ochranou soukromí."},
-  "independentExtension":{"message":"NEZÁVISLÉ ROZŠÍŘENÍ"},"privateWindowNotice":{"message":"Anonymní okno: pouze ruční překlad. Pravidla webů a jazyků se zde neukládají."},"translatePagesInto":{"message":"Překládat stránky do"},"translateThisPage":{"message":"Přeložit tuto stránku"},"automaticSite":{"message":"Automaticky překládat tento web"},"neverSite":{"message":"Nikdy nepřekládat tento web"},"neverLanguage":{"message":"Nikdy nepřekládat tento jazyk"},"settingsPrivacy":{"message":"Nastavení a soukromí"},
-  "onboardingTitle":{"message":"Překlad podle vašich pravidel."},"onboardingIntro":{"message":"Zvolte, k čemu má rozšíření přístup a kde se text před překladem zpracuje."},"yourLanguage":{"message":"Váš jazyk"},"whenTranslationRuns":{"message":"Kdy může překlad běžet"},"translationProvider":{"message":"Poskytovatel překladu"},"privacyCheckpoint":{"message":"Kontrola soukromí"},"acceptFinish":{"message":"Přijmout a dokončit nastavení"},
-  "controlCentre":{"message":"Centrum ovládání překladu"},"controlIntro":{"message":"Spravujte přístup k webům, soukromí poskytovatele, dynamické stránky a automatická pravidla."},"accessBehaviour":{"message":"Přístup a automatické chování"},"pageSafeguards":{"message":"Chování stránky a ochrany"},"rulesTargets":{"message":"Výjimky a cíle webů"},"terminology":{"message":"Terminologie"},"privacyDashboard":{"message":"Přehled soukromí"},"settingsBackup":{"message":"Záloha nastavení"},"localDiagnostics":{"message":"Místní diagnostika"},"saveSettings":{"message":"Uložit nastavení"}
+  "extensionName": {
+    "message": "Soukromý automatický překladač stránek"
+  },
+  "extensionShortName": {
+    "message": "Automatický překladač"
+  },
+  "extensionDescription": {
+    "message": "Kontextový překlad webu s dvojjazyčným čtením, pomocí při psaní, pravidly webů a ochranou soukromí."
+  },
+  "independentExtension": {
+    "message": "NEZÁVISLÉ ROZŠÍŘENÍ"
+  },
+  "privateWindowNotice": {
+    "message": "Anonymní okno: pouze ruční překlad. Pravidla webů a jazyků se zde neukládají."
+  },
+  "translatePagesInto": {
+    "message": "Překládat stránky do"
+  },
+  "translateThisPage": {
+    "message": "Přeložit tuto stránku"
+  },
+  "automaticSite": {
+    "message": "Automaticky překládat tento web"
+  },
+  "neverSite": {
+    "message": "Nikdy nepřekládat tento web"
+  },
+  "neverLanguage": {
+    "message": "Nikdy nepřekládat tento jazyk"
+  },
+  "settingsPrivacy": {
+    "message": "Nastavení a soukromí"
+  },
+  "onboardingTitle": {
+    "message": "Překlad podle vašich pravidel."
+  },
+  "onboardingIntro": {
+    "message": "Zvolte, k čemu má rozšíření přístup a kde se text před překladem zpracuje."
+  },
+  "yourLanguage": {
+    "message": "Váš jazyk"
+  },
+  "whenTranslationRuns": {
+    "message": "Kdy může překlad běžet"
+  },
+  "translationProvider": {
+    "message": "Poskytovatel překladu"
+  },
+  "privacyCheckpoint": {
+    "message": "Kontrola soukromí"
+  },
+  "acceptFinish": {
+    "message": "Přijmout a dokončit nastavení"
+  },
+  "controlCentre": {
+    "message": "Centrum ovládání překladu"
+  },
+  "controlIntro": {
+    "message": "Spravujte přístup k webům, soukromí poskytovatele, dynamické stránky a automatická pravidla."
+  },
+  "accessBehaviour": {
+    "message": "Přístup a automatické chování"
+  },
+  "pageSafeguards": {
+    "message": "Chování stránky a ochrany"
+  },
+  "rulesTargets": {
+    "message": "Výjimky a cíle webů"
+  },
+  "terminology": {
+    "message": "Terminologie"
+  },
+  "privacyDashboard": {
+    "message": "Přehled soukromí"
+  },
+  "settingsBackup": {
+    "message": "Záloha nastavení"
+  },
+  "localDiagnostics": {
+    "message": "Místní diagnostika"
+  },
+  "saveSettings": {
+    "message": "Uložit nastavení"
+  },
+  "readingMode": {
+    "message": "Režim čtení"
+  },
+  "translatedMode": {
+    "message": "Přeloženo"
+  },
+  "bilingualMode": {
+    "message": "Dvojjazyčně"
+  },
+  "hoverMode": {
+    "message": "Originál při najetí"
+  },
+  "workspaceTitle": {
+    "message": "Pracovní prostor překladu"
+  },
+  "showOriginal": {
+    "message": "Zobrazit originál"
+  },
+  "quickTranslate": {
+    "message": "Rychlý překlad"
+  },
+  "textWorkspace": {
+    "message": "Textový prostor"
+  },
+  "translateText": {
+    "message": "Přeložit text"
+  },
+  "copyResult": {
+    "message": "Kopírovat výsledek"
+  },
+  "websiteSettings": {
+    "message": "Nastavení webu"
+  },
+  "localOnly": {
+    "message": "Pouze místně"
+  },
+  "provider": {
+    "message": "Poskytovatel"
+  },
+  "automatic": {
+    "message": "Automaticky"
+  },
+  "onDevice": {
+    "message": "V zařízení"
+  },
+  "targetLanguage": {
+    "message": "Cílový jazyk"
+  },
+  "allowSensitive": {
+    "message": "Povolit zde automatický překlad citlivých formulářů"
+  },
+  "saveProfile": {
+    "message": "Uložit profil webu"
+  },
+  "globalDefaults": {
+    "message": "Použít globální nastavení"
+  },
+  "languagePacks": {
+    "message": "Místní jazykové balíčky"
+  },
+  "preparePair": {
+    "message": "Připravit jazykový pár"
+  },
+  "fromLanguage": {
+    "message": "Z"
+  },
+  "toLanguage": {
+    "message": "Do"
+  },
+  "checkPrepare": {
+    "message": "Zkontrolovat a připravit"
+  },
+  "recentTranslations": {
+    "message": "Nedávné překlady"
+  },
+  "thisSession": {
+    "message": "Tato relace"
+  },
+  "refresh": {
+    "message": "Obnovit"
+  },
+  "addFavourite": {
+    "message": "Přidat oblíbený jazyk"
+  },
+  "removeFavourite": {
+    "message": "Odebrat oblíbený jazyk"
+  },
+  "glossaryHelp": {
+    "message": "Preferované překlady, až 200 položek"
+  },
+  "addTerm": {
+    "message": "Přidat výraz"
+  },
+  "sourceTerm": {
+    "message": "Zdrojový výraz"
+  },
+  "preferredTranslation": {
+    "message": "Preferovaný překlad"
+  },
+  "removeTerm": {
+    "message": "Odebrat"
+  },
+  "grantProviderAccess": {
+    "message": "Povolit přístup k poskytovateli"
+  },
+  "completeSetup": {
+    "message": "Dokončit nastavení"
+  },
+  "cancelTranslation": {
+    "message": "Zrušit překlad"
+  },
+  "textToTranslate": {
+    "message": "Text k překladu"
+  },
+  "supportKofi": {
+    "message": "Podpořit na Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Kontrola stránky…"
+  },
+  "connectionError": {
+    "message": "Připojení selhalo. Zkuste to znovu."
+  },
+  "setupRequired": {
+    "message": "Je nutné nastavit soukromí"
+  },
+  "providerPermissionRequired": {
+    "message": "Povolte přístup ke schválenému poskytovateli překladu."
+  },
+  "providerSetupRequired": {
+    "message": "Vyberte a schvalte poskytovatele v Nastavení a soukromí."
+  },
+  "needsAttention": {
+    "message": "Překlad vyžaduje pozornost"
+  },
+  "onDeviceRoute": {
+    "message": "V zařízení: žádný text nebyl odeslán ven"
+  },
+  "externalRoute": {
+    "message": "$v1$: odesláno $v2$ znaků; skryto $v3$ hodnot",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Žádná aktivní cesta překladu"
+  },
+  "pageTranslated": {
+    "message": "Stránka přeložena"
+  },
+  "sectionsTranslated": {
+    "message": "Přeloženo $v1$ oddílů",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Probíhá překlad"
+  },
+  "retryTranslation": {
+    "message": "Zkuste překlad znovu."
+  },
+  "protectedPage": {
+    "message": "Přístup ke stránce není dostupný"
+  },
+  "openWebsite": {
+    "message": "Otevřete tlačítko rozšíření na běžném webu a povolte přístup."
+  },
+  "siteExcluded": {
+    "message": "Web je vyloučen"
+  },
+  "languageExcluded": {
+    "message": "Jazyk je vyloučen"
+  },
+  "privateSafeguard": {
+    "message": "Ochrana soukromých stránek"
+  },
+  "manualAvailable": {
+    "message": "Ruční překlad je dostupný."
+  },
+  "alreadyTarget": {
+    "message": "Již ve vašem jazyce"
+  },
+  "readyToTranslate": {
+    "message": "Připraveno k překladu"
+  },
+  "noRecentTranslations": {
+    "message": "Žádné nedávné překlady."
+  },
+  "resultPlaceholder": {
+    "message": "Zde se zobrazí překlad."
+  },
+  "thisWebsite": {
+    "message": "Tento web"
+  },
+  "enterText": {
+    "message": "Zadejte text k překladu."
+  },
+  "translating": {
+    "message": "Překládání…"
+  },
+  "profileSaved": {
+    "message": "Profil webu uložen"
+  },
+  "checkingSupport": {
+    "message": "Kontrola podpory prohlížeče…"
+  },
+  "pairUnavailable": {
+    "message": "Prohlížeč nebo jazykový pár není dostupný."
+  },
+  "preparingPair": {
+    "message": "Příprava jazykového páru…"
+  },
+  "pairReady": {
+    "message": "Jazykový pár připraven."
+  },
+  "glossaryInvalid": {
+    "message": "Vyplňte obě pole a odstraňte duplicitní zdrojové výrazy."
+  }
 }

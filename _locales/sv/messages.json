@@ -1,6 +1,315 @@
 {
-  "extensionName":{"message":"Privat automatisk sidöversättare"},"extensionShortName":{"message":"Autoöversättare"},"extensionDescription":{"message":"Kontextmedveten webböversättning med tvåspråkig läsning, skrivhjälp, webbplatsregler och integritetsbrandvägg."},
-  "independentExtension":{"message":"OBEROENDE TILLÄGG"},"privateWindowNotice":{"message":"Privat fönster: endast manuell översättning. Webbplats- och språkregler sparas inte här."},"translatePagesInto":{"message":"Översätt sidor till"},"translateThisPage":{"message":"Översätt den här sidan"},"automaticSite":{"message":"Översätt webbplatsen automatiskt"},"neverSite":{"message":"Översätt aldrig webbplatsen"},"neverLanguage":{"message":"Översätt aldrig språket"},"settingsPrivacy":{"message":"Inställningar och integritet"},
-  "onboardingTitle":{"message":"Översättning på dina villkor."},"onboardingIntro":{"message":"Välj vad tillägget får åtkomst till och var text behandlas före översättning."},"yourLanguage":{"message":"Ditt språk"},"whenTranslationRuns":{"message":"När översättning får köras"},"translationProvider":{"message":"Översättningsleverantör"},"privacyCheckpoint":{"message":"Integritetskontroll"},"acceptFinish":{"message":"Godkänn och slutför"},
-  "controlCentre":{"message":"Kontrollcenter för översättning"},"controlIntro":{"message":"Hantera webbplatsåtkomst, leverantörsintegritet, dynamiska sidor och automatiska regler."},"accessBehaviour":{"message":"Åtkomst och automatiskt beteende"},"pageSafeguards":{"message":"Sidbeteende och skydd"},"rulesTargets":{"message":"Undantag och webbplatsmål"},"terminology":{"message":"Terminologi"},"privacyDashboard":{"message":"Integritetspanel"},"settingsBackup":{"message":"Säkerhetskopia av inställningar"},"localDiagnostics":{"message":"Lokal diagnostik"},"saveSettings":{"message":"Spara inställningar"}
+  "extensionName": {
+    "message": "Privat automatisk sidöversättare"
+  },
+  "extensionShortName": {
+    "message": "Autoöversättare"
+  },
+  "extensionDescription": {
+    "message": "Kontextmedveten webböversättning med tvåspråkig läsning, skrivhjälp, webbplatsregler och integritetsbrandvägg."
+  },
+  "independentExtension": {
+    "message": "OBEROENDE TILLÄGG"
+  },
+  "privateWindowNotice": {
+    "message": "Privat fönster: endast manuell översättning. Webbplats- och språkregler sparas inte här."
+  },
+  "translatePagesInto": {
+    "message": "Översätt sidor till"
+  },
+  "translateThisPage": {
+    "message": "Översätt den här sidan"
+  },
+  "automaticSite": {
+    "message": "Översätt webbplatsen automatiskt"
+  },
+  "neverSite": {
+    "message": "Översätt aldrig webbplatsen"
+  },
+  "neverLanguage": {
+    "message": "Översätt aldrig språket"
+  },
+  "settingsPrivacy": {
+    "message": "Inställningar och integritet"
+  },
+  "onboardingTitle": {
+    "message": "Översättning på dina villkor."
+  },
+  "onboardingIntro": {
+    "message": "Välj vad tillägget får åtkomst till och var text behandlas före översättning."
+  },
+  "yourLanguage": {
+    "message": "Ditt språk"
+  },
+  "whenTranslationRuns": {
+    "message": "När översättning får köras"
+  },
+  "translationProvider": {
+    "message": "Översättningsleverantör"
+  },
+  "privacyCheckpoint": {
+    "message": "Integritetskontroll"
+  },
+  "acceptFinish": {
+    "message": "Godkänn och slutför"
+  },
+  "controlCentre": {
+    "message": "Kontrollcenter för översättning"
+  },
+  "controlIntro": {
+    "message": "Hantera webbplatsåtkomst, leverantörsintegritet, dynamiska sidor och automatiska regler."
+  },
+  "accessBehaviour": {
+    "message": "Åtkomst och automatiskt beteende"
+  },
+  "pageSafeguards": {
+    "message": "Sidbeteende och skydd"
+  },
+  "rulesTargets": {
+    "message": "Undantag och webbplatsmål"
+  },
+  "terminology": {
+    "message": "Terminologi"
+  },
+  "privacyDashboard": {
+    "message": "Integritetspanel"
+  },
+  "settingsBackup": {
+    "message": "Säkerhetskopia av inställningar"
+  },
+  "localDiagnostics": {
+    "message": "Lokal diagnostik"
+  },
+  "saveSettings": {
+    "message": "Spara inställningar"
+  },
+  "readingMode": {
+    "message": "Läsläge"
+  },
+  "translatedMode": {
+    "message": "Översatt"
+  },
+  "bilingualMode": {
+    "message": "Tvåspråkigt"
+  },
+  "hoverMode": {
+    "message": "Original vid hovring"
+  },
+  "workspaceTitle": {
+    "message": "Översättningsyta"
+  },
+  "showOriginal": {
+    "message": "Visa original"
+  },
+  "quickTranslate": {
+    "message": "Snabböversättning"
+  },
+  "textWorkspace": {
+    "message": "Textyta"
+  },
+  "translateText": {
+    "message": "Översätt text"
+  },
+  "copyResult": {
+    "message": "Kopiera resultat"
+  },
+  "websiteSettings": {
+    "message": "Webbplatsinställningar"
+  },
+  "localOnly": {
+    "message": "Endast lokalt"
+  },
+  "provider": {
+    "message": "Leverantör"
+  },
+  "automatic": {
+    "message": "Automatiskt"
+  },
+  "onDevice": {
+    "message": "På enheten"
+  },
+  "targetLanguage": {
+    "message": "Målspråk"
+  },
+  "allowSensitive": {
+    "message": "Tillåt automatisk översättning av känsliga formulär här"
+  },
+  "saveProfile": {
+    "message": "Spara webbplatsprofil"
+  },
+  "globalDefaults": {
+    "message": "Använd globala standardvärden"
+  },
+  "languagePacks": {
+    "message": "Lokala språkpaket"
+  },
+  "preparePair": {
+    "message": "Förbered ett språkpar"
+  },
+  "fromLanguage": {
+    "message": "Från"
+  },
+  "toLanguage": {
+    "message": "Till"
+  },
+  "checkPrepare": {
+    "message": "Kontrollera och förbered"
+  },
+  "recentTranslations": {
+    "message": "Senaste översättningar"
+  },
+  "thisSession": {
+    "message": "Den här sessionen"
+  },
+  "refresh": {
+    "message": "Uppdatera"
+  },
+  "addFavourite": {
+    "message": "Lägg till favoritspråk"
+  },
+  "removeFavourite": {
+    "message": "Ta bort favoritspråk"
+  },
+  "glossaryHelp": {
+    "message": "Föredragna översättningar, högst 200 poster"
+  },
+  "addTerm": {
+    "message": "Lägg till term"
+  },
+  "sourceTerm": {
+    "message": "Källterm"
+  },
+  "preferredTranslation": {
+    "message": "Föredragen översättning"
+  },
+  "removeTerm": {
+    "message": "Ta bort"
+  },
+  "grantProviderAccess": {
+    "message": "Tillåt åtkomst till leverantören"
+  },
+  "completeSetup": {
+    "message": "Slutför inställning"
+  },
+  "cancelTranslation": {
+    "message": "Avbryt översättning"
+  },
+  "textToTranslate": {
+    "message": "Text att översätta"
+  },
+  "supportKofi": {
+    "message": "Stöd på Ko-fi"
+  },
+  "checkingPage": {
+    "message": "Kontrollerar sidan…"
+  },
+  "connectionError": {
+    "message": "Kunde inte ansluta. Försök igen."
+  },
+  "setupRequired": {
+    "message": "Sekretessinställning krävs"
+  },
+  "providerPermissionRequired": {
+    "message": "Tillåt åtkomst till den godkända översättningsleverantören."
+  },
+  "providerSetupRequired": {
+    "message": "Välj och godkänn en leverantör i Inställningar och sekretess."
+  },
+  "needsAttention": {
+    "message": "Översättningen kräver uppmärksamhet"
+  },
+  "onDeviceRoute": {
+    "message": "På enheten: ingen text skickad externt"
+  },
+  "externalRoute": {
+    "message": "$v1$: $v2$ tecken skickade; $v3$ värden maskerade",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      },
+      "v2": {
+        "content": "$2"
+      },
+      "v3": {
+        "content": "$3"
+      }
+    }
+  },
+  "routeInactive": {
+    "message": "Ingen aktiv översättningsväg"
+  },
+  "pageTranslated": {
+    "message": "Sidan översatt"
+  },
+  "sectionsTranslated": {
+    "message": "$v1$ avsnitt översatta",
+    "placeholders": {
+      "v1": {
+        "content": "$1"
+      }
+    }
+  },
+  "translationProgress": {
+    "message": "Översättning pågår"
+  },
+  "retryTranslation": {
+    "message": "Försök översätta igen."
+  },
+  "protectedPage": {
+    "message": "Åtkomst till sidan saknas"
+  },
+  "openWebsite": {
+    "message": "Öppna tilläggsknappen på en vanlig webbplats för att tillåta åtkomst."
+  },
+  "siteExcluded": {
+    "message": "Webbplats undantagen"
+  },
+  "languageExcluded": {
+    "message": "Språk undantaget"
+  },
+  "privateSafeguard": {
+    "message": "Skydd för privata sidor"
+  },
+  "manualAvailable": {
+    "message": "Manuell översättning finns tillgänglig."
+  },
+  "alreadyTarget": {
+    "message": "Redan på ditt språk"
+  },
+  "readyToTranslate": {
+    "message": "Redo att översätta"
+  },
+  "noRecentTranslations": {
+    "message": "Inga senaste översättningar."
+  },
+  "resultPlaceholder": {
+    "message": "Din översättning visas här."
+  },
+  "thisWebsite": {
+    "message": "Denna webbplats"
+  },
+  "enterText": {
+    "message": "Ange text att översätta."
+  },
+  "translating": {
+    "message": "Översätter…"
+  },
+  "profileSaved": {
+    "message": "Webbplatsprofil sparad"
+  },
+  "checkingSupport": {
+    "message": "Kontrollerar webbläsarstöd…"
+  },
+  "pairUnavailable": {
+    "message": "Webbläsaren eller språkparet är inte tillgängligt."
+  },
+  "preparingPair": {
+    "message": "Förbereder språkparet…"
+  },
+  "pairReady": {
+    "message": "Språkparet är klart."
+  },
+  "glossaryInvalid": {
+    "message": "Fyll i båda fälten och ta bort dubbla källtermer."
+  }
 }
