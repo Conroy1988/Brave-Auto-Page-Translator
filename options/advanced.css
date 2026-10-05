@@ -1,8 +1,8 @@
 .provider-disclosure {
-  border: 1px solid #514778;
+  border: 1px solid #4a3338;
   border-radius: 14px;
   padding: 16px;
-  background: #171522;
+  background: #141417;
 }
 
 .provider-disclosure.hidden {
@@ -31,9 +31,9 @@
   flex-direction: column;
   gap: 5px;
   padding: 14px;
-  border: 1px solid #383245;
+  border: 1px solid #36363d;
   border-radius: 12px;
-  background: #15131d;
+  background: #131316;
 }
 
 .privacy-grid span {
