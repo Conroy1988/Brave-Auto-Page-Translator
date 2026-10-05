@@ -1,4 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Private Auto Page Translator">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Private Auto Page Translator — AT">
   <rect width="256" height="256" rx="52" fill="#0b0b0d"/>
-  <g fill="#e52e43"><path d="M76 54h44L84 202H40z"/><path d="M172 54h44l-36 148h-44z"/></g>
+  <g fill="#ef334b">
+    <path fill-rule="evenodd" d="M32 174 70 58h34l38 116h-30l-7-25H68l-7 25zm43-51h23L87 82z"/>
+    <path d="M125 58h99v28h-35v88h-29V86h-35z"/>
+    <path d="M76 196h42l-6 24H70z"/>
+    <path d="M144 196h42l-6 24h-42z"/>
+  </g>
 </svg>

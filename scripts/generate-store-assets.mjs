@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { Resvg } from "@resvg/resvg-js";
@@ -6,6 +6,8 @@ import { Resvg } from "@resvg/resvg-js";
 const root = path.resolve(import.meta.dirname, "..");
 const output = path.join(root, "store-assets");
 const iconOutput = path.join(root, "icons");
+const iconArtwork = readFileSync(path.join(root, "assets/icon.svg"), "utf8")
+  .replace(/<svg\b[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 const temporary = mkdtempSync(path.join(tmpdir(), "bapt-store-"));
 mkdirSync(output, { recursive: true });
 mkdirSync(iconOutput, { recursive: true });
@@ -23,7 +25,7 @@ function defs() {
 }
 
 function icon(x, y, size) {
-  return `<g transform="translate(${x} ${y}) scale(${size / 256})"><rect width="256" height="256" rx="52" fill="#0b0b0d"/><g fill="#e52e43"><path d="M76 54h44L84 202H40z"/><path d="M172 54h44l-36 148h-44z"/></g></g>`;
+  return `<g transform="translate(${x} ${y}) scale(${size / 256})">${iconArtwork}</g>`;
 }
 
 function text(x, y, value, size, weight = 500, fill = "#f7f7fb", anchor = "start") {

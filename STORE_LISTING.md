@@ -11,7 +11,7 @@ Private Auto Page Translator
 - **Extension ID:** `pilpighhgdglgngmakjepoadacbhpoeo`
 - **Source and development:** [GitHub](https://github.com/Conroy1988/Brave-Auto-Page-Translator)
 
-The Chrome Web Store is the official distribution and automatic-update channel. This repository is the source and development home; the sections below are the canonical listing copy for the v1.2.1 update.
+The Chrome Web Store is the official distribution and automatic-update channel. This repository is the source and development home; the sections below are the canonical listing copy for the v1.3.1 update.
 
 ## Summary
 
@@ -31,6 +31,8 @@ Write across languages with Smart Compose. Preview a translation in a supported 
 
 Key features:
 
+- A readable black-and-red interface with a distinctive AT icon and two-bar signature
+- Favourite languages and an easy-to-edit terminology glossary
 - Context-aware in-page translation for more coherent sentences
 - Translated, bilingual and original-on-hover reading modes
 - Viewport-first processing for long pages
@@ -88,6 +90,6 @@ https://github.com/Conroy1988/Brave-Auto-Page-Translator
 https://github.com/Conroy1988/Brave-Auto-Page-Translator/blob/main/PRIVACY.md
 
 
-## v1.3.0 update notes
+## v1.3.1 update notes
 
-A clearer red-and-black interface with a new two-bar icon, readable controls, favourite languages and easier glossary editing. The translation workspace follows your active tab and recovers from errors. Existing preferences and provider approvals are retained. No new permissions.
+A clearer red-and-black interface with a new red AT monogram and two-bar signature, readable controls, favourite languages and easier glossary editing. All websites is selected for new setup, with your consent and website-access permission still required. The translation workspace follows your active tab and recovers from errors. Existing preferences and provider approvals are retained. No new permissions.
